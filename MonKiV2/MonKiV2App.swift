@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct MonKiV2App: App {
+    
+    //MARK: Project Init
+    @StateObject var appCoordinator: AppCoordinator = AppCoordinator()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppCoordinatorView()
+                .environmentObject(appCoordinator)
         }
     }
 }
