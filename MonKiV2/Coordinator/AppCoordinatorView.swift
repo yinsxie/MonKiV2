@@ -18,8 +18,8 @@ struct AppCoordinatorView: View {
             appCoordinator.buildRoot(appCoordinator.root)
                 .navigationDestination(for: RootRoute.self, destination: { route in
                     switch route {
-                    case .main(let mainRoute):
-                        mainRoute.delegateView()
+                    case .play(let playRoute):
+                        playRoute.delegateView()
                             .navigationBarBackButtonHidden(true)
                     default:
                         Text("Unhandled Route")
@@ -35,7 +35,7 @@ struct AppCoordinatorView: View {
     
     private func endSplashView() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            appCoordinator.changeRootAnimate(root: .main(.home))
+            appCoordinator.changeRootAnimate(root: .helperScreen(.startingPage))
         }
     }
     

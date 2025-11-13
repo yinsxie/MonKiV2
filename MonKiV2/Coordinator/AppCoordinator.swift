@@ -31,8 +31,10 @@ final class AppCoordinator: ObservableObject {
         switch route {
         case .splashScreen:
             Text("SplashScreenView")
-        case .main(let mainRoute):
-            mainRoute.delegateView()
+        case .play(let playRoute):
+            playRoute.delegateView()
+        case .helperScreen(let helperRoute):
+            helperRoute.delegateView()
         }
     }
     

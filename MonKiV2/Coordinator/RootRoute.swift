@@ -9,5 +9,6 @@ import SwiftUI
 
 enum RootRoute: Hashable {
     case splashScreen
-    case main(MainRoute)
+    case helperScreen(HelperScreenRoute)
+    case play(PlayRoute)
 }
