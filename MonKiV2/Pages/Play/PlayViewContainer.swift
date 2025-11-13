@@ -9,16 +9,17 @@ import SwiftUI
 
 struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
-    
-    // Store views here
-    let pages: [AnyView] = [
-        AnyView(StartingPageView()),
-        AnyView(Color.red.overlay(Text("Page 1"))),
-        AnyView(Color.green.overlay(Text("Page 2"))),
-        AnyView(Color.blue.overlay(Text("Page 3"))),
-        AnyView(Color.yellow.overlay(Text("Page 4"))),
-        AnyView(Color.orange.overlay(Text("Page 5")))
-    ]
+    @State private var playEngine = PlayEngine()
+
+    var pages: [AnyView] {
+        [
+            AnyView(ShelfView(viewModel: playEngine.shelfVM)),
+            AnyView(Color.green.overlay(Text("Page 2"))),
+            AnyView(Color.blue.overlay(Text("Page 3"))),
+            AnyView(Color.yellow.overlay(Text("Page 4"))),
+            AnyView(Color.orange.overlay(Text("Page 5")))
+        ]
+    }
     
     var body: some View {
         ZStack {
@@ -35,10 +36,20 @@ struct PlayViewContainer: View {
             .scrollBounceBehavior(.basedOnSize)
             .contentMargins(0, for: .scrollContent)
             .scrollTargetBehavior(.paging)
+            .scrollDisabled(playEngine.dragManager.isDragging)
+            
+            VStack {
+                Spacer()
+                CartView(viewModel: playEngine.cartVM)
+                    .padding(.bottom, 50)
+            }
+            
+            DragOverlayView()
         }
+        .environment(playEngine.dragManager) // inject the dragManager into the environment so Modifiers can find it
+        .coordinateSpace(name: "GameSpace")
     }
 }
-
 #Preview {
     PlayViewContainer()
         .environmentObject(AppCoordinator())
