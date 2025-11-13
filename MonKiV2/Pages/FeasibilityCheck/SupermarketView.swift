@@ -1,5 +1,5 @@
 //
-//  TryView.swift
+//  SupermarketView.swift
 //  MonKiV2
 //
 //  Created by Aretha Natalova Wahyudi on 13/11/25.
@@ -206,7 +206,6 @@ struct ItemView: View {
 #Preview {
     SupermarketView()
 }
-
 
 struct GeometryGetter: View {
     let update: (CGRect) -> Void
