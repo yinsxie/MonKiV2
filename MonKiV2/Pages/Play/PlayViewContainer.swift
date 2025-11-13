@@ -9,14 +9,14 @@ import SwiftUI
 
 struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
-    
+    @StateObject var session: GameSessionData = GameSessionData(forGameMode: .singlePlayer)
     // Store views here
     let pages: [AnyView] = [
         AnyView(StartingPageView()),
         AnyView(Color.red.overlay(Text("Page 1"))),
         AnyView(Color.green.overlay(Text("Page 2"))),
-        AnyView(Color.blue.overlay(Text("Page 3"))),
-        AnyView(Color.yellow.overlay(Text("Page 4"))),
+        AnyView(CashierLoadingView()),
+        AnyView(CashierPaymentView()),
         AnyView(Color.orange.overlay(Text("Page 5")))
     ]
     
@@ -27,8 +27,8 @@ struct PlayViewContainer: View {
                     ForEach(pages.indices, id: \.self) { index in
                         pages[index]
                             .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
-                            .frame(height: .infinity)
                             .ignoresSafeArea()
+                            .environmentObject(session)
                     }
                 }
             }

@@ -45,4 +45,5 @@ struct AppCoordinatorView: View {
 
 #Preview {
     AppCoordinatorView()
+        .environmentObject(AppCoordinator())
 }
