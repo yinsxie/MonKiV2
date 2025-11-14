@@ -18,30 +18,30 @@ struct Item: Identifiable, Equatable {
     
     // TODO: Add strings of actual asset
     static let items: [Item] = [
-        // Pokok
-        Item(id: UUID(), name: "Nasi", price: 5, aisle: "Pokok", imageAssetPath: ""),
-        Item(id: UUID(), name: "Mie", price: 5, aisle: "Pokok", imageAssetPath: ""),
-        Item(id: UUID(), name: "Roti", price: 5, aisle: "Pokok", imageAssetPath: ""),
+//        // Pokok
+//        Item(id: UUID(), name: "Nasi", price: 5, aisle: "Pokok", imageAssetPath: ""),
+//        Item(id: UUID(), name: "Mie", price: 5, aisle: "Pokok", imageAssetPath: ""),
+//        Item(id: UUID(), name: "Roti", price: 5, aisle: "Pokok", imageAssetPath: ""),
         
         // Sayur
-        Item(id: UUID(), name: "Wortel", price: 3, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Tomat", price: 3, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Brokoli", price: 4, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Jagung", price: 3, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Kentang", price: 3, aisle: "Sayur", imageAssetPath: ""),
-        
-        // Olahan
-        Item(id: UUID(), name: "Keju", price: 8, aisle: "Olahan", imageAssetPath: ""),
-        Item(id: UUID(), name: "Susu", price: 7, aisle: "Olahan", imageAssetPath: ""),
-        Item(id: UUID(), name: "Sosis", price: 7, aisle: "Olahan", imageAssetPath: ""),
-        
-        // Protein Harian
-        Item(id: UUID(), name: "Ayam", price: 12, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Ikan", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Telur", price: 5, aisle: "Protein Harian", imageAssetPath: ""),
-        
-        // Protein Premium
-        Item(id: UUID(), name: "Daging Sapi", price: 18, aisle: "Protein Premium", imageAssetPath: ""),
-        Item(id: UUID(), name: "Udang", price: 20, aisle: "Protein Premium", imageAssetPath: "")
+        Item(id: UUID(), name: "Wortel", price: 3, aisle: "Sayur", imageAssetPath: "wortel"),
+        Item(id: UUID(), name: "Tomat", price: 3, aisle: "Sayur", imageAssetPath: "tomat"),
+        Item(id: UUID(), name: "Brokoli", price: 4, aisle: "Sayur", imageAssetPath: "brokoli"),
+        Item(id: UUID(), name: "Jagung", price: 3, aisle: "Sayur", imageAssetPath: "jagung"),
+//        Item(id: UUID(), name: "Kentang", price: 3, aisle: "Sayur", imageAssetPath: ""),
+//        
+//        // Olahan
+//        Item(id: UUID(), name: "Keju", price: 8, aisle: "Olahan", imageAssetPath: ""),
+//        Item(id: UUID(), name: "Susu", price: 7, aisle: "Olahan", imageAssetPath: ""),
+//        Item(id: UUID(), name: "Sosis", price: 7, aisle: "Olahan", imageAssetPath: ""),
+//        
+//        // Protein Harian
+//        Item(id: UUID(), name: "Ayam", price: 12, aisle: "Protein Harian", imageAssetPath: ""),
+//        Item(id: UUID(), name: "Ikan", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
+        Item(id: UUID(), name: "Telur", price: 5, aisle: "Protein Harian", imageAssetPath: "")
+//        
+//        // Protein Premium
+//        Item(id: UUID(), name: "Daging Sapi", price: 18, aisle: "Protein Premium", imageAssetPath: ""),
+//        Item(id: UUID(), name: "Udang", price: 20, aisle: "Protein Premium", imageAssetPath: "")
     ]
 }
