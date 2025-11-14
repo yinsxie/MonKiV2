@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ShelfView: View {
-    var viewModel: ShelfViewModel
+    @Environment(ShelfViewModel.self) var viewModel
     
     var body: some View {
         VStack {

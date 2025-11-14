@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CashierPaymentView: View {
     
-    var viewModel: CashierViewModel
+    @Environment(CashierViewModel.self) var viewModel
     
     var body: some View {
         Text("Hello, World!")
@@ -17,5 +17,5 @@ struct CashierPaymentView: View {
 }
 
 #Preview {
-    CashierPaymentView(viewModel: CashierViewModel())
+    CashierPaymentView()
 }

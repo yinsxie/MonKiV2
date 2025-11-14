@@ -8,13 +8,28 @@
 import SwiftUI
 
 // this is basically God class PlayViewModel
-@Observable class PlayEngine {
-    var shelfVM = ShelfViewModel()
-    var cartVM = CartViewModel()
-    var cashierVM = CashierViewModel()
+@Observable class PlayViewModel {
+    
+    // Global Published Var for global state
+    var initialBudget: Int = 0
+    var currentBudget: Int = 0
+    
+    // VM's
+    var shelfVM: ShelfViewModel!
+    var cartVM: CartViewModel!
+    var cashierVM: CashierViewModel!
     var dragManager = DragManager()
     
     init() {
+        // On Game Start
+        let budget = generateBudget(min: 20, max: 100, step: 10)
+        self.initialBudget = budget
+        self.currentBudget = budget
+        
+        self.shelfVM = ShelfViewModel(parent: self)
+        self.cartVM = CartViewModel(parent: self)
+        self.cashierVM = CashierViewModel(parent: self)
+        
         setupGameLogic()
     }
     
@@ -41,5 +56,16 @@ import SwiftUI
                 }
             }
         }
+    }
+}
+
+extension PlayViewModel {
+    
+}
+
+private extension PlayViewModel {
+    func generateBudget(min: Int, max: Int, step: Int) -> Int {
+        let range = stride(from: min, through: max, by: step).map { $0 }
+        return range.randomElement() ?? min
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CashierLoadingView: View {
    
-    var viewModel: CashierViewModel
+    @Environment(CashierViewModel.self) var viewModel
     
     var body: some View {
         VStack {

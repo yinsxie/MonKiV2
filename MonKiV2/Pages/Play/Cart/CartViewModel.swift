@@ -7,13 +7,20 @@
 import SwiftUI
 
 @Observable class CartViewModel {
+    
+    weak var parent: PlayViewModel?
+
+    init(parent: PlayViewModel?) {
+        self.parent = parent
+    }
+    
     var items: [CartItem] = []
     
     func addItem(_ item: Item) {
-            let newCartItem = CartItem(item: item)
-            items.append(newCartItem)
-            print("Item added to cart: \(item.name) (Instance ID: \(newCartItem.id))")
-        }
+        let newCartItem = CartItem(item: item)
+        items.append(newCartItem)
+        print("Item added to cart: \(item.name) (Instance ID: \(newCartItem.id))")
+    }
     
     func removeItem(withId id: UUID) {
         items.removeAll { $0.id == id }

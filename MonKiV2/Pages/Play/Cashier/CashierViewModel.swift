@@ -9,6 +9,9 @@ import SwiftUI
 
 @Observable
 final class CashierViewModel {
-    
-}
+    weak var parent: PlayViewModel?
 
+    init(parent: PlayViewModel?) {
+        self.parent = parent
+    }
+}

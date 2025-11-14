@@ -9,16 +9,17 @@ import SwiftUI
 
 struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
-    @State private var playEngine = PlayEngine()
-    @StateObject var session: GameSessionData = GameSessionData(forGameMode: .singlePlayer)
+    
+    @State private var playVM = PlayViewModel()
+    
     // Store views here
     private var pages: [AnyView] {
         [
-            AnyView(ShelfView(viewModel: playEngine.shelfVM)),
+            AnyView(ShelfView()),
             AnyView(Color.red.overlay(Text("Page 1"))),
             AnyView(Color.green.overlay(Text("Page 2"))),
-            AnyView(CashierLoadingView(viewModel: playEngine.cashierVM)),
-            AnyView(CashierPaymentView(viewModel: playEngine.cashierVM)),
+            AnyView(CashierLoadingView()),
+            AnyView(CashierPaymentView()),
             AnyView(Color.orange.overlay(Text("Page 5")))
         ]
     }
@@ -31,24 +32,28 @@ struct PlayViewContainer: View {
                         pages[index]
                             .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                             .ignoresSafeArea()
-                            .environmentObject(session)
+                            .environment(playVM)
+                            .environment(playVM.cartVM)
+                            .environment(playVM.shelfVM)
+                            .environment(playVM.cashierVM)
+
                     }
                 }
             }
             .scrollBounceBehavior(.basedOnSize)
             .contentMargins(0, for: .scrollContent)
             .scrollTargetBehavior(.paging)
-            .scrollDisabled(playEngine.dragManager.isDragging)
+            .scrollDisabled(playVM.dragManager.isDragging)
             
             VStack {
                 Spacer()
-                CartView(viewModel: playEngine.cartVM)
+                CartView(viewModel: playVM.cartVM)
                     .padding(.bottom, 50)
             }
             
             DragOverlayView()
         }
-        .environment(playEngine.dragManager) // inject the dragManager into the environment so Modifiers can find it
+        .environment(playVM.dragManager) // inject the dragManager into the environment so Modifiers can find it
         .coordinateSpace(name: "GameSpace")
     }
 }
