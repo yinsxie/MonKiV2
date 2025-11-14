@@ -11,7 +11,7 @@ import SwiftUI
 @Observable class PlayEngine {
     var shelfVM = ShelfViewModel()
     var cartVM = CartViewModel()
-    
+    var cashierVM = CashierViewModel()
     var dragManager = DragManager()
     
     init() {
@@ -28,8 +28,10 @@ import SwiftUI
                 withAnimation(.spring) {
                     switch zone {
                     case .cart:
-                        self.cartVM.addItem(groceryItem)
-                        self.shelfVM.removeItem(withId: groceryItem.id)
+                        DispatchQueue.main.async {
+                            self.cartVM.addItem(groceryItem)
+                            self.shelfVM.removeItem(withId: groceryItem.id)
+                        }
                     case .cashierLoadingCounter:
                         print("Moved to cashier")
                     default: break

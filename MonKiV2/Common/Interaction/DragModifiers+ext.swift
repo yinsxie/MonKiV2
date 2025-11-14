@@ -14,7 +14,7 @@ struct DraggableModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .opacity(manager.hiddenItemUUID == item.id ? 0.0 : 1.0)
+            .opacity(manager.currentDraggedItem == item ?  0.0 : 1.0)
             .gesture(
                 DragGesture(coordinateSpace: .named("GameSpace"))
                     .onChanged { value in
@@ -22,7 +22,6 @@ struct DraggableModifier: ViewModifier {
                             // Haptic feedback could go here
                             manager.isDragging = true
                             manager.currentDraggedItem = item
-                            manager.hiddenItemUUID = item.id
                         }
                         manager.currentDragLocation = value.location
                     }

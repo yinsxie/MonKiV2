@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct CashierLoadingView: View {
+   
+    var viewModel: CashierViewModel
+    
     var body: some View {
-        Text("Loading...")
+        VStack {
+            
+        }
     }
 }
 
 #Preview {
-    CashierLoadingView()
+    PlayViewContainer()
 }
