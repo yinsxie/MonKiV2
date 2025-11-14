@@ -34,7 +34,7 @@ struct CreateDishView: View {
         }
         .padding()
         .onAppear {
-            if viewModel.cgImage == nil && !viewModel.ingredientList.isEmpty {
+            if viewModel.cgImage == nil && !viewModel.checkCheckoutItems() {
                 viewModel.generate()
             }
         }
