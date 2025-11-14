@@ -8,6 +8,7 @@ import SwiftUI
 
 struct CartView: View {
     var viewModel: CartViewModel
+    @Environment(DragManager.self) var manager
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -17,12 +18,17 @@ struct CartView: View {
                 .shadow(radius: 5)
             
             HStack(spacing: -10) {
-                ForEach(viewModel.items) { item in
-                    GroceryItemView(item: item)
+                ForEach(viewModel.items) { cartItem in
+
+                    GroceryItemView(item: cartItem.item)
                     .scaleEffect(0.8)
                     .frame(width: 50, height: 50)
                     .shadow(radius: 2)
                     .transition(.scale.combined(with: .opacity))
+
+                    .makeDraggable(item: DraggedItem(id: cartItem.id,
+                                                    payload: .grocery(cartItem.item)))
+                    .opacity(manager.currentDraggedItem?.id == cartItem.id ?  0.0 : 1.0)
                 }
             }
             .padding(.bottom, 40)

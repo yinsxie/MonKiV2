@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Item: Identifiable {
+struct Item: Identifiable, Equatable {
     let id: UUID
     let name: String
     let price: Int
@@ -16,7 +16,7 @@ struct Item: Identifiable {
     
     static let mockItem = Item(id: UUID(), name: "Test item", price: 10, aisle: nil, imageAssetPath: "")
     
-    //TODO: Fill in the items here (filled based on figma, adjust later)
+    // TODO: Add strings of actual asset + aisle adjustment
     static let items: [Item] = [
         // Staples
         Item(id: UUID(), name: "Rice", price: 5, aisle: nil, imageAssetPath: ""),

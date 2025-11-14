@@ -22,7 +22,19 @@ final class GameSessionData: ObservableObject {
     @Published var players: [PlayerSessionData]
     @Published var purchasedItems: [PurchasedItem]
     @Published var checkoutItems: [CheckoutItem]
-     
+    
+    var playerInfo: Player
+    
+    var playerSession: PlayerSessionData? {
+        players.first { data in
+            data.player.playerId == playerInfo.playerId
+        }
+    }
+    
+    var currentCartTotalPrice: Int {
+        playerSession?.cart.items.reduce(0) { $0 + $1.price } ?? 0
+    }
+
     var createdAt: Date
      
     init(forGameMode type: GameSessionType) {
@@ -33,6 +45,7 @@ final class GameSessionData: ObservableObject {
         
         let player = Player.mockPlayer
         let playerSessionData = PlayerSessionData(player: player, budget: budget)
+        self.playerInfo = player
         let purchasedItems: [PurchasedItem] = []
         let checkoutItems: [CheckoutItem] = []
         

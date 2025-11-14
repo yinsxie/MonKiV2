@@ -24,7 +24,7 @@ struct DraggedItem: Equatable {
 }
 
 enum DragPayload: Equatable {
-    case grocery(GroceryItem)
+    case grocery(Item)
     // Future proofing:
     // case money(Double)
 }
@@ -34,7 +34,6 @@ enum DragPayload: Equatable {
     var currentDraggedItem: DraggedItem?
     var currentDragLocation: CGPoint = .zero
     var isDragging: Bool = false
-    var hiddenItemUUID: UUID?
     
     // REGISTERED ZONES (The map of the screen)
     // We store the Frame (CGRect) and the Type of zone
@@ -51,20 +50,16 @@ enum DragPayload: Equatable {
     
     func handleDrop() {
         isDragging = false
-        var wasDropped = false
         
         for (_, zone) in dropZones {
             if zone.frame.contains(currentDragLocation) {
                 if let item = currentDraggedItem {
                     print("Hit zone: \(zone.type)")
-                    wasDropped = true
                     onDropSuccess?(zone.type, item)
                 }
             }
         }
         currentDraggedItem = nil
-        if !wasDropped {
-            hiddenItemUUID = nil
-        }
+
     }
 }
