@@ -12,14 +12,17 @@ struct PlayViewContainer: View {
     @State private var playEngine = PlayEngine()
     @StateObject var session: GameSessionData = GameSessionData(forGameMode: .singlePlayer)
     // Store views here
-    let pages: [AnyView] = [
-        AnyView(ShelfView(viewModel: playEngine.shelfVM)),
-        AnyView(Color.red.overlay(Text("Page 1"))),
-        AnyView(Color.green.overlay(Text("Page 2"))),
-        AnyView(CashierLoadingView()),
-        AnyView(CashierPaymentView()),
-        AnyView(Color.orange.overlay(Text("Page 5")))
-    ]
+    private var pages: [AnyView] {
+        [
+            AnyView(ShelfView(viewModel: playEngine.shelfVM)),
+            AnyView(Color.red.overlay(Text("Page 1"))),
+            AnyView(Color.green.overlay(Text("Page 2"))),
+            AnyView(CashierLoadingView()),
+            AnyView(CashierPaymentView()),
+            AnyView(Color.orange.overlay(Text("Page 5")))
+        ]
+    }
+    
     
     var body: some View {
         ZStack {
