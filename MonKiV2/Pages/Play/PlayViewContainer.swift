@@ -24,7 +24,7 @@ struct PlayViewContainer: View {
             AnyView(CreateDishView(viewModel: createDishVM))
         ]
     }
-
+    
     var body: some View {
         ZStack {
             ScrollView(.horizontal) {
@@ -34,18 +34,41 @@ struct PlayViewContainer: View {
                             .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                             .ignoresSafeArea()
                             .environmentObject(session)
+                            .id(index)
                     }
                 }
+                .scrollTargetLayout()
             }
+            .scrollPosition(id: $playEngine.currentPageIndex)
             .scrollBounceBehavior(.basedOnSize)
             .contentMargins(0, for: .scrollContent)
             .scrollTargetBehavior(.paging)
             .scrollDisabled(playEngine.dragManager.isDragging)
+            .scrollIndicators(.hidden)
             
-            VStack {
-                Spacer()
-                CartView(viewModel: playEngine.cartVM)
+            let currentIndex = playEngine.currentPageIndex ?? 0
+            
+            // Muncul pas di index 0 (Shelf), 3 (CashierLoading), 4 (CashierPayment)
+            // TODO: adjust index in the future
+            let cartVisibleIndices = [0, 3, 4]
+            if cartVisibleIndices.contains(currentIndex) {
+                VStack {
+                    Spacer()
+                    CartView(viewModel: playEngine.cartVM)
+                        .padding(.bottom, 50)
+                }
+            }
+            
+            // Muncul pas di semua halaman KECUALI di halaman imageplayground
+            if currentIndex < 5 { // TODO: adjust index in the future
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        WalletView(viewModel: playEngine.walletVM)
+                    }
                     .padding(.bottom, 50)
+                }
             }
             
             DragOverlayView()

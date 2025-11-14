@@ -28,7 +28,7 @@ struct CartView: View {
 
                     .makeDraggable(item: DraggedItem(id: cartItem.id,
                                                     payload: .grocery(cartItem.item)))
-                    .opacity(manager.currentDraggedItem?.id == cartItem.id ?  0.0 : 1.0)
+                    .opacity(manager.currentDraggedItem?.id == cartItem.id ?  0 : 1)
                 }
             }
             .padding(.bottom, 40)

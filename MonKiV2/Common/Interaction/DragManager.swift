@@ -11,6 +11,7 @@ enum DropZoneType: String {
     case cart
     case cashierLoadingCounter // for handing over items to be bought
     case cashierPaymentCounter // for handing over money
+    case wallet // for handling kembalian
 }
 
 // A wrapper for the data being dragged
@@ -26,7 +27,7 @@ struct DraggedItem: Equatable {
 enum DragPayload: Equatable {
     case grocery(Item)
     // Future proofing:
-    // case money(Double)
+     case money(Int)
 }
 
 @Observable class DragManager {

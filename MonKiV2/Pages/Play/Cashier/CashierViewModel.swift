@@ -10,5 +10,15 @@ import SwiftUI
 @Observable
 final class CashierViewModel {
     
+    var receivedMoney: [Money] = []
+    
+    func acceptMoney(_ money: Money) {
+        receivedMoney.append(money)
+        print("Cashier received money: \(money.price)")
+    }
+    
+    var totalReceivedMoney: Int {
+        receivedMoney.reduce(0) { $0 + $1.price }
+    }
+    
 }
-
