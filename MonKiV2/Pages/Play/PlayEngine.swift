@@ -28,9 +28,11 @@ import SwiftUI
                 withAnimation(.spring) {
                     switch zone {
                     case .cart:
-                        DispatchQueue.main.async {
-                            self.cartVM.addItem(groceryItem)
-                            self.shelfVM.removeItem(withId: groceryItem.id)
+                        if !self.cartVM.containsItem(withId: draggedItem.id) {
+                            DispatchQueue.main.async {
+                                self.cartVM.addItem(groceryItem)
+    //                            self.shelfVM.removeItem(withId: groceryItem.id)
+                            }
                         }
                     case .cashierLoadingCounter:
                         print("Moved to cashier")

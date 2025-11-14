@@ -17,13 +17,16 @@ struct CartView: View {
                 .shadow(radius: 5)
             
             HStack(spacing: -10) {
-                ForEach(viewModel.items) { item in
-                    GroceryItemView(item: item)
+                ForEach(viewModel.items) { cartItem in
+
+                    GroceryItemView(item: cartItem.item)
                     .scaleEffect(0.8)
                     .frame(width: 50, height: 50)
                     .shadow(radius: 2)
                     .transition(.scale.combined(with: .opacity))
-                    .makeDraggable(item: DraggedItem(id: item.id, payload: .grocery(item)))
+
+                    .makeDraggable(item: DraggedItem(id: cartItem.id,
+                                                    payload: .grocery(cartItem.item)))
                 }
             }
             .padding(.bottom, 40)

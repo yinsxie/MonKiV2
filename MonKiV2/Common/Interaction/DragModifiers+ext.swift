@@ -14,7 +14,6 @@ struct DraggableModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .opacity(manager.currentDraggedItem == item ?  0.0 : 1.0)
             .gesture(
                 DragGesture(coordinateSpace: .named("GameSpace"))
                     .onChanged { value in

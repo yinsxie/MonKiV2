@@ -7,15 +7,20 @@
 import SwiftUI
 
 @Observable class CartViewModel {
-    var items: [Item] = []
+    var items: [CartItem] = []
     
     func addItem(_ item: Item) {
-        items.append(item)
-        print("Item added to cart: \(item.name)")
-    }
+            let newCartItem = CartItem(item: item)
+            items.append(newCartItem)
+            print("Item added to cart: \(item.name) (Instance ID: \(newCartItem.id))")
+        }
     
     func removeItem(withId id: UUID) {
         items.removeAll { $0.id == id }
-        print("Item removed from cart with id: \(id)")
+        print("Item removed from cart with instance id: \(id)")
+    }
+    
+    func containsItem(withId id: UUID) -> Bool {
+        return items.contains { $0.id == id }
     }
 }
