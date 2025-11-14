@@ -11,12 +11,19 @@ enum DropZoneType: String {
     case cart
     case cashierLoadingCounter // for handing over items to be bought
     case cashierPaymentCounter // for handing over money
+    case cashierRemoveItem // for removing cart item
+}
+
+enum PayloadSourceType {
+    case cart
+    case cashierCounter
 }
 
 // A wrapper for the data being dragged
 struct DraggedItem: Equatable {
     var id: UUID = UUID()
     var payload: DragPayload
+    var source: PayloadSourceType?
         
     static func == (lhs: DraggedItem, rhs: DraggedItem) -> Bool {
         lhs.id == rhs.id

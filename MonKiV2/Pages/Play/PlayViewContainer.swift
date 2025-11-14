@@ -32,10 +32,6 @@ struct PlayViewContainer: View {
                         pages[index]
                             .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                             .ignoresSafeArea()
-                            .environment(playVM)
-                            .environment(playVM.cartVM)
-                            .environment(playVM.shelfVM)
-                            .environment(playVM.cashierVM)
 
                     }
                 }
@@ -47,12 +43,16 @@ struct PlayViewContainer: View {
             
             VStack {
                 Spacer()
-                CartView(viewModel: playVM.cartVM)
+                CartView()
                     .padding(.bottom, 50)
             }
             
             DragOverlayView()
         }
+        .environment(playVM)
+        .environment(playVM.cartVM)
+        .environment(playVM.shelfVM)
+        .environment(playVM.cashierVM)
         .environment(playVM.dragManager) // inject the dragManager into the environment so Modifiers can find it
         .coordinateSpace(name: "GameSpace")
     }

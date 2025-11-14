@@ -46,11 +46,36 @@ import SwiftUI
                         if !self.cartVM.containsItem(withId: draggedItem.id) {
                             DispatchQueue.main.async {
                                 self.cartVM.addItem(groceryItem)
+                                //Check if source from counter, if yes, remove counter data
+                                if let source = draggedItem.source, source == .cashierCounter {
+                                    self.cashierVM.removeFromCounter(withId: draggedItem.id)
+                                }
     //                            self.shelfVM.removeItem(withId: groceryItem.id)
                             }
                         }
                     case .cashierLoadingCounter:
                         print("Moved to cashier")
+                        if let source = draggedItem.source, source == .cart {
+                            DispatchQueue.main.async {
+                                self.cartVM.removeItem(withId: draggedItem.id)
+                                self.cashierVM.addToCounter(CartItem(item: groceryItem))
+                            }
+                        }
+                    case .cashierRemoveItem:
+                        print("Remove from cart")
+                        if let source = draggedItem.source {
+                            switch source {
+                            case .cart:
+                                DispatchQueue.main.async {
+                                    self.cartVM.removeItem(withId: draggedItem.id)
+                                }
+                            case .cashierCounter:
+                                DispatchQueue.main.async {
+                                    self.cashierVM.removeFromCounter(withId: draggedItem.id)
+                                }
+                            }
+                        }
+                        
                     default: break
                     }
                 }
