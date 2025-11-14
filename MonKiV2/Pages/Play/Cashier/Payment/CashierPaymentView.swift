@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct CashierPaymentView: View {
+    
+    var viewModel: CashierViewModel
+    
     var body: some View {
         Text("Hello, World!")
     }
 }
 
 #Preview {
-    CashierPaymentView()
+    CashierPaymentView(viewModel: CashierViewModel())
 }

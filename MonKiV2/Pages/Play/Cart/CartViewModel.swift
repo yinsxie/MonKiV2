@@ -11,9 +11,11 @@ import SwiftUI
     
     func addItem(_ item: GroceryItem) {
         items.append(item)
+        print("Item added to cart: \(item.name)")
     }
     
     func removeItem(withId id: UUID) {
         items.removeAll { $0.id == id }
+        print("Item removed from cart with id: \(id)")
     }
 }

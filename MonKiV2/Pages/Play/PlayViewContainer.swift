@@ -17,12 +17,11 @@ struct PlayViewContainer: View {
             AnyView(ShelfView(viewModel: playEngine.shelfVM)),
             AnyView(Color.red.overlay(Text("Page 1"))),
             AnyView(Color.green.overlay(Text("Page 2"))),
-            AnyView(CashierLoadingView()),
-            AnyView(CashierPaymentView()),
+            AnyView(CashierLoadingView(viewModel: playEngine.cashierVM)),
+            AnyView(CashierPaymentView(viewModel: playEngine.cashierVM)),
             AnyView(Color.orange.overlay(Text("Page 5")))
         ]
     }
-    
     
     var body: some View {
         ZStack {

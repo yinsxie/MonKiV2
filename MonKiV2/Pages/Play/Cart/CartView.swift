@@ -23,6 +23,7 @@ struct CartView: View {
                     .frame(width: 50, height: 50)
                     .shadow(radius: 2)
                     .transition(.scale.combined(with: .opacity))
+                    .makeDraggable(item: DraggedItem(id: item.id, payload: .grocery(item)))
                 }
             }
             .padding(.bottom, 40)
