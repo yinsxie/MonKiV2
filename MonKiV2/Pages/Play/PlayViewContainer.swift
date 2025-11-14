@@ -10,16 +10,16 @@ import SwiftUI
 struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playEngine = PlayEngine()
-
-    var pages: [AnyView] {
-        [
-            AnyView(ShelfView(viewModel: playEngine.shelfVM)),
-            AnyView(Color.green.overlay(Text("Page 2"))),
-            AnyView(Color.blue.overlay(Text("Page 3"))),
-            AnyView(Color.yellow.overlay(Text("Page 4"))),
-            AnyView(Color.orange.overlay(Text("Page 5")))
-        ]
-    }
+    @StateObject var session: GameSessionData = GameSessionData(forGameMode: .singlePlayer)
+    // Store views here
+    let pages: [AnyView] = [
+        AnyView(ShelfView(viewModel: playEngine.shelfVM)),
+        AnyView(Color.red.overlay(Text("Page 1"))),
+        AnyView(Color.green.overlay(Text("Page 2"))),
+        AnyView(CashierLoadingView()),
+        AnyView(CashierPaymentView()),
+        AnyView(Color.orange.overlay(Text("Page 5")))
+    ]
     
     var body: some View {
         ZStack {
@@ -28,8 +28,8 @@ struct PlayViewContainer: View {
                     ForEach(pages.indices, id: \.self) { index in
                         pages[index]
                             .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
-                            .frame(height: .infinity)
                             .ignoresSafeArea()
+                            .environmentObject(session)
                     }
                 }
             }
