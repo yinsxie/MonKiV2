@@ -7,9 +7,9 @@
 import SwiftUI
 
 @Observable class CartViewModel {
-    var items: [GroceryItem] = []
+    var items: [Item] = []
     
-    func addItem(_ item: GroceryItem) {
+    func addItem(_ item: Item) {
         items.append(item)
     }
     

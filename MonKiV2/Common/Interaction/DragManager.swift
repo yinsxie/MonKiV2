@@ -24,7 +24,7 @@ struct DraggedItem: Equatable {
 }
 
 enum DragPayload: Equatable {
-    case grocery(GroceryItem)
+    case grocery(Item)
     // Future proofing:
     // case money(Double)
 }

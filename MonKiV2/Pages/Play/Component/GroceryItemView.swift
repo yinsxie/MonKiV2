@@ -7,15 +7,22 @@
 import SwiftUI
 
 struct GroceryItemView: View { // this is created so that item on shelf and after clicked stays consistent
-    let item: GroceryItem
+    let item: Item
     
     var body: some View {
-        VStack {
-            // TODO: Change with actual item asset string
-            Image(systemName: item.icon)
-                .font(.system(size: 40))
-                .foregroundColor(.orange)
-        }
-        .shadow(radius: 3)
+        // TODO: Change with actual asset
+        Rectangle()
+            .fill(Color.gray.opacity(0.2))
+            .frame(width: 100, height: 100)
+            .overlay(
+                Text(item.name)
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .padding(5)
+            )
     }
+}
+
+#Preview {
+    GroceryItemView(item: Item.mockItem)
 }

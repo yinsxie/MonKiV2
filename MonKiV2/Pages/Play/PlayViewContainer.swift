@@ -22,8 +22,7 @@ struct PlayViewContainer: View {
             AnyView(Color.orange.overlay(Text("Page 5")))
         ]
     }
-    
-    
+        
     var body: some View {
         ZStack {
             ScrollView(.horizontal) {
