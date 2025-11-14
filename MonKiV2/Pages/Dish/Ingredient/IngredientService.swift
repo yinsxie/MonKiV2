@@ -16,17 +16,22 @@ struct IngredientService {
         self.repository = repository
     }
     
-    func getRandomIngredients(count: Int) -> [Ingredient] {
-        let allNames = repository.getAvailableIngredientNames()
+    func getRandomIngredients(count: Int) -> [CheckoutItem] {
+        let allItems = repository.getAvailableItems()
         
-        let validCount = min(count, allNames.count)
+        let validCount = min(count, allItems.count)
         guard validCount > 0 else { return [] }
         
-        let shuffledNames = allNames.shuffled().prefix(validCount)
+        let shuffledItems = allItems.shuffled().prefix(validCount)
         
-        return shuffledNames.map { name in
-            let randomQuantity = Int.random(in: 1...10)
-            return Ingredient(name: name, quantity: randomQuantity)
+        return shuffledItems.map { item in
+            let randomQuantity = Int.random(in: 1...5)
+            
+            return ItemHeader(
+                item: item,
+                quantity: randomQuantity,
+                originalOwner: Player.mockPlayer
+            )
         }
     }
     

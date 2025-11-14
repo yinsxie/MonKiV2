@@ -13,7 +13,6 @@ import Combine
 final class CreateDishViewModel: ObservableObject {
     @Published var cgImage: CGImage?
     @Published var isLoading = false
-    @Published var errorMessage: String?
     private let ingredientService = IngredientService()
     
     @Published var inputText: String = "" {
@@ -33,21 +32,18 @@ final class CreateDishViewModel: ObservableObject {
     
     // MARK: - DONT DELETE, ini buat nerima data object, will be used
     // kepikiran nanti pas udah co, yg dilempar itu bentuknya object si bahannya
-    func setIngredients(from objects: [Ingredient]) {
+    func setIngredients(from objects: [CheckoutItem]) {
         let ingredientString = objects.formattedAllIngredientsToString()
         self.inputText = ingredientString
     }
     
     func generate() {
-        // MARK: ganti ingredientlist dengan object ingredient yg di co, buat guard, idk butuh apa ngga
-        guard !ingredientList.isEmpty else {
-            errorMessage = "Add at least one ingredient"
+        guard !checkCheckoutItems() else {
             return
         }
         
         Task {
             isLoading = true
-            errorMessage = nil
             let start = CFAbsoluteTimeGetCurrent()
             
             do {
@@ -57,11 +53,15 @@ final class CreateDishViewModel: ObservableObject {
                 cgImage = image
                 print("Generated in \(String(format: "%.2f", time))s")
             } catch {
-                errorMessage = error.localizedDescription
-                print("Generate failed: \(error)")
+                print("Generate failed: \(error.localizedDescription)")
             }
             isLoading = false
         }
+    }
+    
+    func checkCheckoutItems() -> Bool {
+        let trimmedInput = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmedInput.isEmpty && ingredientList.isEmpty
     }
     
 }

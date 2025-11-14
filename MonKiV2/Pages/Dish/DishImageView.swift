@@ -40,18 +40,6 @@ struct DishImageView: View {
                     .overlay(ProgressView().progressViewStyle(.circular).scaleEffect(1.5))
             }
             
-            // Error message
-            if let error = viewModel.errorMessage {
-                VStack {
-                    Text("Error: \(error)")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.red.opacity(0.8))
-                        .cornerRadius(12)
-                    Spacer()
-                }.padding()
-            }
-            
             // Refresh button
             VStack {
                 HStack {
@@ -67,7 +55,7 @@ struct DishImageView: View {
                             .clipShape(Circle())
                             .shadow(radius: 5)
                     }
-                    .disabled(viewModel.isLoading)
+                    .disabled(viewModel.checkCheckoutItems())
                 }
                 .padding(12)
                 Spacer()

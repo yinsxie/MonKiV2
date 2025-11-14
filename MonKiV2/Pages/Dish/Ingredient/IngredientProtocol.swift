@@ -9,18 +9,12 @@
 import Foundation
 
 protocol IngredientRepositoryProtocol {
-    func getAvailableIngredientNames() -> [String]
+    func getAvailableItems() -> [Item]
 }
 
 struct DummyIngredientRepository: IngredientRepositoryProtocol {
     
-    private let dummyNames: [String] = [
-        "Egg", "Tomato", "Milk", "Cheese", "Chicken",
-        "Beef", "Brocolli", "Rice", "Pasta", "Corn",
-        "Bread", "Shrimp", "Fish", "Sausage", "Potato", "Carrot"
-    ]
-    
-    func getAvailableIngredientNames() -> [String] {
-        return dummyNames
+    func getAvailableItems() -> [Item] {
+        return Item.items
     }
 }
