@@ -52,6 +52,7 @@ struct PlayViewContainer: View {
         .coordinateSpace(name: "GameSpace")
     }
 }
+
 #Preview {
     PlayViewContainer()
         .environmentObject(AppCoordinator())

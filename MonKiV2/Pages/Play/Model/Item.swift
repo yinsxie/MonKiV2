@@ -38,8 +38,8 @@ struct Item: Identifiable, Equatable {
 //        // Protein Harian
 //        Item(id: UUID(), name: "Ayam", price: 12, aisle: "Protein Harian", imageAssetPath: ""),
 //        Item(id: UUID(), name: "Ikan", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Telur", price: 5, aisle: "Protein Harian", imageAssetPath: "")
-//        
+        Item(id: UUID(), name: "Telur", price: 5, aisle: "Protein Harian", imageAssetPath: "telur")
+//
 //        // Protein Premium
 //        Item(id: UUID(), name: "Daging Sapi", price: 18, aisle: "Protein Premium", imageAssetPath: ""),
 //        Item(id: UUID(), name: "Udang", price: 20, aisle: "Protein Premium", imageAssetPath: "")
