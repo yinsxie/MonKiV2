@@ -8,6 +8,7 @@ import SwiftUI
 
 struct CartView: View {
     var viewModel: CartViewModel
+    @Environment(DragManager.self) var manager
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -27,6 +28,7 @@ struct CartView: View {
 
                     .makeDraggable(item: DraggedItem(id: cartItem.id,
                                                     payload: .grocery(cartItem.item)))
+                    .opacity(manager.currentDraggedItem?.id == cartItem.id ?  0.0 : 1.0)
                 }
             }
             .padding(.bottom, 40)
