@@ -11,6 +11,7 @@ struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playEngine = PlayEngine()
     @StateObject var session: GameSessionData = GameSessionData(forGameMode: .singlePlayer)
+    @StateObject private var createDishVM = CreateDishViewModel()
     // Store views here
     private var pages: [AnyView] {
         [
@@ -19,10 +20,10 @@ struct PlayViewContainer: View {
             AnyView(Color.green.overlay(Text("Page 2"))),
             AnyView(CashierLoadingView()),
             AnyView(CashierPaymentView()),
-            AnyView(Color.orange.overlay(Text("Page 5")))
+            AnyView(IngredientInputView(viewModel: createDishVM)),
+            AnyView(CreateDishView(viewModel: createDishVM))
         ]
     }
-    
     
     var body: some View {
         ZStack {
