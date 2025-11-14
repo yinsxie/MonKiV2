@@ -16,32 +16,32 @@ struct Item: Identifiable, Equatable {
     
     static let mockItem = Item(id: UUID(), name: "Test item", price: 10, aisle: nil, imageAssetPath: "")
     
-    // TODO: Add strings of actual asset
+    // TODO: Add strings of actual asset + aisle adjustment
     static let items: [Item] = [
-        // Pokok
-        Item(id: UUID(), name: "Nasi", price: 5, aisle: "Pokok", imageAssetPath: ""),
-        Item(id: UUID(), name: "Mie", price: 5, aisle: "Pokok", imageAssetPath: ""),
-        Item(id: UUID(), name: "Roti", price: 5, aisle: "Pokok", imageAssetPath: ""),
+        // Staples
+        Item(id: UUID(), name: "Rice", price: 5, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Noodles", price: 5, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Bread", price: 5, aisle: nil, imageAssetPath: ""),
         
-        // Sayur
-        Item(id: UUID(), name: "Wortel", price: 3, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Tomat", price: 3, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Brokoli", price: 4, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Jagung", price: 3, aisle: "Sayur", imageAssetPath: ""),
-        Item(id: UUID(), name: "Kentang", price: 3, aisle: "Sayur", imageAssetPath: ""),
+        // Vegetables
+        Item(id: UUID(), name: "Carrot", price: 3, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Tomato", price: 3, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Broccoli", price: 4, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Corn", price: 3, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Potato", price: 3, aisle: nil, imageAssetPath: ""),
         
-        // Olahan
-        Item(id: UUID(), name: "Keju", price: 8, aisle: "Olahan", imageAssetPath: ""),
-        Item(id: UUID(), name: "Susu", price: 7, aisle: "Olahan", imageAssetPath: ""),
-        Item(id: UUID(), name: "Sosis", price: 7, aisle: "Olahan", imageAssetPath: ""),
+        // Processed
+        Item(id: UUID(), name: "Cheese", price: 8, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Milk", price: 7, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Sausage", price: 7, aisle: nil, imageAssetPath: ""),
         
-        // Protein Harian
-        Item(id: UUID(), name: "Ayam", price: 12, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Ikan", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Telur", price: 5, aisle: "Protein Harian", imageAssetPath: ""),
+        // Daily Protein
+        Item(id: UUID(), name: "Chicken", price: 12, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Fish", price: 15, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Egg", price: 5, aisle: nil, imageAssetPath: ""),
         
-        // Protein Premium
-        Item(id: UUID(), name: "Daging Sapi", price: 18, aisle: "Protein Premium", imageAssetPath: ""),
-        Item(id: UUID(), name: "Udang", price: 20, aisle: "Protein Premium", imageAssetPath: "")
+        // Premium Protein
+        Item(id: UUID(), name: "Beef", price: 18, aisle: nil, imageAssetPath: ""),
+        Item(id: UUID(), name: "Shrimp", price: 20, aisle: nil, imageAssetPath: "")
     ]
 }

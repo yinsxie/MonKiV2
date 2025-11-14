@@ -22,3 +22,20 @@ final class ItemHeader: ObservableObject {
     
 typealias PurchasedItem = ItemHeader
 typealias CheckoutItem = ItemHeader
+
+// MARK: - Helper Extensions
+extension ItemHeader {
+//    Untuk memformat SATU item jadi string.
+//    Contoh: "5 Egg"
+    var formatted: String {
+        return "\(quantity) \(item.name)"
+    }
+}
+
+extension Array where Element == ItemHeader {
+//    Untuk memformat ARRAY dari ChekoutItem jadi satu string.
+//    Contoh: "5 Egg, 2 Tomato"
+    func formattedAllIngredientsToString() -> String {
+        return self.map { $0.formatted }.joined(separator: ", ")
+    }
+}
