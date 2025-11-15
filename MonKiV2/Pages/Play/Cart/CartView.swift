@@ -36,9 +36,7 @@ struct CartView: View {
                         ForEach(row) { cartItem in
                             GroceryItemView(item: cartItem.item)
                                 .transition(.scale.combined(with: .opacity))
-                                .makeDraggable(item: DraggedItem(id: cartItem.id,
-                                                                 payload: .grocery(cartItem.item)))
-                                .opacity(manager.currentDraggedItem?.id == cartItem.id ? 0.0 : 1.0)
+                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .cart))
                         }
                     }
                     .frame(height: rowHeight)

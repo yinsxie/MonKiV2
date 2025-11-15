@@ -51,12 +51,19 @@ import SwiftUI
                     case .cart:
                         // source from counter
                         DispatchQueue.main.async {
-                            if let source = draggedItem.source, source == .cashierCounter {
-                                if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
-                                    self.cartVM.addExistingItem(cartItem)
+                            if let source = draggedItem.source {
+                                switch source {
+                                case .cashierCounter:
+                                    // from counter
+                                    if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
+                                        self.cartVM.addExistingItem(cartItem)
+                                    }
+                                case .cart:
+                                    // from cart itself
+                                    break
                                 }
                             } else {
-                                // source from cart
+                                // from shelf
                                 self.cartVM.addNewItem(groceryItem)
                             }
                         }
@@ -123,7 +130,7 @@ extension PlayViewModel {
                         }
 
                         // 4. Add dragged item to counter
-                        self.cashierVM.addToCounter(CartItem(item: itemToMoveToCounter.item))
+                        self.cashierVM.addToCounter(itemToMoveToCounter)
                     }
                 }
 
