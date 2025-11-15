@@ -55,12 +55,8 @@ import SwiftUI
                         }
                     case .cashierLoadingCounter:
                         print("Moved to cashier")
-                        if let source = draggedItem.source, source == .cart {
-                            DispatchQueue.main.async {
-                                self.cartVM.removeItem(withId: draggedItem.id)
-                                self.cashierVM.addToCounter(CartItem(item: groceryItem))
-                            }
-                        }
+                        self.handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
+                        
                     case .cashierRemoveItem:
                         print("Remove from cart")
                         if let source = draggedItem.source {
@@ -85,8 +81,38 @@ import SwiftUI
 }
 
 extension PlayViewModel {
-    
+    func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {
+        guard let source = draggedItem.source, source == .cart else { return }
+
+        DispatchQueue.main.async {
+            // If counter is full
+            if self.cashierVM.isLimitCounterReached() {
+
+                // 1. Take the first item in the counter
+                if let firstItemInCounter = self.cashierVM.checkOutItems.first {
+
+                    // 2. Remove dragged item from cart
+                    if let itemToMoveToCounter = self.cartVM.popItem(withId: draggedItem.id) {
+
+                        // 3. Remove the first item from counter, bring it back to cart
+                        if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
+                            self.cartVM.addItem(removedFromCounter.item)
+                        }
+
+                        // 4. Add dragged item to counter
+                        self.cashierVM.addToCounter(CartItem(item: itemToMoveToCounter.item))
+                    }
+                }
+
+            } else {
+                // Counter still has room
+                self.cartVM.removeItem(withId: draggedItem.id)
+                self.cashierVM.addToCounter(CartItem(item: groceryItem))
+            }
+        }
+    }
 }
+
 
 private extension PlayViewModel {
     func generateBudget(min: Int, max: Int, step: Int) -> Int {

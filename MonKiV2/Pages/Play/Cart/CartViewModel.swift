@@ -27,6 +27,12 @@ import SwiftUI
         print("Item removed from cart with instance id: \(id)")
     }
     
+    func popItem(withId id: UUID) -> CartItem? {
+        let item = items.first { $0.id == id }
+        items.removeAll { $0.id == id }
+        return item
+    }
+    
     func containsItem(withId id: UUID) -> Bool {
         return items.contains { $0.id == id }
     }
