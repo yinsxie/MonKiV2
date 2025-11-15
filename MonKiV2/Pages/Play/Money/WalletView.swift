@@ -38,7 +38,6 @@ struct WalletView: View {
                 .padding(.bottom, 10)
                 .zIndex(2)
         }
-        .makeDropZone(type: .cashierPaymentCounter)
         .frame(width: 300, height: 200)
     }
 }
