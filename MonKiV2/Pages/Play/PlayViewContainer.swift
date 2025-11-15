@@ -66,8 +66,10 @@ struct PlayViewContainer: View {
                         Spacer()
                         WalletView()
                     }
-                    .padding(.bottom, 50)
+                    .padding(.trailing, 30)
                 }
+                .ignoresSafeArea()
+                .offset(y: 125)
             }
 
             DragOverlayView()

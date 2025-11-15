@@ -12,32 +12,20 @@ struct WalletView: View {
     @Environment(DragManager.self) var manager
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            Rectangle()
-                .background(Color.black.opacity(0.3))
-                .frame(width: 300)
-                .shadow(radius: 5)
-                .zIndex(0)
-            
-            VStack(spacing: -20) {
-                ForEach(viewModel.moneys.reversed()) { moneyItem in
-                    MoneyView(money: moneyItem)
-                        .makeDraggable(item: DraggedItem(
-                            id: moneyItem.id,
-                            payload: .money(moneyItem.price)
-                        ))
-                        .opacity(manager.currentDraggedItem?.id == moneyItem.id ? 0 : 1)
+        VStack(spacing: 0) {
+            VStack(spacing: 0) {
+                ForEach(viewModel.moneys.reversed().indices, id: \.self) { index in
+                    let money = viewModel.moneys.reversed()[index]
+                    
+                    MoneyView(money: money)
+                        .opacity(manager.currentDraggedItem?.id == money.id ? 0 : 1)
+                        .makeDraggable(item: DraggedItem(id: money.id, payload: .money(money.price)))
                 }
             }
-            .padding(.bottom, 70)
-            .zIndex(1)
-            
-            Text("Total: \(viewModel.totalMoney.formatted())")
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding(.bottom, 10)
-                .zIndex(2)
+            Image("Wallet")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 250)
         }
-        .frame(width: 300, height: 200)
     }
 }
