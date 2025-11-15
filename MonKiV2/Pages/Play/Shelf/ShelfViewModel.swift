@@ -7,6 +7,12 @@
 import SwiftUI
 
 @Observable class ShelfViewModel {
+    weak var parent: PlayViewModel?
+
+    init(parent: PlayViewModel?) {
+        self.parent = parent
+    }
+    
     var items: [Item] = Item.items
 
     func removeItem(withId itemID: UUID) {

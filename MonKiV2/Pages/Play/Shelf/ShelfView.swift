@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ShelfView: View {
-    var viewModel: ShelfViewModel
+    @Environment(ShelfViewModel.self) var viewModel
     
     private let carrotItem = Item.items.first { $0.name == "Wortel" }
     private let tomatoItem = Item.items.first { $0.name == "Tomat" }

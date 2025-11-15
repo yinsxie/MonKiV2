@@ -7,6 +7,13 @@
 import SwiftUI
 
 @Observable class CartViewModel {
+    
+    weak var parent: PlayViewModel?
+
+    init(parent: PlayViewModel?) {
+        self.parent = parent
+    }
+    
     var items: [CartItem] = []
     private let maxCapacity = 12
     
@@ -24,6 +31,12 @@ import SwiftUI
     func removeItem(withId id: UUID) {
         items.removeAll { $0.id == id }
         print("Item removed from cart with instance id: \(id)")
+    }
+    
+    func popItem(withId id: UUID) -> CartItem? {
+        let item = items.first { $0.id == id }
+        items.removeAll { $0.id == id }
+        return item
     }
     
     func containsItem(withId id: UUID) -> Bool {

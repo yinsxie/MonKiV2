@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct CartView: View {
-    var viewModel: CartViewModel
+    @Environment(CartViewModel.self) var viewModel
     @Environment(DragManager.self) var manager
     
     private let maxRows = 3
