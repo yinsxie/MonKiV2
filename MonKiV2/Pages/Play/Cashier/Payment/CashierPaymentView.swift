@@ -10,8 +10,7 @@ import SwiftUI
 
 struct CashierPaymentView: View {
     
-    var viewModel: CashierViewModel
-    @Environment(DragManager.self) var manager
+    @Environment(CashierViewModel.self) var viewModel
     
     var body: some View {
         ZStack {
@@ -45,5 +44,5 @@ struct CashierPaymentView: View {
 }
 
 #Preview {
-    CashierPaymentView(viewModel: CashierViewModel())
+    CashierPaymentView()
 }

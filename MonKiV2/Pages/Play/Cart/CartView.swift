@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct CartView: View {
-    var viewModel: CartViewModel
+    @Environment(CartViewModel.self) var viewModel
     @Environment(DragManager.self) var manager
     
     var body: some View {
@@ -27,8 +27,8 @@ struct CartView: View {
                     .transition(.scale.combined(with: .opacity))
 
                     .makeDraggable(item: DraggedItem(id: cartItem.id,
-                                                    payload: .grocery(cartItem.item)))
-                    .opacity(manager.currentDraggedItem?.id == cartItem.id ?  0 : 1)
+                                                     payload: .grocery(cartItem.item), source: .cart))
+                    .opacity(manager.currentDraggedItem?.id == cartItem.id ?  0.0 : 1.0)
                 }
             }
             .padding(.bottom, 40)
