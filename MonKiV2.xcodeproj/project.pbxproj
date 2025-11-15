@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		416972332EC9181500E98E51 /* Exceptions for "MonKiV2" folder in "MonKiV2" target */ = {
+		2726F6882EC8F80800D68B11 /* Exceptions for "MonKiV2" folder in "MonKiV2" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -43,7 +43,7 @@
 		EB3243822EC537D00049AA7F /* MonKiV2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				416972332EC9181500E98E51 /* Exceptions for "MonKiV2" folder in "MonKiV2" target */,
+				2726F6882EC8F80800D68B11 /* Exceptions for "MonKiV2" folder in "MonKiV2" target */,
 			);
 			path = MonKiV2;
 			sourceTree = "<group>";
