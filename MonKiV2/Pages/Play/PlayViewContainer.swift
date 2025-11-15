@@ -24,7 +24,7 @@ struct PlayViewContainer: View {
             AnyView(CreateDishView(viewModel: createDishVM))
         ]
     }
-
+    
     var body: some View {
         ZStack {
             ScrollView(.horizontal) {
@@ -33,19 +33,41 @@ struct PlayViewContainer: View {
                         pages[index]
                             .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                             .ignoresSafeArea()
-
+                            .id(index)
                     }
                 }
+                .scrollTargetLayout()
             }
+            .scrollPosition(id: $playVM.currentPageIndex)
             .scrollBounceBehavior(.basedOnSize)
             .contentMargins(0, for: .scrollContent)
             .scrollTargetBehavior(.paging)
             .scrollDisabled(playVM.dragManager.isDragging)
-
-            VStack {
-                Spacer()
-                CartView()
+            .scrollIndicators(.hidden)
+            
+            let currentIndex = playVM.currentPageIndex ?? 0
+            
+            // Muncul pas di index 0 (Shelf), 3 (CashierLoading), 4 (CashierPayment)
+            // TODO: adjust index in the future
+            let cartVisibleIndices = [0, 3, 4]
+            if cartVisibleIndices.contains(currentIndex) {
+                VStack {
+                    Spacer()
+                    CartView()
+                        .padding(.bottom, 50)
+                }
+            }
+            
+            // Muncul pas di semua halaman KECUALI di halaman imageplayground
+            if currentIndex < 5 { // TODO: adjust index in the future
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        WalletView()
+                    }
                     .padding(.bottom, 50)
+                }
             }
 
             DragOverlayView()
@@ -54,6 +76,7 @@ struct PlayViewContainer: View {
         .environment(playVM.cartVM)
         .environment(playVM.shelfVM)
         .environment(playVM.cashierVM)
+        .environment(playVM.walletVM)
         .environment(playVM.dragManager)  // inject the dragManager into the environment so Modifiers can find it
         .coordinateSpace(name: "GameSpace")
     }

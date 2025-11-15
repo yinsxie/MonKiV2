@@ -16,10 +16,15 @@ import SwiftUI
     
     var items: [CartItem] = []
     
-    func addItem(_ item: Item) {
+    func addNewItem(_ item: Item) {
         let newCartItem = CartItem(item: item)
         items.append(newCartItem)
         print("Item added to cart: \(item.name) (Instance ID: \(newCartItem.id))")
+    }
+    
+    func addExistingItem(_ cartItem: CartItem) {
+        items.append(cartItem)
+        print("EXISTING Item added to cart: \(cartItem.item.name) (Instance ID: \(cartItem.id))")
     }
     
     func removeItem(withId id: UUID) {
