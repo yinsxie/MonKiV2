@@ -21,13 +21,6 @@ struct ShelfView: View {
             let shelfBottomPadding = geo.size.height - (backgroundSplitHeight + 40)
             
             ZStack(alignment: .bottom) {
-                // background
-                VStack(spacing: 0) {
-                    Color(hex: "#27A8DF").opacity(0.5)
-                        .frame(height: backgroundSplitHeight)
-                    Color(hex: "#85DCFA").opacity(0.5)
-                }
-                .ignoresSafeArea()
                 
                 VStack {
                     Spacer()

@@ -11,7 +11,7 @@ struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playVM = PlayViewModel()
     @StateObject private var createDishVM = CreateDishViewModel()
-
+    
     // Store views here
     private var pages: [AnyView] {
         [
@@ -25,6 +25,8 @@ struct PlayViewContainer: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
+            PlayBackgroundView()
+            
             ScrollView(.horizontal) {
                 HStack(spacing: 0) {
                     ForEach(pages.indices, id: \.self) { index in
@@ -56,10 +58,10 @@ struct PlayViewContainer: View {
                 let currentIndex = playVM.currentPageIndex ?? 0
                 let cartVisibleIndices = [0, 1]
                 
-                if cartVisibleIndices.contains(currentIndex) {
-                    CartView()
-                        .offset(y: 160)
-                }
+                CartView()
+                    .offset(y: 160)
+                    .opacity(cartVisibleIndices.contains(currentIndex) ? 1 : 0)
+                
             }
             
             DragOverlayView()
