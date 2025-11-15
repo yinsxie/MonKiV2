@@ -33,20 +33,19 @@ struct PlayViewContainer: View {
                         pages[index]
                             .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
                             .ignoresSafeArea()
-                            .environmentObject(session)
                             .id(index)
                     }
                 }
                 .scrollTargetLayout()
             }
-            .scrollPosition(id: $playEngine.currentPageIndex)
+            .scrollPosition(id: $playVM.currentPageIndex)
             .scrollBounceBehavior(.basedOnSize)
             .contentMargins(0, for: .scrollContent)
             .scrollTargetBehavior(.paging)
-            .scrollDisabled(playEngine.dragManager.isDragging)
+            .scrollDisabled(playVM.dragManager.isDragging)
             .scrollIndicators(.hidden)
             
-            let currentIndex = playEngine.currentPageIndex ?? 0
+            let currentIndex = playVM.currentPageIndex ?? 0
             
             // Muncul pas di index 0 (Shelf), 3 (CashierLoading), 4 (CashierPayment)
             // TODO: adjust index in the future
@@ -54,7 +53,7 @@ struct PlayViewContainer: View {
             if cartVisibleIndices.contains(currentIndex) {
                 VStack {
                     Spacer()
-                    CartView(viewModel: playEngine.cartVM)
+                    CartView()
                         .padding(.bottom, 50)
                 }
             }
@@ -65,7 +64,7 @@ struct PlayViewContainer: View {
                     Spacer()
                     HStack {
                         Spacer()
-                        WalletView(viewModel: playEngine.walletVM)
+                        WalletView()
                     }
                     .padding(.bottom, 50)
                 }
@@ -77,6 +76,7 @@ struct PlayViewContainer: View {
         .environment(playVM.cartVM)
         .environment(playVM.shelfVM)
         .environment(playVM.cashierVM)
+        .environment(playVM.walletVM)
         .environment(playVM.dragManager)  // inject the dragManager into the environment so Modifiers can find it
         .coordinateSpace(name: "GameSpace")
     }

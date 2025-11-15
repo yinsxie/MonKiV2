@@ -8,6 +8,12 @@
 import SwiftUI
 
 @Observable class WalletViewModel {
+    weak var parent: PlayViewModel?
+
+    init(parent: PlayViewModel?) {
+        self.parent = parent
+    }
+    
     var moneys: [Money] = []
 
     func addMoney(_ money: Money) {

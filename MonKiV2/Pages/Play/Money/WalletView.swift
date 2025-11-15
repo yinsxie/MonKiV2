@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WalletView: View {
-    var viewModel: WalletViewModel
+    @Environment(WalletViewModel.self) var viewModel
     @Environment(DragManager.self) var manager
     
     var body: some View {
