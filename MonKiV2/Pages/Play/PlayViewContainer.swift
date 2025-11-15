@@ -11,7 +11,8 @@ struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playEngine = PlayEngine()
     @StateObject var session: GameSessionData = GameSessionData(forGameMode: .singlePlayer)
-
+    @StateObject private var createDishVM = CreateDishViewModel()
+    // Store views here
     private var pages: [AnyView] {
         [
             AnyView(ShelfView(viewModel: playEngine.shelfVM)),
@@ -19,10 +20,11 @@ struct PlayViewContainer: View {
             AnyView(Color.green.overlay(Text("Page 2"))),
             AnyView(CashierLoadingView(viewModel: playEngine.cashierVM)),
             AnyView(CashierPaymentView(viewModel: playEngine.cashierVM)),
-            AnyView(Color.orange.overlay(Text("Page 5")))
+            AnyView(IngredientInputView(viewModel: createDishVM)), // can be delete after cashier payment implemented
+            AnyView(CreateDishView(viewModel: createDishVM))
         ]
     }
-        
+
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView(.horizontal) {
