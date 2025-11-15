@@ -37,10 +37,10 @@ struct Money: Identifiable, Equatable {
     private static func getStaticColor(for price: Int) -> Color {
         // MARK: - Adjust later based on nominals
         switch price {
-        case 100:
-            return ColorPalette.pink900
+//        case 100:
+//            return ColorPalette.pink900
         default:
-            return ColorPalette.neutral500
+            return ColorPalette.greenMoney
         }
     }
 }
