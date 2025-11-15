@@ -31,9 +31,9 @@ final class GameSessionData: ObservableObject {
         }
     }
     
-    var currentCartTotalPrice: Int {
-        playerSession?.cart.items.reduce(0) { $0 + $1.price } ?? 0
-    }
+//    var currentCartTotalPrice: Int {
+//        playerSession?.cart.items.reduce(0) { $0 + $1.price } ?? 0
+//    }
 
     var createdAt: Date
      
