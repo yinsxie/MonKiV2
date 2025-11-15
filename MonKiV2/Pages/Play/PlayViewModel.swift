@@ -84,20 +84,23 @@ private extension PlayViewModel {
     }
     
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
-        DispatchQueue.main.async {
-            if let source = draggedItem.source {
-                switch source {
-                case .cashierCounter:
-                    // from counter
-                    if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
+        print("test")
+        if let source = draggedItem.source {
+            switch source {
+            case .cashierCounter:
+                // from counter
+                if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
+                    DispatchQueue.main.async {
                         self.cartVM.addExistingItem(cartItem)
                     }
-                case .cart:
-                    // from cart itself
-                    break
                 }
-            } else {
-                // from shelf
+            case .cart:
+                // from cart itself
+                break
+            }
+        } else {
+            // from shelf
+            DispatchQueue.main.async {
                 self.cartVM.addNewItem(groceryItem)
             }
         }
