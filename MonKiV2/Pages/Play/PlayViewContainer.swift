@@ -25,6 +25,8 @@ struct PlayViewContainer: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
+            PlayBackgroundView()
+            
             ScrollView(.horizontal) {
                 HStack(spacing: 0) {
                     ForEach(pages.indices, id: \.self) { index in

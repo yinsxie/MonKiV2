@@ -13,7 +13,6 @@ struct CashierLoadingView: View {
     
     var body: some View {
         ZStack {
-            Color.yellow
             
             HStack(spacing: 0) {
                 
