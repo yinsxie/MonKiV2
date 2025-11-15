@@ -11,7 +11,7 @@ struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playEngine = PlayEngine()
     @StateObject var session: GameSessionData = GameSessionData(forGameMode: .singlePlayer)
-    // Store views here
+
     private var pages: [AnyView] {
         [
             AnyView(ShelfView(viewModel: playEngine.shelfVM)),
@@ -24,7 +24,7 @@ struct PlayViewContainer: View {
     }
         
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             ScrollView(.horizontal) {
                 HStack(spacing: 0) {
                     ForEach(pages.indices, id: \.self) { index in
@@ -40,11 +40,10 @@ struct PlayViewContainer: View {
             .scrollTargetBehavior(.paging)
             .scrollDisabled(playEngine.dragManager.isDragging)
             
-            VStack {
-                Spacer()
-                CartView(viewModel: playEngine.cartVM)
-                    .padding(.bottom, 50)
-            }
+            CartView(viewModel: playEngine.cartVM)
+                .alignmentGuide(VerticalAlignment.bottom) { dim in
+                    dim[.bottom] - (dim.height * 0.2)
+                }
             
             DragOverlayView()
         }

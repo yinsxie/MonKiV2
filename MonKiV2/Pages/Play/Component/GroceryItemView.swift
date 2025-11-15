@@ -15,7 +15,7 @@ struct GroceryItemView: View { // this is created so that item on shelf and afte
             Rectangle()
                 .fill(Color.gray.opacity(0.8))
                 .border(Color.black, width: 1)
-                .frame(width: 100, height: 100)
+//                .frame(width: 100, height: 100)
                 .overlay(
                     Text(item.name)
                         .font(.caption)
@@ -25,12 +25,14 @@ struct GroceryItemView: View { // this is created so that item on shelf and afte
         } else {
             Image(item.imageAssetPath)
                 .resizable()
-                .frame(width: 100, height: 100)
+                .scaledToFit()
+                .frame(width: 110, height: 110)
         }
         
     }
 }
 
 #Preview {
-    GroceryItemView(item: Item.mockItem)
+    PlayViewContainer()
+        .environmentObject(AppCoordinator())
 }

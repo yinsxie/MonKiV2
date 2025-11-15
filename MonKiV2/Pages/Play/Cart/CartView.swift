@@ -11,7 +11,9 @@ struct CartView: View {
     @Environment(DragManager.self) var manager
     
     private let maxRows = 3
-    private let itemsPerRow = 5
+    private let itemsPerRow = 4
+    private let rowHeight: CGFloat = 120
+    private let indentPerRow: CGFloat = 30.0
     
     private var itemRows: [[CartItem]] {
         viewModel.items.chunked(into: itemsPerRow)
@@ -23,20 +25,14 @@ struct CartView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.gray.opacity(0.8))
-            
-            VStack(alignment: .leading, spacing: -20) {
-
+            VStack(alignment: .leading, spacing: -30) {
                 ForEach(0..<emptyRows, id: \.self) { _ in
                     Color.clear
-                        .frame(height: 50)
+                        .frame(height: rowHeight)
                 }
-
                 ForEach(itemRows.indices.reversed(), id: \.self) { index in
                     let row = itemRows[index]
-                    
-                    HStack(spacing: -20) {
+                    HStack(alignment: .firstTextBaseline, spacing: -30) {
                         ForEach(row) { cartItem in
                             GroceryItemView(item: cartItem.item)
                                 .transition(.scale.combined(with: .opacity))
@@ -44,50 +40,33 @@ struct CartView: View {
                                                                  payload: .grocery(cartItem.item)))
                                 .opacity(manager.currentDraggedItem?.id == cartItem.id ? 0.0 : 1.0)
                         }
-                        
                     }
+                    .frame(height: rowHeight)
+//                    .border(Color.blue, width: 5)
+                    .padding(.leading, CGFloat(index) * (2-indentPerRow))
+//                    .border(Color.yellow, width: 5)
                 }
             }
-            .frame(width: 460, height: 280, alignment: .bottom)
-
+//            .background(Color.green.opacity(0.8))
+            .frame(maxWidth: 350)
+            .padding(.bottom, 200)
+            .padding(.trailing, 0)
+            .padding(.leading, 120)
+            
+            Image("cart")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 581, alignment: .bottom)
+                .allowsHitTesting(false)
         }
-        .frame(width: 460, height: 280)
+        .frame(width: 581, alignment: .bottom)
+//        .border(Color.green, width: 5)
         .clipped()
         .makeDropZone(type: .cart)
     }
 }
 
-// Helper extension to chunk an array into smaller arrays
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        stride(from: 0, to: count, by: size).map {
-            Array(self[$0 ..< Swift.min($0 + size, count)])
-        }
-    }
-}
-
 #Preview {
-    var previewVM: CartViewModel {
-        let vm = CartViewModel()
-        
-        let item1 = Item(id: UUID(), name: "Wortel", price: 3, aisle: "Sayur", imageAssetPath: "wortel")
-        let item2 = Item(id: UUID(), name: "Tomat", price: 3, aisle: "Sayur", imageAssetPath: "tomat")
-        let item3 = Item(id: UUID(), name: "Brokoli", price: 4, aisle: "Sayur", imageAssetPath: "brokoli")
-        let item4 = Item(id: UUID(), name: "Jagung", price: 3, aisle: "Sayur", imageAssetPath: "jagung")
-        let item5 = Item(id: UUID(), name: "Telur", price: 5, aisle: "Protein Harian", imageAssetPath: "")
-        
-        // Add 5 items to test stacking
-        vm.addItem(item1)
-        vm.addItem(item2)
-        vm.addItem(item3)
-        vm.addItem(item4)
-        vm.addItem(item5)
-        
-        return vm
-    }
-    let previewManager = DragManager()
-    
-    return CartView(viewModel: previewVM)
-        .environment(previewManager)
-        .padding()
+    PlayViewContainer()
+        .environmentObject(AppCoordinator())
 }
