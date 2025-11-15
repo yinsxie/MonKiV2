@@ -40,9 +40,9 @@ struct PlayViewContainer: View {
             .scrollBounceBehavior(.basedOnSize)
             .contentMargins(0, for: .scrollContent)
             .scrollTargetBehavior(.paging)
-            .scrollDisabled(playEngine.dragManager.isDragging)
+            .scrollDisabled(playVM.dragManager.isDragging)
             
-            CartView(viewModel: playEngine.cartVM)
+            CartView()
                 .alignmentGuide(VerticalAlignment.bottom) { dim in
                     dim[.bottom] - (dim.height * 0.2)
                 }

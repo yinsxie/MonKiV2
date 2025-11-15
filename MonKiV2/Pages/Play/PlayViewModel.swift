@@ -46,7 +46,7 @@ import SwiftUI
                         if !self.cartVM.containsItem(withId: draggedItem.id) {
                             DispatchQueue.main.async {
                                 self.cartVM.addItem(groceryItem)
-                                //Check if source from counter, if yes, remove counter data
+                                // Check if source from counter, if yes, remove counter data
                                 if let source = draggedItem.source, source == .cashierCounter {
                                     self.cashierVM.removeFromCounter(withId: draggedItem.id)
                                 }
@@ -112,7 +112,6 @@ extension PlayViewModel {
         }
     }
 }
-
 
 private extension PlayViewModel {
     func generateBudget(min: Int, max: Int, step: Int) -> Int {
