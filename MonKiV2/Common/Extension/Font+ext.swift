@@ -8,6 +8,17 @@
 import SwiftUI
 
 extension Font {
+
+    static func wendyOne(size: CGFloat) -> Font {
+        return Font.custom("WendyOne-Regular", size: size)
+    }
+
+    static func wendyOne(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
+        return Font.custom("WendyOne-Regular", size: size, relativeTo: style)
+    }
+}
+
+extension Font {
     
     // MARK: - Helper Function
     
