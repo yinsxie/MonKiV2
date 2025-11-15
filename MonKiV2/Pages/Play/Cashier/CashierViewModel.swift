@@ -15,6 +15,17 @@ final class CashierViewModel {
         self.parent = parent
     }
     
+    var receivedMoney: [Money] = []
+    
+    func acceptMoney(_ money: Money) {
+        receivedMoney.append(money)
+        print("Cashier received money: \(money.price)")
+    }
+    
+    var totalReceivedMoney: Int {
+        receivedMoney.reduce(0) { $0 + $1.price }
+    }
+    
     var checkOutItems: [CartItem] = []
     let maxItemsInCounter: Int = 6
     
@@ -46,4 +57,3 @@ private extension CashierViewModel {
         return checkOutItems.count
     }
 }
-

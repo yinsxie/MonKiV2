@@ -18,6 +18,10 @@ import SwiftUI
     var shelfVM: ShelfViewModel!
     var cartVM: CartViewModel!
     var cashierVM: CashierViewModel!
+    var walletVM: WalletViewModel!
+    
+    var currentPageIndex: Int? = 0
+    
     var dragManager = DragManager()
     
     init() {
@@ -29,8 +33,10 @@ import SwiftUI
         self.shelfVM = ShelfViewModel(parent: self)
         self.cartVM = CartViewModel(parent: self)
         self.cashierVM = CashierViewModel(parent: self)
+        self.walletVM = WalletViewModel(parent: self)
         
         setupGameLogic()
+        walletVM.addMoney(Money(price: budget))
     }
     
     private func setupGameLogic() {
@@ -43,14 +49,15 @@ import SwiftUI
                 withAnimation(.spring) {
                     switch zone {
                     case .cart:
-                        if !self.cartVM.containsItem(withId: draggedItem.id) {
-                            DispatchQueue.main.async {
-                                self.cartVM.addItem(groceryItem)
-                                // Check if source from counter, if yes, remove counter data
-                                if let source = draggedItem.source, source == .cashierCounter {
-                                    self.cashierVM.removeFromCounter(withId: draggedItem.id)
+                        // source from counter
+                        DispatchQueue.main.async {
+                            if let source = draggedItem.source, source == .cashierCounter {
+                                if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
+                                    self.cartVM.addExistingItem(cartItem)
                                 }
-    //                            self.shelfVM.removeItem(withId: groceryItem.id)
+                            } else {
+                                // source from cart
+                                self.cartVM.addNewItem(groceryItem)
                             }
                         }
                     case .cashierLoadingCounter:
@@ -75,6 +82,22 @@ import SwiftUI
                     default: break
                     }
                 }
+            case .money(let price):
+                withAnimation(.spring) {
+                    switch zone {
+                    case .cashierPaymentCounter:
+                        print("Dropped money (\(price)) on payment counter")
+                        self.walletVM.removeItem(withId: draggedItem.id)
+                        let droppedMoney = Money(price: price)
+                        self.cashierVM.acceptMoney(droppedMoney)
+                        
+                    case .wallet:
+                        print("Dropped money (\(price)) back on wallet")
+                        
+                    default:
+                        print("Dropped money on an invalid zone (\(zone.rawValue))")
+                    }
+                }
             }
         }
     }
@@ -96,7 +119,7 @@ extension PlayViewModel {
 
                         // 3. Remove the first item from counter, bring it back to cart
                         if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
-                            self.cartVM.addItem(removedFromCounter.item)
+                            self.cartVM.addExistingItem(removedFromCounter)
                         }
 
                         // 4. Add dragged item to counter
@@ -106,8 +129,9 @@ extension PlayViewModel {
 
             } else {
                 // Counter still has room
-                self.cartVM.removeItem(withId: draggedItem.id)
-                self.cashierVM.addToCounter(CartItem(item: groceryItem))
+                if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
+                    self.cashierVM.addToCounter(cartItem)
+                }
             }
         }
     }
