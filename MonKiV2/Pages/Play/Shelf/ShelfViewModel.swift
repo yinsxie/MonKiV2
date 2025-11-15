@@ -14,8 +14,5 @@ import SwiftUI
     }
     
     var items: [Item] = Item.items
-
-    func removeItem(withId itemID: UUID) {
-        items.removeAll { $0.id == itemID }
-    }
+    
 }

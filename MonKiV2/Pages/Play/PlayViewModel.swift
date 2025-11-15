@@ -49,14 +49,15 @@ import SwiftUI
                 withAnimation(.spring) {
                     switch zone {
                     case .cart:
-                        if !self.cartVM.containsItem(withId: draggedItem.id) {
-                            DispatchQueue.main.async {
-                                self.cartVM.addItem(groceryItem)
-                                // Check if source from counter, if yes, remove counter data
-                                if let source = draggedItem.source, source == .cashierCounter {
-                                    self.cashierVM.removeFromCounter(withId: draggedItem.id)
+                        // source from counter
+                        DispatchQueue.main.async {
+                            if let source = draggedItem.source, source == .cashierCounter {
+                                if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
+                                    self.cartVM.addExistingItem(cartItem)
                                 }
-    //                            self.shelfVM.removeItem(withId: groceryItem.id)
+                            } else {
+                                // source from cart
+                                self.cartVM.addNewItem(groceryItem)
                             }
                         }
                     case .cashierLoadingCounter:
@@ -118,7 +119,7 @@ extension PlayViewModel {
 
                         // 3. Remove the first item from counter, bring it back to cart
                         if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
-                            self.cartVM.addItem(removedFromCounter.item)
+                            self.cartVM.addExistingItem(removedFromCounter)
                         }
 
                         // 4. Add dragged item to counter
@@ -128,13 +129,13 @@ extension PlayViewModel {
 
             } else {
                 // Counter still has room
-                self.cartVM.removeItem(withId: draggedItem.id)
-                self.cashierVM.addToCounter(CartItem(item: groceryItem))
+                if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
+                    self.cashierVM.addToCounter(cartItem)
+                }
             }
         }
     }
 }
-
 
 private extension PlayViewModel {
     func generateBudget(min: Int, max: Int, step: Int) -> Int {
