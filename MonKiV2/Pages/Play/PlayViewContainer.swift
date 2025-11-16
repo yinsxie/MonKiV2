@@ -64,8 +64,9 @@ struct PlayViewContainer: View {
                 let currentIndex = playVM.currentPageIndex ?? 0
                 if currentIndex < 3 {
                     WalletView()
-                        .padding(.bottom, 50)
-                        .padding(.trailing, 20)
+//                        .padding(.bottom, 50)
+                        .padding(.trailing, 30)
+                        .offset(y: 125)
                 }
             }
             
