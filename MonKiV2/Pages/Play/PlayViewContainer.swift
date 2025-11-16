@@ -48,6 +48,7 @@ struct PlayViewContainer: View {
             
             .overlay(alignment: .topLeading) {
                 Button(action: {
+                    AudioManager.shared.play(.buttonClick)
                     appCoordinator.popToRoot()
                 }, label: {
                     Image("home_button")
