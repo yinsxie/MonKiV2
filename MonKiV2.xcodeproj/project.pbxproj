@@ -29,9 +29,22 @@
 		EB3243972EC537D10049AA7F /* MonKiV2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MonKiV2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		416972332EC9181500E98E51 /* Exceptions for "MonKiV2" folder in "MonKiV2" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EB32437F2EC537D00049AA7F /* MonKiV2 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		EB3243822EC537D00049AA7F /* MonKiV2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				416972332EC9181500E98E51 /* Exceptions for "MonKiV2" folder in "MonKiV2" target */,
+			);
 			path = MonKiV2;
 			sourceTree = "<group>";
 		};
@@ -429,6 +442,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonKiV2/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MonKi;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.kids-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -469,6 +483,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonKiV2/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MonKi;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.kids-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

@@ -11,13 +11,11 @@ struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playVM = PlayViewModel()
     @StateObject private var createDishVM = CreateDishViewModel()
-
+    
     // Store views here
     private var pages: [AnyView] {
         [
             AnyView(ShelfView()),
-            AnyView(Color.red.overlay(Text("Page 1"))),
-            AnyView(Color.green.overlay(Text("Page 2"))),
             AnyView(CashierLoadingView()),
             AnyView(CashierPaymentView()),
             AnyView(IngredientInputView(viewModel: createDishVM)),  // can be delete after cashier payment implemented
@@ -26,7 +24,9 @@ struct PlayViewContainer: View {
     }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
+            PlayBackgroundView()
+            
             ScrollView(.horizontal) {
                 HStack(spacing: 0) {
                     ForEach(pages.indices, id: \.self) { index in
@@ -45,31 +45,25 @@ struct PlayViewContainer: View {
             .scrollDisabled(playVM.dragManager.isDragging)
             .scrollIndicators(.hidden)
             
-            let currentIndex = playVM.currentPageIndex ?? 0
-            
-            // Muncul pas di index 0 (Shelf), 3 (CashierLoading), 4 (CashierPayment)
-            // TODO: adjust index in the future
-            let cartVisibleIndices = [0, 3, 4]
-            if cartVisibleIndices.contains(currentIndex) {
-                VStack {
-                    Spacer()
-                    CartView()
+            .overlay(alignment: .bottomTrailing) {
+                let currentIndex = playVM.currentPageIndex ?? 0
+                if currentIndex < 3 {
+                    WalletView()
                         .padding(.bottom, 50)
+                        .padding(.trailing, 20)
                 }
             }
             
-            // Muncul pas di semua halaman KECUALI di halaman imageplayground
-            if currentIndex < 5 { // TODO: adjust index in the future
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        WalletView()
-                    }
-                    .padding(.bottom, 50)
-                }
+            .overlay(alignment: .bottom) {
+                let currentIndex = playVM.currentPageIndex ?? 0
+                let cartVisibleIndices = [0, 1]
+                
+                CartView()
+                    .offset(y: 160)
+                    .opacity(cartVisibleIndices.contains(currentIndex) ? 1 : 0)
+                
             }
-
+            
             DragOverlayView()
         }
         .environment(playVM)
@@ -77,10 +71,11 @@ struct PlayViewContainer: View {
         .environment(playVM.shelfVM)
         .environment(playVM.cashierVM)
         .environment(playVM.walletVM)
-        .environment(playVM.dragManager)  // inject the dragManager into the environment so Modifiers can find it
+        .environment(playVM.dragManager)
         .coordinateSpace(name: "GameSpace")
     }
 }
+
 #Preview {
     PlayViewContainer()
         .environmentObject(AppCoordinator())

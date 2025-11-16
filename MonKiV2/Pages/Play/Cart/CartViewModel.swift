@@ -15,14 +15,26 @@ import SwiftUI
     }
     
     var items: [CartItem] = []
+    private let maxCapacity = 12
     
+    private func enforceMaxCapacity() {
+        if items.count >= maxCapacity {
+            let removedItem = items.removeFirst()
+            print("Cart full. Removing oldest item: \(removedItem.item.name)")
+        }
+    }
+  
     func addNewItem(_ item: Item) {
+        enforceMaxCapacity()
+      
         let newCartItem = CartItem(item: item)
         items.append(newCartItem)
         print("Item added to cart: \(item.name) (Instance ID: \(newCartItem.id))")
     }
     
     func addExistingItem(_ cartItem: CartItem) {
+        enforceMaxCapacity()
+      
         items.append(cartItem)
         print("EXISTING Item added to cart: \(cartItem.item.name) (Instance ID: \(cartItem.id))")
     }
