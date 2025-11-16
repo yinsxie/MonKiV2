@@ -21,13 +21,14 @@ final class CreateDishViewModel: ObservableObject {
     var isLoading = false
     var inputText: String = ""
     
-    // MARK: - DONT DELETE, ini buat nerima data object, will be used
-    // kepikiran nanti pas udah co, yg dilempar itu bentuknya object si bahannya
+    var totalPurchasedPrice: Int {
+        guard let parent = parent else { return 0 }
+        return parent.cashierVM.purchasedItems.reduce(0) { $0 + $1.item.price }
+    }
+    
     func setIngredients(from cartItems: [CartItem]) {
-        // 1. Group by item to get quantities
         let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
         
-        // 2. Create the formatted string: "QTY Item, QTY Item"
         let ingredientStrings = grouped.compactMap { (_, items) -> String? in
             guard let item = items.first?.item else { return nil }
             return "\(items.count) \(item.name)"

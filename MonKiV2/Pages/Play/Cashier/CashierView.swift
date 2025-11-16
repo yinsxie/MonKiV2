@@ -139,6 +139,13 @@ struct CashierView: View {
                                 }
                             }
                         }
+                        .onChange(of: viewModel.totalPrice) { _, newTotalPrice in
+                            if newTotalPrice == 0 {
+                                withAnimation(.easeOut(duration: 0.1)) {
+                                    bubbleOpacity = 0
+                                }
+                            }
+                        }
                         .scrollTransition(.animated, axis: .horizontal) { content, phase in
                             content
                                 .offset(x: phase.isIdentity ? 0 : 520)

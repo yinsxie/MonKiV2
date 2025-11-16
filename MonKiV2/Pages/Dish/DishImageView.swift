@@ -26,7 +26,7 @@ struct DishImageView: View {
                             .fill(Color(hex: "#65C466"))
                             .frame(width: 172, height: 47)
                             .overlay(
-                                Text("100")
+                                Text("\(viewModel.totalPurchasedPrice)")
                                     .font(.wendyOne(size: 40))
                                     .foregroundColor(.white)
                                     .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
