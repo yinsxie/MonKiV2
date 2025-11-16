@@ -15,6 +15,10 @@ final class CashierViewModel {
         self.parent = parent
     }
     
+    var totalPrice: Int {
+        checkOutItems.reduce(0) { $0 + $1.item.price }
+    }
+    
     var receivedMoney: [Money] = []
     
     func acceptMoney(_ money: Money) {
