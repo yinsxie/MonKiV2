@@ -8,61 +8,127 @@
 import SwiftUI
 
 struct DishImageView: View {
-    @ObservedObject var viewModel: CreateDishViewModel
+    @Environment(CreateDishViewModel.self) var viewModel
     
     var body: some View {
+        VStack {
+            imageDisplayBox
+                .frame(width: 600, height: 600)
+                .padding(.top, 115)
+                .overlay(alignment: .top) {
+                    ZStack {
+                        Image("extractor_hood")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 395)
+                        
+                        Rectangle()
+                            .fill(Color(hex: "#65C466"))
+                            .frame(width: 172, height: 47)
+                            .overlay(
+                                Text("\(viewModel.totalPurchasedPrice)")
+                                    .font(.wendyOne(size: 40))
+                                    .foregroundColor(.white)
+                                    .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
+                            )
+                            .allowsHitTesting(false)
+                            .padding(.top, 40)
+                    }
+                }
+                .overlay(alignment: .bottom) {
+                    bottomButton
+                        .padding(.horizontal, 16)
+                        .offset(y: 50)
+                }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
+    }
+    
+    // MARK: - Image Display Box
+    private var imageDisplayBox: some View {
         ZStack {
-            // Background placeholder
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.gray.opacity(0.2))
-                .overlay(
-                    Group {
-                        if let cgImage = viewModel.cgImage {
-                            Image(uiImage: UIImage(cgImage: cgImage))
+            RoundedRectangle(cornerRadius: 83)
+                .fill(Color.white)
+                .frame(width: 600, height: 600)
+            
+            ZStack {
+                if let cgImage = viewModel.cgImage {
+                    Image(uiImage: UIImage(cgImage: cgImage))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(RoundedRectangle(cornerRadius: 24))
+                }
+                
+                // LOADING OVERLAY
+                if viewModel.isLoading {
+                    Color.black.opacity(0.4)
+                        .clipShape(RoundedRectangle(cornerRadius: 24))
+                        .overlay(
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .scaleEffect(1.5)
+                                .tint(.white)
+                        )
+                }
+            }
+            .frame(width: 555, height: 555)
+        }
+        .frame(width: 600, height: 600)
+    }
+    
+    // MARK: - Bottom Button
+    // MARK: - Bottom Button
+        private var bottomButton: some View {
+            // This function returns true if the input text is EMPTY
+            let isInputEmpty = viewModel.checkCheckoutItems()
+            let hasImage = viewModel.cgImage != nil
+            
+            // The button is disabled if:
+            // 1. We are currently loading (isLoading == true)
+            // 2. We have NO image generated yet AND the input is empty
+            //    (meaning no purchased items were loaded)
+            let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+            
+            return Button(action: {
+                // MODIFIED ACTION:
+                // 1. Always get the fresh list of purchased items
+                if let purchasedItems = viewModel.parent?.cashierVM.purchasedItems {
+                    viewModel.setIngredients(from: purchasedItems)
+                }
+                // 2. Start generating
+                viewModel.generate()
+                
+            }) {
+                ZStack {
+                    Image(isDisabled ? "button_disable" : "button_active")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 100)
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(.white)
+                            .scaleEffect(1.5)
+                    } else {
+                        HStack(spacing: 10) {
+                            // MODIFIED: Text changes based on hasImage
+                            Text(hasImage ? "New Dish" : "Start Cook")
+                                .font(.wendyOne(size: 40))
+                                .foregroundColor(.white)
+                            
+                            Image("Spatula")
                                 .resizable()
                                 .scaledToFit()
-                        } else {
-                            VStack {
-                                Image(systemName: "photo")
-                                    .font(.system(size: 50))
-                                    .foregroundColor(.secondary)
-                                Text(viewModel.isLoading ? "Generating..." : "No image yet")
-                                    .foregroundColor(.secondary)
-                                    .font(.title3)
-                            }
+                                .frame(height: 30)
                         }
+                        .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
                     }
-                )
-            
-            // Loading overlay
-            if viewModel.isLoading {
-                Color.black.opacity(0.4)
-                    .overlay(ProgressView().progressViewStyle(.circular).scaleEffect(1.5))
-            }
-            
-            // Refresh button
-            VStack {
-                HStack {
-                    Spacer()
-                    Button {
-                        viewModel.generate()
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding(12)
-                            .background(Color.blue.opacity(0.8))
-                            .clipShape(Circle())
-                            .shadow(radius: 5)
-                    }
-                    .disabled(viewModel.checkCheckoutItems())
                 }
-                .padding(12)
-                Spacer()
             }
+            .disabled(isDisabled) // Use the new isDisabled logic
         }
-        .aspectRatio(1.0, contentMode: .fit)
-        .cornerRadius(16)
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.3), lineWidth: 2))
-    }
 }

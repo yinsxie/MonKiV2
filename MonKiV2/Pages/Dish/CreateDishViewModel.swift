@@ -9,32 +9,34 @@ import Foundation
 import UIKit
 import Combine
 
-@MainActor
+@Observable
 final class CreateDishViewModel: ObservableObject {
-    @Published var cgImage: CGImage?
-    @Published var isLoading = false
-    private let ingredientService = IngredientService()
+    weak var parent: PlayViewModel?
     
-    @Published var inputText: String = "" {
-        didSet { parseIngredients() } // MARK: kalau udah integrate, ini didsetnya apus aja
+    init(parent: PlayViewModel?) {
+        self.parent = parent
     }
     
-    // MARK: - delete later, for magic button purpose, biar ada opsi gausa masukin manual UNTUK TESTING
-    @Published private(set) var ingredientList: [String] = []
-    func generateRandomIngredients(count: Int) {
-        let randomIngredients = ingredientService.getRandomIngredients(count: count)
-        let ingredientString = randomIngredients.formattedAllIngredientsToString()
+    var cgImage: CGImage?
+    var isLoading = false
+    var inputText: String = ""
+    
+    var totalPurchasedPrice: Int {
+        guard let parent = parent else { return 0 }
+        return parent.cashierVM.purchasedItems.reduce(0) { $0 + $1.item.price }
+    }
+    
+    func setIngredients(from cartItems: [CartItem]) {
+        let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
+        
+        let ingredientStrings = grouped.compactMap { (_, items) -> String? in
+            guard let item = items.first?.item else { return nil }
+            return "\(items.count) \(item.name)"
+        }
+        
+        let ingredientString = ingredientStrings.joined(separator: ", ")
         self.inputText = ingredientString
-    }
-    private func parseIngredients() {
-        ingredientList = ingredientService.parseIngredients(from: inputText)
-    }
-    
-    // MARK: - DONT DELETE, ini buat nerima data object, will be used
-    // kepikiran nanti pas udah co, yg dilempar itu bentuknya object si bahannya
-    func setIngredients(from objects: [CheckoutItem]) {
-        let ingredientString = objects.formattedAllIngredientsToString()
-        self.inputText = ingredientString
+        print("\(inputText)")
     }
     
     func generate() {
@@ -64,7 +66,7 @@ final class CreateDishViewModel: ObservableObject {
     
     func checkCheckoutItems() -> Bool {
         let trimmedInput = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmedInput.isEmpty && ingredientList.isEmpty
+        return trimmedInput.isEmpty
     }
     
 }

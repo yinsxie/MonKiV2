@@ -9,11 +9,11 @@ import SwiftUI
 struct ShelfView: View {
     @Environment(ShelfViewModel.self) var viewModel
     
-    private let carrotItem = Item.items.first { $0.name == "Wortel" }
-    private let tomatoItem = Item.items.first { $0.name == "Tomat" }
-    private let broccoliItem = Item.items.first { $0.name == "Brokoli" }
-    private let cornItem = Item.items.first { $0.name == "Jagung" }
-    private let eggItem = Item.items.first { $0.name == "Telur" }
+    private let carrotItem = Item.items.first { $0.name == "Carrot" }
+    private let tomatoItem = Item.items.first { $0.name == "Tomato" }
+    private let broccoliItem = Item.items.first { $0.name == "Broccoli" }
+    private let cornItem = Item.items.first { $0.name == "Corn" }
+    private let eggItem = Item.items.first { $0.name == "Egg" }
     
     var body: some View {
         GeometryReader { geo in

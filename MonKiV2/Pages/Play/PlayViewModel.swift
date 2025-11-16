@@ -19,6 +19,7 @@ import SwiftUI
     var cartVM: CartViewModel!
     var cashierVM: CashierViewModel!
     var walletVM: WalletViewModel!
+    var dishVM: CreateDishViewModel!
     
     var currentPageIndex: Int? = 0
     
@@ -34,6 +35,7 @@ import SwiftUI
         self.cartVM = CartViewModel(parent: self)
         self.cashierVM = CashierViewModel(parent: self)
         self.walletVM = WalletViewModel(parent: self)
+        self.dishVM = CreateDishViewModel(parent: self)
         
         setupGameLogic()
         walletVM.addMoney(Money(price: budget))

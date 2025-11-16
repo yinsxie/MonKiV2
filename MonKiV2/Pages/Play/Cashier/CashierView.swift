@@ -111,10 +111,16 @@ struct CashierView: View {
                                     .frame(width: 202)
                                 
                                 if viewModel.isPaymentSufficient {
-                                    Rectangle()
-                                        .fill(ColorPalette.green500)
-                                        .frame(width: 85, height: 60)
-                                        .offset(x: 10)
+                                    ZStack {
+                                        Rectangle()
+                                            .fill(ColorPalette.green500)
+                                            .frame(width: 85, height: 60)
+                                        
+                                        Text("\(viewModel.totalPrice)")
+                                            .font(.custom("WendyOne-Regular", size: 40))
+                                            .foregroundStyle(.white)
+                                    }
+                                    .offset(x: 10)
                                 } else {
                                     Image(systemName: "xmark")
                                         .resizable()
@@ -134,6 +140,13 @@ struct CashierView: View {
                                 }
                             } else {
                                 // Fade OUT — default (fast)
+                                withAnimation(.easeOut(duration: 0.1)) {
+                                    bubbleOpacity = 0
+                                }
+                            }
+                        }
+                        .onChange(of: viewModel.totalPrice) { _, newTotalPrice in
+                            if newTotalPrice == 0 {
                                 withAnimation(.easeOut(duration: 0.1)) {
                                     bubbleOpacity = 0
                                 }
