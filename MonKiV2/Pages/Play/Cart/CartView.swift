@@ -7,7 +7,8 @@
 import SwiftUI
 
 struct CartView: View {
-    @Environment(CartViewModel.self) var viewModel
+    @Environment(CartViewModel.self) var cartVM
+    @Environment(WalletViewModel.self) var walletVM
     @Environment(DragManager.self) var manager
     
     private let maxRows = 3
@@ -15,8 +16,16 @@ struct CartView: View {
     private let rowHeight: CGFloat = 120
     private let indentPerRow: CGFloat = 30.0
     
+    private var priceColor: Color {
+        if cartVM.totalPrice > walletVM.totalMoney {
+            return Color(hex: "#CD4947")
+        } else {
+            return Color(hex: "#65C466")
+        }
+    }
+    
     private var itemRows: [[CartItem]] {
-        viewModel.items.chunked(into: itemsPerRow)
+        cartVM.items.chunked(into: itemsPerRow)
     }
     
     private var emptyRows: Int {
@@ -52,11 +61,24 @@ struct CartView: View {
             .padding(.trailing, 0)
             .padding(.leading, 120)
             
-            Image("cart")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 581, alignment: .bottom)
-                .allowsHitTesting(false)
+            ZStack(alignment: .center) {
+                Image("cart")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 581, alignment: .bottom)
+                
+                Rectangle()
+                    .foregroundColor(priceColor)
+                    .frame(width: 172, height: 47)
+                    .overlay(
+                        Text("\(cartVM.totalPrice)")
+                            .font(.wendyOne(size: 40))
+                            .foregroundColor(Color.white)
+                        )
+                    .offset(x: 65, y: -45)
+                    .allowsHitTesting(false)
+            }
+            .allowsHitTesting(false)
         }
         .frame(width: 581, alignment: .bottom)
 //        .border(Color.green, width: 5)

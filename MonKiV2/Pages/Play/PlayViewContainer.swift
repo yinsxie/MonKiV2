@@ -45,6 +45,21 @@ struct PlayViewContainer: View {
             .scrollDisabled(playVM.dragManager.isDragging)
             .scrollIndicators(.hidden)
             
+            .overlay(alignment: .topLeading) {
+                Button(action: {
+                    appCoordinator.popToRoot()
+                }, label: {
+                    Image("home_button")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 112, height: 112)
+                })
+                .padding(.leading, 80)
+                .padding(.top, 80)
+                .ignoresSafeArea(.all)
+
+            }
+            
             .overlay(alignment: .bottomTrailing) {
                 let currentIndex = playVM.currentPageIndex ?? 0
                 if currentIndex < 3 {
