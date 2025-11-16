@@ -84,7 +84,22 @@ struct CashierLoadingView: View {
                 // CASHIER IMAGE
                 
                 ZStack {
+                    Image("Cashier")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 706)
+                        .ignoresSafeArea()
+                    
                     ZStack {
+                        Image("monki_cashier")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 370)
+                            .offset(x: -230, y: -110)
+                            .scrollTransition(.animated, axis: .horizontal) { content, phase in
+                                content.offset(x: phase.isIdentity ? 0 : 520)
+                            }
+                        
                         Image("Register")
                             .resizable()
                             .scaledToFit()
@@ -96,12 +111,6 @@ struct CashierLoadingView: View {
                             .offset(x: 180, y: -169)
                             .foregroundStyle(Color(hex: "#89E219"))
                     }
-                    
-                    Image("Cashier")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 706)
-                        .ignoresSafeArea()
                 }
             }
             .padding(.top, -120) // replaces offset(y: -40)
