@@ -84,7 +84,7 @@ struct CashierView: View {
                 // CASHIER IMAGE
                 
                 ZStack {
-                    Image("cashier")
+                    Image("cashier_counter")
                         .resizable()
                         .scaledToFit()
                         .frame(height: 706)
@@ -98,7 +98,7 @@ struct CashierView: View {
                     
                     ZStack {
                         ZStack {
-                            Image("monki_cashier")
+                            Image("cashier_monki")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 370)
@@ -144,7 +144,7 @@ struct CashierView: View {
                                 .offset(x: phase.isIdentity ? 0 : 520)
                         }
                         
-                        Image("register")
+                        Image("cashier_register")
                             .resizable()
                             .scaledToFit()
                             .frame(height: 250)
