@@ -57,17 +57,20 @@ import SwiftUI
 // MARK: Drop Handlers
 private extension PlayViewModel {
     func handleGroceryDrop(zone: DropZoneType, groceryItem: Item, draggedItem: DraggedItem) {
-        withAnimation(.spring) {
-            switch zone {
-            case .cart:
+        switch zone {
+        case .cart:
+            withAnimation (.spring) {
                 handleGroceryDropOnCart(groceryItem: groceryItem, draggedItem: draggedItem)
-            case .cashierLoadingCounter:
-                handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
-            case .cashierRemoveItem:
-                handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
-            default:
-                break
             }
+        case .cashierLoadingCounter:
+            // No animation here
+            handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
+        case .cashierRemoveItem:
+            withAnimation (.spring) {
+                handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
+            }
+        default:
+            break
         }
     }
     
@@ -135,32 +138,34 @@ private extension PlayViewModel {
     }
     
     func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {
+        
         guard let source = draggedItem.source, source == .cart else { return }
         
-        DispatchQueue.main.async {
-            // If counter is full
-            if self.cashierVM.isLimitCounterReached() {
+        // If counter is full
+        if !self.cashierVM.isLimitCounterReached() {
+            if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
+                DispatchQueue.main.async {
+                    self.cashierVM.addToCounter(cartItem)
+                }
+            }
+            return
+        }
+        
+        // 1. Take the first item in the counter
+        if let firstItemInCounter = self.cashierVM.checkOutItems.first {
+            
+            // 2. Remove dragged item from cart
+            if let itemToMoveToCounter = self.cartVM.popItem(withId: draggedItem.id) {
                 
-                // 1. Take the first item in the counter
-                if let firstItemInCounter = self.cashierVM.checkOutItems.first {
-                    
-                    // 2. Remove dragged item from cart
-                    if let itemToMoveToCounter = self.cartVM.popItem(withId: draggedItem.id) {
-                        
-                        // 3. Remove the first item from counter, bring it back to cart
-                        if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
-                            self.cartVM.addExistingItem(removedFromCounter)
-                        }
-                        
-                        // 4. Add dragged item to counter
-                        self.cashierVM.addToCounter(itemToMoveToCounter)
+                // 3. Remove the first item from counter, bring it back to cart
+                if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
+                    DispatchQueue.main.async {
+                        self.cartVM.addExistingItem(removedFromCounter)
                     }
                 }
-                
-            } else {
-                // Counter still has room
-                if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
-                    self.cashierVM.addToCounter(cartItem)
+                // 4. Add dragged item to counter
+                DispatchQueue.main.async {
+                    self.cashierVM.addToCounter(itemToMoveToCounter)
                 }
             }
         }
