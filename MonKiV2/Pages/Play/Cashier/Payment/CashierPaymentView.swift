@@ -44,5 +44,5 @@ struct CashierPaymentView: View {
 }
 
 #Preview {
-    CashierPaymentView()
+    PlayViewContainer()
 }

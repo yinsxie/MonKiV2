@@ -9,16 +9,17 @@ import SwiftUI
 
 struct MoneyView: View {
     let money: Money
+    var isBeingDragged: Bool = false
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 5)
+            Rectangle()
                 .fill(money.color)
-                .frame(width: 100, height: 50)
+                .frame(width: 250, height: isBeingDragged ? 128 : 64)
             
             Text("\(money.price)")
-                .font(.bodyRegular)
-                .foregroundColor(.black)
+                .font(.custom("WendyOne-Regular", size: 40))
+                .foregroundStyle(.white)
         }
     }
 }

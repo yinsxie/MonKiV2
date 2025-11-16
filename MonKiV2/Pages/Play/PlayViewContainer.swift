@@ -16,8 +16,9 @@ struct PlayViewContainer: View {
     private var pages: [AnyView] {
         [
             AnyView(ShelfView()),
-            AnyView(CashierLoadingView()),
-            AnyView(CashierPaymentView()),
+            AnyView(CashierView()),
+            AnyView(Color.clear),
+//            AnyView(CashierPaymentView()),
             AnyView(IngredientInputView(viewModel: createDishVM)),  // can be delete after cashier payment implemented
             AnyView(CreateDishView(viewModel: createDishVM))
         ]
@@ -45,12 +46,28 @@ struct PlayViewContainer: View {
             .scrollDisabled(playVM.dragManager.isDragging)
             .scrollIndicators(.hidden)
             
+            .overlay(alignment: .topLeading) {
+                Button(action: {
+                    appCoordinator.popToRoot()
+                }, label: {
+                    Image("home_button")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 112, height: 112)
+                })
+                .padding(.leading, 80)
+                .padding(.top, 80)
+                .ignoresSafeArea(.all)
+
+            }
+            
             .overlay(alignment: .bottomTrailing) {
                 let currentIndex = playVM.currentPageIndex ?? 0
                 if currentIndex < 3 {
                     WalletView()
-                        .padding(.bottom, 50)
-                        .padding(.trailing, 20)
+//                        .padding(.bottom, 50)
+                        .padding(.trailing, 30)
+                        .offset(y: 125)
                 }
             }
             

@@ -47,6 +47,7 @@ import SwiftUI
             case .grocery(let groceryItem):
                 self.handleGroceryDrop(zone: zone, groceryItem: groceryItem, draggedItem: draggedItem)
             case .money(let price):
+                print("Dropped money with price: \(price)")
                 self.handleMoneyDrop(zone: zone, price: price, draggedItem: draggedItem)
             }
         }
@@ -56,22 +57,25 @@ import SwiftUI
 // MARK: Drop Handlers
 private extension PlayViewModel {
     func handleGroceryDrop(zone: DropZoneType, groceryItem: Item, draggedItem: DraggedItem) {
-        withAnimation(.spring) {
-            switch zone {
-            case .cart:
+        switch zone {
+        case .cart:
+            withAnimation (.spring) {
                 handleGroceryDropOnCart(groceryItem: groceryItem, draggedItem: draggedItem)
-            case .cashierLoadingCounter:
-                handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
-            case .cashierRemoveItem:
-                handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
-            default:
-                break
             }
+        case .cashierLoadingCounter:
+            // No animation here
+            handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
+        case .cashierRemoveItem:
+            withAnimation (.spring) {
+                handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
+            }
+        default:
+            break
         }
     }
     
     func handleMoneyDrop(zone: DropZoneType, price: Int, draggedItem: DraggedItem) {
-        withAnimation(.spring) {
+//        withAnimation(.spring) {
             switch zone {
             case .cashierPaymentCounter:
                 handleMoneyDropOnPaymentCounter(price: price, draggedItem: draggedItem)
@@ -80,7 +84,7 @@ private extension PlayViewModel {
             default:
                 print("Dropped money on an invalid zone (\(zone.rawValue))")
             }
-        }
+//        }
     }
     
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
@@ -129,13 +133,47 @@ private extension PlayViewModel {
     }
     
     func handleMoneyDropOnPaymentCounter(price: Int, draggedItem: DraggedItem) {
-        print("Dropped money (\(price)) on payment counter")
+        //        print("Dropped money (\(price)) on payment counter")
+        //        self.walletVM.removeItem(withId: draggedItem.id)
+        //        let droppedMoney = Money(price: price)
+        //        self.cashierVM.acceptMoney(droppedMoney)
+        let requiredAmount = self.cashierVM.totalPrice
+        let draggedAmount = price
         
+        // KONDISI 1: Gaada barang yg harus dibayar
+        guard requiredAmount > 0 else {
+            return
+        }
+        
+        // KONDISI 2: Duitnya ga cukup
+        guard draggedAmount >= requiredAmount else {
+            return
+        }
+        
+        // KONDISI 3: Duitnya Cukup (Lunas atau Ada Kembalian)
         AudioManager.shared.play(.paymentSuccess, pitchVariation: 0.02)
-        
         self.walletVM.removeItem(withId: draggedItem.id)
-        let droppedMoney = Money(price: price)
+        let droppedMoney = Money(price: draggedAmount)
         self.cashierVM.acceptMoney(droppedMoney)
+        
+        // Itung kembalian kalau ada
+        let changeAmount = draggedAmount - requiredAmount
+        currentBudget = changeAmount
+        
+        if changeAmount >= 0 {
+            // Case ada kembalian
+            print("Giving change: \(changeAmount)")
+            let changeMoney = Money(price: changeAmount)
+            
+            // kasih kembalian
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.walletVM.addMoney(changeMoney)
+                }
+            }
+        }
+        
+        self.cashierVM.checkOutSuccess()
     }
     
     func handleMoneyDropOnWallet(price: Int, draggedItem: DraggedItem) {
@@ -143,34 +181,36 @@ private extension PlayViewModel {
     }
     
     func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {
-        guard let source = draggedItem.source, source == .cart else { return }
         
+        guard let source = draggedItem.source, source == .cart else { return }
+      
         AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
         
-        DispatchQueue.main.async {
-            // If counter is full
-            if self.cashierVM.isLimitCounterReached() {
+        // If counter is full
+        if !self.cashierVM.isLimitCounterReached() {
+            if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
+                DispatchQueue.main.async {
+                    self.cashierVM.addToCounter(cartItem)
+                }
+            }
+            return
+        }
+        
+        // 1. Take the first item in the counter
+        if let firstItemInCounter = self.cashierVM.checkOutItems.first {
+            
+            // 2. Remove dragged item from cart
+            if let itemToMoveToCounter = self.cartVM.popItem(withId: draggedItem.id) {
                 
-                // 1. Take the first item in the counter
-                if let firstItemInCounter = self.cashierVM.checkOutItems.first {
-                    
-                    // 2. Remove dragged item from cart
-                    if let itemToMoveToCounter = self.cartVM.popItem(withId: draggedItem.id) {
-                        
-                        // 3. Remove the first item from counter, bring it back to cart
-                        if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
-                            self.cartVM.addExistingItem(removedFromCounter)
-                        }
-                        
-                        // 4. Add dragged item to counter
-                        self.cashierVM.addToCounter(itemToMoveToCounter)
+                // 3. Remove the first item from counter, bring it back to cart
+                if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
+                    DispatchQueue.main.async {
+                        self.cartVM.addExistingItem(removedFromCounter)
                     }
                 }
-                
-            } else {
-                // Counter still has room
-                if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
-                    self.cashierVM.addToCounter(cartItem)
+                // 4. Add dragged item to counter
+                DispatchQueue.main.async {
+                    self.cashierVM.addToCounter(itemToMoveToCounter)
                 }
             }
         }

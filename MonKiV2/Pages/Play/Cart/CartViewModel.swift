@@ -15,6 +15,7 @@ import SwiftUI
     }
     
     var items: [CartItem] = []
+    var totalPrice: Int { items.reduce(0) { $0 + $1.item.price } }
     private let maxCapacity = 12
     
     private func enforceMaxCapacity() {
