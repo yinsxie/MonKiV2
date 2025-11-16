@@ -7,12 +7,37 @@
 
 import SwiftUI
 
+enum CashierPage {
+    case loading
+    case payment
+    case none
+}
+
 @Observable
 final class CashierViewModel {
     weak var parent: PlayViewModel?
-
+    
     init(parent: PlayViewModel?) {
         self.parent = parent
+    }
+    
+    var currentPage: CashierPage {
+        if parent?.currentPageIndex == 1 {
+            return .loading
+        }
+        else if parent?.currentPageIndex == 2 {
+            return .payment
+        }
+        else {
+            return .none
+        }
+    }
+    
+    var isPaymentSufficient: Bool {
+        if let parent = parent {
+            return parent.currentBudget >= totalPrice
+        }
+        return false
     }
     
     var totalPrice: Int {
@@ -31,6 +56,37 @@ final class CashierViewModel {
     }
     
     var checkOutItems: [CartItem] = []
+    var purchasedItems: [CartItem] = []
+    
+    var purchasedItemVisualized: [CartItem] {
+        // If item less or equal to 3, show all
+        if purchasedItems.count <= 3 {
+            return purchasedItems
+        }
+
+        var seenItemIDs = Set<UUID>()
+        var result: [CartItem] = []
+
+        // 1) Add up to 3 unique item types (preserving order)
+        for cart in purchasedItems {
+            if !seenItemIDs.contains(cart.item.id) {
+                seenItemIDs.insert(cart.item.id)
+                result.append(cart)
+                if result.count == 3 { return result }
+            }
+        }
+
+        // 2) If fewer than 3 unique types, fill with other CartItem instances
+        for cart in purchasedItems {
+            // skip ones already added (by cartItem id)
+            if result.contains(where: { $0.id == cart.item.id }) { continue }
+            result.append(cart)
+            if result.count == 3 { break }
+        }
+
+        return result
+    }
+    
     let maxItemsInCounter: Int = 6
     
     func addToCounter(_ item: CartItem) {
@@ -53,6 +109,15 @@ final class CashierViewModel {
     
     func isLimitCounterReached() -> Bool {
         return getCounterItemsCount() >= maxItemsInCounter
+    }
+    
+    func checkOutSuccess() {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.purchasedItems.append(contentsOf: self.checkOutItems)
+                self.checkOutItems.removeAll()
+            }
+        }
     }
 }
 

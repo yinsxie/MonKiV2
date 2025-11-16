@@ -47,6 +47,7 @@ import SwiftUI
             case .grocery(let groceryItem):
                 self.handleGroceryDrop(zone: zone, groceryItem: groceryItem, draggedItem: draggedItem)
             case .money(let price):
+                print("Dropped money with price: \(price)")
                 self.handleMoneyDrop(zone: zone, price: price, draggedItem: draggedItem)
             }
         }

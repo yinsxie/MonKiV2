@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct CashierLoadingView: View {
+struct CashierView: View {
     @Environment(CashierViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
     @Environment(PlayViewModel.self) var playViewModel
     
-    let discardBinImage: String = "DiscardBin"
+    @State private var bubbleOpacity: Double = 0
     
     var body: some View {
         ZStack {
@@ -21,17 +21,17 @@ struct CashierLoadingView: View {
             HStack(spacing: 0) {
                 
                 ZStack {
-                    Image(discardBinImage)
+                    Image("discard_bin")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 210)
+                        .frame(width: 251)
                         .offset(y: -40)
                     
                     RoundedRectangle(cornerRadius: 10)
                         .fill(ColorPalette.green200)
                         .opacity(0)         // debug: set to 0.3 to see the area
-                        .frame(width: 210, height: 235)
-                        .offset(y: 80)
+                        .frame(width: 245, height: 280)
+                        .offset(y: 100)
                         .makeDropZone(type: .cashierRemoveItem)
                 }
                 .padding(.horizontal, 40)
@@ -48,7 +48,7 @@ struct CashierLoadingView: View {
                     // GREEN BACKGROUND BAR (left-aligned)
                     Color.green
                         .opacity(0)
-                        .frame(width: 460, height: 150)
+                        .frame(width: 550, height: 200)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     // ITEMS FROM RIGHT → LEFT
@@ -78,29 +78,73 @@ struct CashierLoadingView: View {
                 .frame(maxWidth: 460, alignment: .leading)
                 .padding(.top, 82)
                 .makeDropZone(type: .cashierLoadingCounter)
-                .offset(y: -80)
+                .offset(y: -95)
                 .zIndex(1)
                 
                 // CASHIER IMAGE
                 
                 ZStack {
-                    Image("Cashier")
+                    Image("cashier")
                         .resizable()
                         .scaledToFit()
                         .frame(height: 706)
                         .ignoresSafeArea()
                     
+                    Image("basket")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 232.46)
+                        .offset(x: 850, y: 170)
+                    
                     ZStack {
-                        Image("monki_cashier")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 370)
-                            .offset(x: -230, y: -110)
-                            .scrollTransition(.animated, axis: .horizontal) { content, phase in
-                                content.offset(x: phase.isIdentity ? 0 : 520)
+                        ZStack {
+                            Image("monki_cashier")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 370)
+                                .offset(x: -230, y: -110)
+                            
+                            ZStack(alignment: .center) {
+                                Image("speech_bubble")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 202)
+                                
+                                if viewModel.isPaymentSufficient {
+                                    Rectangle()
+                                        .fill(ColorPalette.green500)
+                                        .frame(width: 85, height: 60)
+                                        .offset(x: 10)
+                                } else {
+                                    Image(systemName: "xmark")
+                                        .resizable()
+                                        .frame(width: 60, height: 60)
+                                        .foregroundStyle(Color(hex: "#D84942"))
+                                        .offset(x: 10)
+                                }
                             }
+                            .offset(x: -110, y: -280)
+                            .opacity(bubbleOpacity)
+                        }
+                        .onChange(of: viewModel.currentPage) { _, newPage in
+                            if viewModel.totalPrice > 0 && newPage == .payment {
+                                // Fade IN — 1.5 seconds
+                                withAnimation(.easeInOut(duration: 1.2)) {
+                                    bubbleOpacity = 1
+                                }
+                            } else {
+                                // Fade OUT — default (fast)
+                                withAnimation(.easeOut(duration: 0.1)) {
+                                    bubbleOpacity = 0
+                                }
+                            }
+                        }
+                        .scrollTransition(.animated, axis: .horizontal) { content, phase in
+                            content
+                                .offset(x: phase.isIdentity ? 0 : 520)
+                        }
                         
-                        Image("Register")
+                        Image("register")
                             .resizable()
                             .scaledToFit()
                             .frame(height: 250)
@@ -110,12 +154,23 @@ struct CashierLoadingView: View {
                             .font(.VT323(size: 40))
                             .offset(x: 180, y: -169)
                             .foregroundStyle(Color(hex: "#89E219"))
+                        
+                        ShoppingBagView()
+                            .offset(x: 520, y: 27)
+                    }
+                    
+                    // Money DropZone
+                    // Edge Case: Make sure the drop zone is only active on the payment page
+                    if viewModel.currentPage == .payment {
+                        Color.green.opacity(0.3)
+                            .frame(width: 465, height: 406)
+                            .opacity(0)
+                            .makeDropZone(type: .cashierPaymentCounter)
+                            .offset(x: 450)
                     }
                 }
             }
-            .padding(.top, -120) // replaces offset(y: -40)
-            
-            // SCROLL TRANSITION
+            .padding(.top, -120) // replaces offset(y: -120)
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in
                 content.offset(x: phase.isIdentity ? 350 : 600)
             }
