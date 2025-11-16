@@ -30,9 +30,11 @@ final class AppCoordinator: ObservableObject {
     func buildRoot(_ route: RootRoute) -> some View {
         switch route {
         case .splashScreen:
-            Text("SplashScreenView")
-        case .main(let mainRoute):
-            mainRoute.delegateView()
+            SplashScreenView()
+        case .play(let playRoute):
+            playRoute.delegateView()
+        case .helperScreen(let helperRoute):
+            helperRoute.delegateView()
         }
     }
     
@@ -84,4 +86,3 @@ final class AppCoordinator: ObservableObject {
         navigationPath.removeLast(navigationPath.count - 1)
     }
 }
-

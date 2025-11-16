@@ -7,18 +7,16 @@
 
 import SwiftUI
 
-enum MainRoute {
-    case home
+enum PlayRoute {
+    case play
 }
 
-
-extension MainRoute: SubRouteProtocol {
+extension PlayRoute: SubRouteProtocol {
     @ViewBuilder
     func delegateView() -> some View {
         switch self {
-        case .home:
-            HomeView()
+        case .play:
+            PlayViewContainer()
         }
     }
 }
-
