@@ -24,10 +24,10 @@ struct Item: Identifiable, Equatable {
 //        Item(id: UUID(), name: "Roti", price: 5, aisle: "Pokok", imageAssetPath: ""),
         
         // Sayur
-        Item(id: UUID(), name: "Wortel", price: 3, aisle: "Sayur", imageAssetPath: "wortel"),
-        Item(id: UUID(), name: "Tomat", price: 3, aisle: "Sayur", imageAssetPath: "tomat"),
-        Item(id: UUID(), name: "Brokoli", price: 4, aisle: "Sayur", imageAssetPath: "brokoli"),
-        Item(id: UUID(), name: "Jagung", price: 3, aisle: "Sayur", imageAssetPath: "jagung"),
+        Item(id: UUID(), name: "Carrot", price: 3, aisle: "Sayur", imageAssetPath: "wortel"),
+        Item(id: UUID(), name: "Tomato", price: 3, aisle: "Sayur", imageAssetPath: "tomat"),
+        Item(id: UUID(), name: "Broccoli", price: 4, aisle: "Sayur", imageAssetPath: "brokoli"),
+        Item(id: UUID(), name: "Corn", price: 3, aisle: "Sayur", imageAssetPath: "jagung"),
 //        Item(id: UUID(), name: "Kentang", price: 3, aisle: "Sayur", imageAssetPath: ""),
 //        
 //        // Olahan
@@ -38,7 +38,7 @@ struct Item: Identifiable, Equatable {
 //        // Protein Harian
 //        Item(id: UUID(), name: "Ayam", price: 12, aisle: "Protein Harian", imageAssetPath: ""),
 //        Item(id: UUID(), name: "Ikan", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Telur", price: 5, aisle: "Protein Harian", imageAssetPath: "telur")
+        Item(id: UUID(), name: "Egg", price: 5, aisle: "Protein Harian", imageAssetPath: "telur")
 //
 //        // Protein Premium
 //        Item(id: UUID(), name: "Daging Sapi", price: 18, aisle: "Protein Premium", imageAssetPath: ""),

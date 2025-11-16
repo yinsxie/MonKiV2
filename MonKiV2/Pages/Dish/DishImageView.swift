@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DishImageView: View {
-    @ObservedObject var viewModel: CreateDishViewModel
+    @Environment(CreateDishViewModel.self) var viewModel
     
     var body: some View {
         VStack {
@@ -80,40 +80,55 @@ struct DishImageView: View {
     }
     
     // MARK: - Bottom Button
-    private var bottomButton: some View {
-        let hasIngredients = viewModel.checkCheckoutItems()
-        let hasImage = viewModel.cgImage != nil
-        let isInitiallyDisabled = !hasIngredients && !hasImage
-        
-        return Button(action: {
-            viewModel.generate()
-        }) {
-            ZStack {
-                Image(isInitiallyDisabled ? "button_disable" : "button_active")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 100)
+    // MARK: - Bottom Button
+        private var bottomButton: some View {
+            // This function returns true if the input text is EMPTY
+            let isInputEmpty = viewModel.checkCheckoutItems()
+            let hasImage = viewModel.cgImage != nil
+            
+            // The button is disabled if:
+            // 1. We are currently loading (isLoading == true)
+            // 2. We have NO image generated yet AND the input is empty
+            //    (meaning no purchased items were loaded)
+            let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+            
+            return Button(action: {
+                // MODIFIED ACTION:
+                // 1. Always get the fresh list of purchased items
+                if let purchasedItems = viewModel.parent?.cashierVM.purchasedItems {
+                    viewModel.setIngredients(from: purchasedItems)
+                }
+                // 2. Start generating
+                viewModel.generate()
                 
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
-                        .scaleEffect(1.5)
-                } else {
-                    HStack(spacing: 10) {
-                        Text(hasImage ? "New Dish" : "Start Cook")
-                            .font(.wendyOne(size: 40))
-                            .foregroundColor(.white)
-                        
-                        Image("spatula")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
+            }) {
+                ZStack {
+                    Image(isDisabled ? "button_disable" : "button_active")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 100)
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(.white)
+                            .scaleEffect(1.5)
+                    } else {
+                        HStack(spacing: 10) {
+                            // MODIFIED: Text changes based on hasImage
+                            Text(hasImage ? "New Dish" : "Start Cook")
+                                .font(.wendyOne(size: 40))
+                                .foregroundColor(.white)
+                            
+                            Image("Spatula")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 30)
+                        }
+                        .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
                     }
-                    .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
                 }
             }
+            .disabled(isDisabled) // Use the new isDisabled logic
         }
-        .disabled(viewModel.isLoading || isInitiallyDisabled)
-    }
 }

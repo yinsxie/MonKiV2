@@ -1,3 +1,10 @@
+//
+//  CreateDishView.swift
+//  MonKiV2
+//
+//  Created by Yonathan Handoyo on 13/11/25.
+//
+
 import SwiftUI
 
 struct CreateDishView: View {
@@ -20,7 +27,7 @@ struct CreateDishView: View {
                             .scaledToFit()
                             .frame(width: 202)
                         
-                        if true {
+                        if viewModel.cgImage == nil {
                             Image("food_speech_bubble")
                                 .resizable()
                                 .scaledToFit()
@@ -42,12 +49,22 @@ struct CreateDishView: View {
             .frame(maxWidth: .infinity)
             .padding()
             .onAppear {
-                if viewModel.cgImage == nil && !viewModel.checkCheckoutItems() {
-                    viewModel.generate()
+                if viewModel.cgImage == nil && viewModel.checkCheckoutItems(),
+                   let purchasedItems = viewModel.parent?.cashierVM.purchasedItems,
+                   !purchasedItems.isEmpty {
+                    viewModel.setIngredients(from: purchasedItems)
+                }
+            }
+            .onChange(of: viewModel.parent?.cashierVM.purchasedItems) { _, newPurchasedItems in
+                if let purchasedItems = newPurchasedItems,
+                   !purchasedItems.isEmpty &&
+                    viewModel.cgImage == nil &&
+                    viewModel.checkCheckoutItems() {
+                    viewModel.setIngredients(from: purchasedItems)
                 }
             }
             
-            DishImageView(viewModel: viewModel)
+            DishImageView()
                 .frame(maxWidth: .infinity)
         }
         .padding(.horizontal)
