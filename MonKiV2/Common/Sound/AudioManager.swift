@@ -6,7 +6,6 @@
 //
 
 import AVFoundation
-
 import Foundation
 
 enum Sound: String, CaseIterable {
@@ -18,9 +17,6 @@ enum Sound: String, CaseIterable {
     case pickShelf
     case scanItem
 }
-
-
-import AVFoundation
 
 final class AudioManager {
     static let shared = AudioManager()
@@ -114,5 +110,3 @@ final class AudioManager {
         players.forEach { $0.volume = mute ? 0 : 1 }
     }
 }
-
-

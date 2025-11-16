@@ -86,4 +86,3 @@ final class AppCoordinator: ObservableObject {
         navigationPath.removeLast(navigationPath.count - 1)
     }
 }
-
