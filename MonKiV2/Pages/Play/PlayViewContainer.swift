@@ -10,7 +10,6 @@ import SwiftUI
 struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playVM = PlayViewModel()
-    @StateObject private var createDishVM = CreateDishViewModel()
     
     // Store views here
     private var pages: [AnyView] {
@@ -18,9 +17,7 @@ struct PlayViewContainer: View {
             AnyView(ShelfView()),
             AnyView(CashierView()),
             AnyView(Color.clear),
-//            AnyView(CashierPaymentView()),
-            AnyView(IngredientInputView(viewModel: createDishVM)),  // can be delete after cashier payment implemented
-            AnyView(CreateDishView(viewModel: createDishVM))
+            AnyView(CreateDishView())
         ]
     }
     
@@ -89,6 +86,7 @@ struct PlayViewContainer: View {
         .environment(playVM.cashierVM)
         .environment(playVM.walletVM)
         .environment(playVM.dragManager)
+        .environment(playVM.dishVM)
         .coordinateSpace(name: "GameSpace")
     }
 }
