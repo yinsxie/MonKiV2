@@ -18,7 +18,7 @@ struct PlayViewContainer: View {
             AnyView(ShelfView()),
             AnyView(CashierView()),
             AnyView(Color.clear),
-            AnyView(CashierPaymentView()),
+//            AnyView(CashierPaymentView()),
             AnyView(IngredientInputView(viewModel: createDishVM)),  // can be delete after cashier payment implemented
             AnyView(CreateDishView(viewModel: createDishVM))
         ]

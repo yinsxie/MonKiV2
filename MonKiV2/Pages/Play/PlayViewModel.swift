@@ -75,7 +75,7 @@ private extension PlayViewModel {
     }
     
     func handleMoneyDrop(zone: DropZoneType, price: Int, draggedItem: DraggedItem) {
-        withAnimation(.spring) {
+//        withAnimation(.spring) {
             switch zone {
             case .cashierPaymentCounter:
                 handleMoneyDropOnPaymentCounter(price: price, draggedItem: draggedItem)
@@ -84,7 +84,7 @@ private extension PlayViewModel {
             default:
                 print("Dropped money on an invalid zone (\(zone.rawValue))")
             }
-        }
+//        }
     }
     
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
@@ -127,10 +127,46 @@ private extension PlayViewModel {
     }
     
     func handleMoneyDropOnPaymentCounter(price: Int, draggedItem: DraggedItem) {
-        print("Dropped money (\(price)) on payment counter")
+        //        print("Dropped money (\(price)) on payment counter")
+        //        self.walletVM.removeItem(withId: draggedItem.id)
+        //        let droppedMoney = Money(price: price)
+        //        self.cashierVM.acceptMoney(droppedMoney)
+        let requiredAmount = self.cashierVM.totalPrice
+        let draggedAmount = price
+        
+        // KONDISI 1: Gaada barang yg harus dibayar
+        guard requiredAmount > 0 else {
+            return
+        }
+        
+        // KONDISI 2: Duitnya ga cukup
+        guard draggedAmount >= requiredAmount else {
+            return
+        }
+        
+        // KONDISI 3: Duitnya Cukup (Lunas atau Ada Kembalian)
         self.walletVM.removeItem(withId: draggedItem.id)
-        let droppedMoney = Money(price: price)
+        let droppedMoney = Money(price: draggedAmount)
         self.cashierVM.acceptMoney(droppedMoney)
+        
+        // Itung kembalian kalau ada
+        let changeAmount = draggedAmount - requiredAmount
+        currentBudget = changeAmount
+        
+        if changeAmount >= 0 {
+            // Case ada kembalian
+            print("Giving change: \(changeAmount)")
+            let changeMoney = Money(price: changeAmount)
+            
+            // kasih kembalian
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.walletVM.addMoney(changeMoney)
+                }
+            }
+        }
+        
+        self.cashierVM.checkOutSuccess()
     }
     
     func handleMoneyDropOnWallet(price: Int, draggedItem: DraggedItem) {
