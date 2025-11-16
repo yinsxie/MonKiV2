@@ -19,8 +19,7 @@ struct DraggableModifier: ViewModifier {
                     .onChanged { value in
                         if !manager.isDragging {
                             // Haptic feedback could go here
-                            manager.isDragging = true
-                            manager.currentDraggedItem = item
+                            manager.startDrag(item)
                         }
                         manager.currentDragLocation = value.location
                     }

@@ -10,8 +10,12 @@ import SwiftUI
 @main
 struct MonKiV2App: App {
     
-    //MARK: Project Init
+    // MARK: Project Init
     @StateObject var appCoordinator: AppCoordinator = AppCoordinator()
+    
+    init() {
+        _ = AudioManager.shared
+    }
     
     var body: some Scene {
         WindowGroup {

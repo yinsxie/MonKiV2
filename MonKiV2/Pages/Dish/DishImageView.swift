@@ -95,6 +95,7 @@ struct DishImageView: View {
             return Button(action: {
                 // MODIFIED ACTION:
                 // 1. Always get the fresh list of purchased items
+                AudioManager.shared.play(.buttonClick)
                 if let purchasedItems = viewModel.parent?.cashierVM.purchasedItems {
                     viewModel.setIngredients(from: purchasedItems)
                 }
