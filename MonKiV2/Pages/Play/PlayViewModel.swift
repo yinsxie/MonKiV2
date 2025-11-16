@@ -151,8 +151,9 @@ private extension PlayViewModel {
         
         // Itung kembalian kalau ada
         let changeAmount = draggedAmount - requiredAmount
+        currentBudget = changeAmount
         
-        if changeAmount > 0 {
+        if changeAmount >= 0 {
             // Case ada kembalian
             print("Giving change: \(changeAmount)")
             let changeMoney = Money(price: changeAmount)
