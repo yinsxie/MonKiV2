@@ -52,6 +52,9 @@ final class CreateDishViewModel: ObservableObject {
                 let time = CFAbsoluteTimeGetCurrent() - start
                 cgImage = image
                 print("Generated in \(String(format: "%.2f", time))s")
+                
+                AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
+                
             } catch {
                 print("Generate failed: \(error.localizedDescription)")
             }

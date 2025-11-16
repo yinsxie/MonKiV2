@@ -25,6 +25,7 @@ struct StartingPageView: View {
                 
                 VStack(spacing: 16) {
                     Button(action: {
+                        AudioManager.shared.play(.buttonClick)
                         appCoordinator.goTo(.play(.play))
                     }, label: {
                         Image("1P_button")
@@ -33,6 +34,7 @@ struct StartingPageView: View {
                     })
                     
                     Button(action: {
+                        AudioManager.shared.play(.buttonClick)
                     }, label: {
                         Image("2P_button")
                             .resizable()

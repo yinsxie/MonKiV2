@@ -85,6 +85,9 @@ private extension PlayViewModel {
     
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
         print("test")
+        
+        AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
+        
         if let source = draggedItem.source {
             switch source {
             case .cashierCounter:
@@ -108,6 +111,9 @@ private extension PlayViewModel {
     
     func handleGroceryDropOnRemoveZone(draggedItem: DraggedItem) {
         print("Remove from cart")
+        
+        AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
+        
         if let source = draggedItem.source {
             switch source {
             case .cart:
@@ -124,6 +130,9 @@ private extension PlayViewModel {
     
     func handleMoneyDropOnPaymentCounter(price: Int, draggedItem: DraggedItem) {
         print("Dropped money (\(price)) on payment counter")
+        
+        AudioManager.shared.play(.paymentSuccess, pitchVariation: 0.02)
+        
         self.walletVM.removeItem(withId: draggedItem.id)
         let droppedMoney = Money(price: price)
         self.cashierVM.acceptMoney(droppedMoney)
@@ -135,6 +144,8 @@ private extension PlayViewModel {
     
     func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {
         guard let source = draggedItem.source, source == .cart else { return }
+        
+        AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
         
         DispatchQueue.main.async {
             // If counter is full

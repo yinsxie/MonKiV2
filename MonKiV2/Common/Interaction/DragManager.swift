@@ -70,4 +70,12 @@ enum DragPayload: Equatable {
         currentDraggedItem = nil
 
     }
+    
+    func startDrag(_ item: DraggedItem) {
+        if isDragging { return }
+        
+        isDragging = true
+        currentDraggedItem = item
+        AudioManager.shared.play(.pickShelf, pitchVariation: 0.04)
+    }
 }
