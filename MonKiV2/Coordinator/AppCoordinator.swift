@@ -30,7 +30,7 @@ final class AppCoordinator: ObservableObject {
     func buildRoot(_ route: RootRoute) -> some View {
         switch route {
         case .splashScreen:
-            Text("SplashScreenView")
+            SplashScreenView()
         case .play(let playRoute):
             playRoute.delegateView()
         case .helperScreen(let helperRoute):
