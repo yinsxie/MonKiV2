@@ -40,6 +40,7 @@ struct StartingPageView: View {
                             .resizable()
                             .scaledToFit()
                     })
+                    .disabled(true)
                 }
             }
             .padding(115)
