@@ -71,6 +71,8 @@ private extension PlayViewModel {
             withAnimation(.spring) {
                 handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
             }
+        case .shelfReturnItem:
+            handleGroceryDropOnShelf(draggedItem: draggedItem)
         default:
             break
         }
@@ -145,6 +147,16 @@ private extension PlayViewModel {
                 DispatchQueue.main.async {
                     self.cashierVM.removeFromCounter(withId: draggedItem.id)
                 }
+            }
+        }
+    }
+    
+    func handleGroceryDropOnShelf(draggedItem: DraggedItem) {
+        if draggedItem.source == .cart {
+            AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
+            DispatchQueue.main.async {
+                self.cartVM.removeItem(withId: draggedItem.id)
+                
             }
         }
     }
