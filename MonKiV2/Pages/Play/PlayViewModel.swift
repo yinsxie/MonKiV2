@@ -61,14 +61,14 @@ private extension PlayViewModel {
     func handleGroceryDrop(zone: DropZoneType, groceryItem: Item, draggedItem: DraggedItem) {
         switch zone {
         case .cart:
-            withAnimation (.spring) {
+            withAnimation(.spring) {
                 handleGroceryDropOnCart(groceryItem: groceryItem, draggedItem: draggedItem)
             }
         case .cashierLoadingCounter:
             // No animation here
             handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
         case .cashierRemoveItem:
-            withAnimation (.spring) {
+            withAnimation(.spring) {
                 handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
             }
         default:
@@ -92,15 +92,21 @@ private extension PlayViewModel {
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
         print("test")
         
-        AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
-        
         if let source = draggedItem.source {
             switch source {
             case .cashierCounter:
                 // from counter
+                if self.cartVM.isFull {
+                    DispatchQueue.main.async {
+                        print("Cart full, item not moved.")
+                        AudioManager.shared.play(.dropFail)
+                    }
+                    return
+                }
                 if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
                     DispatchQueue.main.async {
                         self.cartVM.addExistingItem(cartItem)
+                        AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
                     }
                 }
             case .cart:
@@ -109,8 +115,17 @@ private extension PlayViewModel {
             }
         } else {
             // from shelf
+            if self.cartVM.isFull {
+                DispatchQueue.main.async {
+                    print("Cart full, item not added.")
+                    AudioManager.shared.play(.dropFail)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 self.cartVM.addNewItem(groceryItem)
+                AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
             }
         }
     }

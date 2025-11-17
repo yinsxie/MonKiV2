@@ -16,6 +16,7 @@ enum Sound: String, CaseIterable {
     case paymentSuccess
     case pickShelf
     case scanItem
+    case dropFail
 }
 
 final class AudioManager {
