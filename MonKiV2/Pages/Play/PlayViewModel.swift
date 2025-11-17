@@ -201,10 +201,9 @@ private extension PlayViewModel {
         
         guard let source = draggedItem.source, source == .cart else { return }
       
-        AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
-        
         // If counter is full
         if !self.cashierVM.isLimitCounterReached() {
+            AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
             if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
                 DispatchQueue.main.async {
                     self.cashierVM.addToCounter(cartItem)
@@ -213,24 +212,7 @@ private extension PlayViewModel {
             return
         }
         
-        // 1. Take the first item in the counter
-        if let firstItemInCounter = self.cashierVM.checkOutItems.first {
-            
-            // 2. Remove dragged item from cart
-            if let itemToMoveToCounter = self.cartVM.popItem(withId: draggedItem.id) {
-                
-                // 3. Remove the first item from counter, bring it back to cart
-                if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
-                    DispatchQueue.main.async {
-                        self.cartVM.addExistingItem(removedFromCounter)
-                    }
-                }
-                // 4. Add dragged item to counter
-                DispatchQueue.main.async {
-                    self.cashierVM.addToCounter(itemToMoveToCounter)
-                }
-            }
-        }
+        AudioManager.shared.play(.dropFail)
     }
 }
 
