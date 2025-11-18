@@ -111,7 +111,7 @@ private extension PlayViewModel {
             case .cashierCounter:
                 // from counter
                 if self.cartVM.isFull {
-                    // --- ANIMATION HERE (CART FULL) ---
+                    self.cartVM.triggerShake()
                     print("Cart full, item not moved.")
                     AudioManager.shared.play(.dropFail)
                     
@@ -138,7 +138,7 @@ private extension PlayViewModel {
         } else {
             // from shelf
             if self.cartVM.isFull {
-                // --- ANIMATION HERE (CART FULL) ---
+                self.cartVM.triggerShake()
                 print("Cart full, item not added.")
                 AudioManager.shared.play(.dropFail)
                 
