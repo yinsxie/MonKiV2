@@ -25,10 +25,6 @@ struct DraggableModifier: ViewModifier {
                 DragGesture(coordinateSpace: .named("GameSpace"))
                     .onChanged { value in
                         if !manager.isDragging {
-                            // Haptic feedback could go here
-                            
-                            // --- THIS IS THE FIX ---
-                            // Pass the startLocation from the gesture 'value'
                             manager.startDrag(item, at: value.startLocation)
                         }
                         manager.currentDragLocation = value.location

@@ -7,15 +7,8 @@
 
 import SwiftUI
 
-struct FallingItem: Identifiable, Equatable {
-    let id = UUID()
-    let item: Item
-    let startPoint: CGPoint
-    let originPoint: CGPoint?
-}
-
 @Observable class PlayViewModel {
-    var fallingItems: [FallingItem] = []
+    var floatingItems: [FloatingItemFeedback] = []
     
     // Global Published Var for global state
     var initialBudget: Int = 0
@@ -68,19 +61,16 @@ struct FallingItem: Identifiable, Equatable {
     }
     
     func removeFallingItem(id: UUID) {
-        fallingItems.removeAll(where: { $0.id == id })
+        floatingItems.removeAll(where: { $0.id == id })
     }
 }
 
 // MARK: Drop Handlers
 private extension PlayViewModel {
     
-    // --- REVISED: Only clears the item, does NOT animate ---
     func handleDropFailed(draggedItem: DraggedItem) {
         print("Drop failed (Invalid Zone). Clearing item without animation.")
         
-        // We just clear the item.
-        // Using DispatchQueue ensures no flicker if we were dragging.
         DispatchQueue.main.async {
             self.dragManager.currentDraggedItem = nil
         }
@@ -125,12 +115,12 @@ private extension PlayViewModel {
                     print("Cart full, item not moved.")
                     AudioManager.shared.play(.dropFail)
                     
-                    let fall = FallingItem(
+                    let fall = FloatingItemFeedback(
                         item: groceryItem,
                         startPoint: self.dragManager.currentDragLocation,
-                        originPoint: nil
+                        originPoint: self.dragManager.dragStartLocation
                     )
-                    self.fallingItems.append(fall)
+                    self.floatingItems.append(fall)
                     self.dragManager.currentDraggedItem = nil
                     return
                 }
@@ -152,12 +142,12 @@ private extension PlayViewModel {
                 print("Cart full, item not added.")
                 AudioManager.shared.play(.dropFail)
                 
-                let fall = FallingItem(
+                let fall = FloatingItemFeedback(
                     item: groceryItem,
                     startPoint: self.dragManager.currentDragLocation,
                     originPoint: self.dragManager.dragStartLocation
                 )
-                self.fallingItems.append(fall)
+                self.floatingItems.append(fall)
                 self.dragManager.currentDraggedItem = nil
                 return
             }

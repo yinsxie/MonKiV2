@@ -9,19 +9,33 @@ import SwiftUI
 
 struct DragOverlayView: View {
     @Environment(DragManager.self) var manager
+    @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
-        if let item = manager.currentDraggedItem {
-            Group {
-                switch item.payload {
-                case .grocery(let groceryItem):
-                    GroceryItemView(item: groceryItem)
-                case .money(let price):
-                    MoneyView(money: Money(price: price), isBeingDragged: true)
+        ZStack {
+            if let item = manager.currentDraggedItem {
+                Group {
+                    switch item.payload {
+                    case .grocery(let groceryItem):
+                        GroceryItemView(item: groceryItem)
+                    case .money(let price):
+                        MoneyView(money: Money(price: price), isBeingDragged: true)
+                    }
                 }
+                .position(manager.currentDragLocation)
+                .allowsHitTesting(false) // very importanto line of code
             }
-            .position(manager.currentDragLocation)
-            .allowsHitTesting(false) // very importanto line of code
+            
+            ForEach(playVM.floatingItems) { fall in
+                FloatingItemFeedbackView(
+                    item: fall.item,
+                    startPoint: fall.startPoint,
+                    originPoint: fall.originPoint,
+                    onAnimationComplete: {
+                        playVM.removeFallingItem(id: fall.id)
+                    }
+                )
+            }
         }
     }
 }

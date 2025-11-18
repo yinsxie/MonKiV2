@@ -80,17 +80,6 @@ struct PlayViewContainer: View {
             }
             
             DragOverlayView()
-            
-            ForEach(playVM.fallingItems) { fall in
-                FallingItemView(
-                    item: fall.item,
-                    startPoint: fall.startPoint,
-                    originPoint: fall.originPoint,
-                    onAnimationComplete: {
-                        playVM.removeFallingItem(id: fall.id)
-                    }
-                )
-            }
         }
         .environment(playVM)
         .environment(playVM.cartVM)
