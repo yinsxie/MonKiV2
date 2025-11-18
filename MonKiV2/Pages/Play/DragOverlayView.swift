@@ -16,8 +16,8 @@ struct DragOverlayView: View {
                 switch item.payload {
                 case .grocery(let groceryItem):
                     GroceryItemView(item: groceryItem)
-                case .money(let price):
-                    MoneyView(money: Money(price: price), isBeingDragged: true)
+                case .money(let currency):
+                    MoneyView(money: Money(forCurrency: currency), isBeingDragged: true)
                 }
             }
             .position(manager.currentDragLocation)

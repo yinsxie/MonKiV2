@@ -81,4 +81,26 @@ struct ColorPalette {
     static let green800 = Color(hex: "#003D1B")
     static let green900 = Color(hex: "#00210E")
     static let greenMoney = Color(hex: "#49A35B")
+    
+    // Money Colors
+    static let money100Foreground = Color(hex: "#DC4C44")
+    static let money100Background = Color(hex: "#EC8388")
+    
+    static let money50Foreground = Color(hex: "#1974F3")
+    static let money50Background = blue300
+    
+    static let money20Foreground = Color(hex: "#377F56")
+    static let money20Background = Color(hex: "#65C466")
+    
+    static let money10Foreground = Color(hex: "#8252A8")
+    static let money10Background = Color(hex: "#AD81CE")
+    
+    static let money5Foreground = Color(hex: "#937B0F")
+    static let money5Background = yellow600
+    
+    static let money2Foreground = Color(hex: "#9A8E5B")
+    static let money2Background = Color(hex: "#BFB58A")
+    
+    static let money1Foreground = neutral400
+    static let money1Background = neutral300
 }

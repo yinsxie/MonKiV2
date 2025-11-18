@@ -53,7 +53,7 @@ private extension UserDefaultsManager {
     }
 }
 
-//MARK: Dev Purposes Only
+// MARK: Dev Purposes Only
 extension UserDefaultsManager {
     func resetAll() {
         UserDefaults.standard.dictionaryRepresentation().keys.forEach {
@@ -68,7 +68,7 @@ extension UserDefaultsManager {
         }
     }
     
-    //MARK: Change this as needed
+    // MARK: Change this as needed
     func initDevUserDefaults() {
 
     }

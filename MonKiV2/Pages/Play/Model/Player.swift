@@ -11,7 +11,7 @@ import Combine
 struct Player {
     var playerId: UUID
     
-    //TODO: Replace with Game Center ID after gamekit is established
+    // TODO: Replace with Game Center ID after gamekit is established
     var gameKitId: UUID
     var displayName: String
     
