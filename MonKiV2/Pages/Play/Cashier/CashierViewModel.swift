@@ -46,11 +46,11 @@ final class CashierViewModel {
     
     func acceptMoney(_ money: Money) {
         receivedMoney.append(money)
-        print("Cashier received money: \(money.price)")
+        print("Cashier received money: \(money.currency.value)")
     }
     
     var totalReceivedMoney: Int {
-        receivedMoney.reduce(0) { $0 + $1.price }
+        receivedMoney.reduce(0) { $0 + $1.currency.value }
     }
     
     var checkOutItems: [CartItem] = []

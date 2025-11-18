@@ -14,12 +14,15 @@ struct WalletView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
-                ForEach(viewModel.moneys.reversed().indices, id: \.self) { index in
-                    let money = viewModel.moneys.reversed()[index]
-                    
-                    MoneyView(money: money)
-                        .opacity(manager.currentDraggedItem?.id == money.id ? 0 : 1)
-                        .makeDraggable(item: DraggedItem(id: money.id, payload: .money(money.price)))
+                ForEach(viewModel.walletSorted) { moneyGroup in
+                    MoneyView(money: moneyGroup.money, isMoreThanOne: moneyGroup.count > 1)
+                        .opacity(((manager.currentDraggedItem?.id == moneyGroup.money.id) && (moneyGroup.count == 1)) ? 0 : 1)
+                        .makeDraggable(
+                            item: DraggedItem(
+                                id: moneyGroup.money.id,
+                                payload: .money(moneyGroup.money.currency)
+                            )
+                        )
                 }
             }
             Image("Wallet")

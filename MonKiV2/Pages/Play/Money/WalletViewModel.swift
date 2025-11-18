@@ -9,17 +9,30 @@ import SwiftUI
 
 @Observable class WalletViewModel {
     weak var parent: PlayViewModel?
-
+    
     init(parent: PlayViewModel?) {
         self.parent = parent
     }
     
     var moneys: [Money] = []
-
-    func addMoney(_ money: Money) {
-        let newMoney = Money(price: money.price)
+    
+    var walletSorted: [MoneyGroup] {
+        wallet.sorted { $0.money.currency.value > $1.money.currency.value }
+    }
+    
+    func addMoney(_ currency: Currency) {
+        let newMoney = Money(forCurrency: currency)
         moneys.append(newMoney)
-        print("Money added to wallet: \(money.price) (Instance ID: \(newMoney.id))")
+        print("Money added to wallet: \(currency.value) (Instance ID: \(newMoney.id))")
+    }
+    
+    func addMoney(_ currencies: [Currency]) {
+        print("Adding multiple currencies to wallet...")
+        for currency in currencies {
+            let newMoney = Money(forCurrency: currency)
+            moneys.append(newMoney)
+            print("Money added to wallet: \(currency.value) (Instance ID: \(newMoney.id))")
+        }
     }
     
     func removeItem(withId id: UUID) {
@@ -27,14 +40,32 @@ import SwiftUI
         print("Item removed from cart with instance id: \(id)")
     }
     
-    func removeFirstMoney(withPrice price: Int) {
-        guard let index = moneys.firstIndex(where: { $0.price == price }) else {
+    func removeFirstMoney(withCurrency currency: Currency) {
+        guard let index = moneys.firstIndex(where: { $0.currency == currency }) else {
             return
         }
         moneys.remove(at: index)
     }
-    
-    var totalMoney: Int {
-        moneys.reduce(0) { $0 + $1.price }
+}
+
+struct MoneyGroup: Identifiable {
+    let id = UUID()
+    let money: Money      // representative
+    let count: Int
+}
+
+extension WalletViewModel {
+    var wallet: [MoneyGroup] {
+        var temp: [Currency: (money: Money, count: Int)] = [:]
+        
+        for money in moneys {
+            if let existing = temp[money.currency] {
+                temp[money.currency] = (existing.money, existing.count + 1)
+            } else {
+                temp[money.currency] = (money, 1)
+            }
+        }
+        
+        return temp.values.map { MoneyGroup(money: $0.money, count: $0.count) }
     }
 }
