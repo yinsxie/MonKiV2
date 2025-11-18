@@ -78,6 +78,8 @@ private extension PlayViewModel {
             withAnimation(.spring) {
                 handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
             }
+        case .shelfReturnItem:
+            handleGroceryDropOnShelf(draggedItem: draggedItem)
         default:
             break
         }
@@ -121,15 +123,21 @@ private extension PlayViewModel {
     
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
         
-        AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
-        
         if let source = draggedItem.source {
             switch source {
             case .cashierCounter:
                 // from counter
+                if self.cartVM.isFull {
+                    DispatchQueue.main.async {
+                        print("Cart full, item not moved.")
+                        AudioManager.shared.play(.dropFail)
+                    }
+                    return
+                }
                 if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
                     DispatchQueue.main.async {
                         self.cartVM.addExistingItem(cartItem)
+                        AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
                     }
                 }
             case .cart:
@@ -138,8 +146,17 @@ private extension PlayViewModel {
             }
         } else {
             // from shelf
+            if self.cartVM.isFull {
+                DispatchQueue.main.async {
+                    print("Cart full, item not added.")
+                    AudioManager.shared.play(.dropFail)
+                }
+                return
+            }
+
             DispatchQueue.main.async {
                 self.cartVM.addNewItem(groceryItem)
+                AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
             }
         }
     }
@@ -159,6 +176,17 @@ private extension PlayViewModel {
                 DispatchQueue.main.async {
                     self.cashierVM.removeFromCounter(withId: draggedItem.id)
                 }
+            }
+        }
+    }
+    
+    
+    func handleGroceryDropOnShelf(draggedItem: DraggedItem) {
+        if draggedItem.source == .cart {
+            AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
+            DispatchQueue.main.async {
+                self.cartVM.removeItem(withId: draggedItem.id)
+                
             }
         }
     }
@@ -255,6 +283,7 @@ private extension PlayViewModel {
         
         // If counter is full
         if !self.cashierVM.isLimitCounterReached() {
+            AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
             if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
                 DispatchQueue.main.async {
                     self.cashierVM.addToCounter(cartItem)
@@ -263,24 +292,7 @@ private extension PlayViewModel {
             return
         }
         
-        // 1. Take the first item in the counter
-        if let firstItemInCounter = self.cashierVM.checkOutItems.first {
-            
-            // 2. Remove dragged item from cart
-            if let itemToMoveToCounter = self.cartVM.popItem(withId: draggedItem.id) {
-                
-                // 3. Remove the first item from counter, bring it back to cart
-                if let removedFromCounter = self.cashierVM.popFromCounter(withId: firstItemInCounter.id) {
-                    DispatchQueue.main.async {
-                        self.cartVM.addExistingItem(removedFromCounter)
-                    }
-                }
-                // 4. Add dragged item to counter
-                DispatchQueue.main.async {
-                    self.cashierVM.addToCounter(itemToMoveToCounter)
-                }
-            }
-        }
+        AudioManager.shared.play(.dropFail)
     }
 }
 

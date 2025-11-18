@@ -21,7 +21,6 @@ struct ShelfView: View {
             let shelfBottomPadding = geo.size.height - (backgroundSplitHeight + 40)
             
             ZStack(alignment: .bottom) {
-                
                 VStack {
                     Spacer()
                     HStack {
@@ -53,7 +52,7 @@ struct ShelfView: View {
                                         Text(cornItem.price.description)
                                             .font(.wendyOne(size: 40))
                                             .foregroundColor(Color.black)
-                                        )
+                                    )
                                     .offset(x: -150, y: 150)
                                 
                                 Color.clear
@@ -81,7 +80,7 @@ struct ShelfView: View {
                                         Text(carrotItem.price.description)
                                             .font(.wendyOne(size: 40))
                                             .foregroundColor(Color.black)
-                                        )
+                                    )
                                     .offset(x: -150, y: 150)
                                 
                                 Color.clear
@@ -111,7 +110,7 @@ struct ShelfView: View {
                                         Text(tomatoItem.price.description)
                                             .font(.wendyOne(size: 40))
                                             .foregroundColor(Color.black)
-                                        )
+                                    )
                                     .offset(x: -150, y: 120)
                                 
                                 Color.clear
@@ -138,7 +137,7 @@ struct ShelfView: View {
                                         Text(broccoliItem.price.description)
                                             .font(.wendyOne(size: 40))
                                             .foregroundColor(Color.black)
-                                        )
+                                    )
                                     .offset(x: -150, y: 135)
                                 
                                 Color.clear
@@ -166,7 +165,7 @@ struct ShelfView: View {
                                         Text(eggItem.price.description)
                                             .font(.wendyOne(size: 40))
                                             .foregroundColor(Color.black)
-                                        )
+                                    )
                                     .offset(x: -80, y: 110)
                                 
                                 Color.clear
@@ -182,8 +181,15 @@ struct ShelfView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
                 .padding(.bottom, shelfBottomPadding)
+                
+                Color.clear
+                    .frame(width: 1050, height: 400)
+//                    .background(Color.green.opacity(0.3))
+                    .contentShape(Rectangle())
+                    .allowsHitTesting(false)
+                    .makeDropZone(type: .shelfReturnItem)
+                    .padding(.bottom, shelfBottomPadding+190)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
