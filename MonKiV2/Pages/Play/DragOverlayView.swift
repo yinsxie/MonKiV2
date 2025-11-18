@@ -12,18 +12,7 @@ struct DragOverlayView: View {
     @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
-        if let item = manager.currentDraggedItem {
-            Group {
-                switch item.payload {
-                case .grocery(let groceryItem):
-                    GroceryItemView(item: groceryItem)
-                case .money(let currency):
-                    MoneyView(money: Money(forCurrency: currency), isBeingDragged: true)
-                }
-                .position(manager.currentDragLocation)
-                .allowsHitTesting(false) // very importanto line of code
-            }
-            
+        ZStack {
             ForEach(playVM.floatingItems) { fall in
                 FloatingItemFeedbackView(
                     item: fall.item,
@@ -33,6 +22,19 @@ struct DragOverlayView: View {
                         playVM.removeFallingItem(id: fall.id)
                     }
                 )
+            }
+            
+            if let item = manager.currentDraggedItem {
+                Group {
+                    switch item.payload {
+                    case .grocery(let groceryItem):
+                        GroceryItemView(item: groceryItem)
+                    case .money(let currency):
+                        MoneyView(money: Money(forCurrency: currency), isBeingDragged: true)
+                    }
+                }
+                .position(manager.currentDragLocation)
+                .allowsHitTesting(false)
             }
         }
     }
