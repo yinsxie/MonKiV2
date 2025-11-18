@@ -53,24 +53,18 @@ enum DragPayload: Equatable {
     
     func handleDrop() {
         isDragging = false
-        var didHitZone = false
         
         guard let item = currentDraggedItem else { return }
         
         for (_, zone) in dropZones where zone.frame.contains(currentDragLocation) {
             print("Hit zone: \(zone.type)")
-            
-            didHitZone = true
-            
+                        
             onDropSuccess?(zone.type, item)
             break
         }
         
-        if !didHitZone {
-            print("Hit no valid zone. Failing drop.")
-            onDropFailed?(item)
-        }
-        // currentDraggedItem = nil (Handled by VM)
+        print("Hit no valid zone. Failing drop.")
+        onDropFailed?(item)
     }
     
     func startDrag(_ item: DraggedItem, at startLocation: CGPoint) {
