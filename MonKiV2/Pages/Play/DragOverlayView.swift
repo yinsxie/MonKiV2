@@ -12,15 +12,13 @@ struct DragOverlayView: View {
     @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
-        ZStack {
-            if let item = manager.currentDraggedItem {
-                Group {
-                    switch item.payload {
-                    case .grocery(let groceryItem):
-                        GroceryItemView(item: groceryItem)
-                    case .money(let price):
-                        MoneyView(money: Money(price: price), isBeingDragged: true)
-                    }
+        if let item = manager.currentDraggedItem {
+            Group {
+                switch item.payload {
+                case .grocery(let groceryItem):
+                    GroceryItemView(item: groceryItem)
+                case .money(let currency):
+                    MoneyView(money: Money(forCurrency: currency), isBeingDragged: true)
                 }
                 .position(manager.currentDragLocation)
                 .allowsHitTesting(false) // very importanto line of code

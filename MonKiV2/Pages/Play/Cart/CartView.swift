@@ -8,7 +8,7 @@ import SwiftUI
 
 struct CartView: View {
     @Environment(CartViewModel.self) var cartVM
-    @Environment(WalletViewModel.self) var walletVM
+    @Environment(PlayViewModel.self) var playVM
     @Environment(DragManager.self) var manager
     
     private let maxRows = 3
@@ -17,7 +17,7 @@ struct CartView: View {
     private let indentPerRow: CGFloat = 30.0
     
     private var priceColor: Color {
-        if cartVM.totalPrice > walletVM.totalMoney {
+        if cartVM.totalPrice > playVM.currentBudget {
             return Color(hex: "#CD4947")
         } else {
             return Color(hex: "#65C466")

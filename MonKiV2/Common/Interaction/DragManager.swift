@@ -25,7 +25,7 @@ struct DraggedItem: Equatable {
     var id: UUID = UUID()
     var payload: DragPayload
     var source: PayloadSourceType?
-        
+    
     static func == (lhs: DraggedItem, rhs: DraggedItem) -> Bool {
         lhs.id == rhs.id
     }
@@ -33,7 +33,8 @@ struct DraggedItem: Equatable {
 
 enum DragPayload: Equatable {
     case grocery(Item)
-     case money(Int)
+    // Future proofing:
+    case money(Currency)
 }
 
 @Observable class DragManager {

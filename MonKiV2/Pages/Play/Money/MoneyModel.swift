@@ -9,21 +9,16 @@ import SwiftUI
 
 struct Money: Identifiable, Equatable {
     let id: UUID
-    let price: Int
-    let color: Color
-    let imageAssetPath: String?
+    let currency: Currency
     
-    // MARK: - Kustom Initializer
-
-    init(price: Int) {
+    // MARK: - Custom Initializer
+    init(forCurrency currency: Currency) {
         self.id = UUID()
-        self.price = price
-        self.color = Money.getStaticColor(for: price)
-        self.imageAssetPath = ""
+        self.currency = currency
     }
     
     // MARK: - Mock & Data Statis
-    static let mockMoney = Money(price: 10)
+    static let mockMoney = Money(forCurrency: .idr10)
     
     static let money: [Money] = [
 
@@ -31,16 +26,5 @@ struct Money: Identifiable, Equatable {
     
     static func == (lhs: Money, rhs: Money) -> Bool {
         lhs.id == rhs.id
-    }
-    
-    // MARK: - Private Helper
-    private static func getStaticColor(for price: Int) -> Color {
-        // MARK: - Adjust later based on nominals
-        switch price {
-//        case 100:
-//            return ColorPalette.pink900
-        default:
-            return ColorPalette.greenMoney
-        }
     }
 }

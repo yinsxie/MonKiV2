@@ -7,10 +7,9 @@
 
 import Foundation
 import UIKit
-import Combine
 
 @Observable
-final class CreateDishViewModel: ObservableObject {
+final class CreateDishViewModel {
     weak var parent: PlayViewModel?
     
     init(parent: PlayViewModel?) {

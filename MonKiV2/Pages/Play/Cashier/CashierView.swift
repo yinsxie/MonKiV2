@@ -188,6 +188,9 @@ struct CashierView: View {
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in
                 content.offset(x: phase.isIdentity ? 350 : 600)
             }
+            
+            CashierPaymentView()
+                .offset(x: 1800, y: -300)
         }
     }
 }

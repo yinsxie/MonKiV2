@@ -18,10 +18,10 @@ struct Item: Identifiable, Equatable {
     
     // TODO: Add strings of actual asset + aisle adjustment
     static let items: [Item] = [
-//        // Pokok
-//        Item(id: UUID(), name: "Nasi", price: 5, aisle: "Pokok", imageAssetPath: ""),
-//        Item(id: UUID(), name: "Mie", price: 5, aisle: "Pokok", imageAssetPath: ""),
-//        Item(id: UUID(), name: "Roti", price: 5, aisle: "Pokok", imageAssetPath: ""),
+        // Pokok
+        Item(id: UUID(), name: "Rice", price: 5, aisle: "Pokok", imageAssetPath: ""),
+        Item(id: UUID(), name: "Pasta", price: 5, aisle: "Pokok", imageAssetPath: ""),
+        Item(id: UUID(), name: "Bread", price: 5, aisle: "Pokok", imageAssetPath: ""),
         
         // Sayur
         Item(id: UUID(), name: "Carrot", price: 3, aisle: "Sayur", imageAssetPath: "wortel"),
@@ -32,16 +32,16 @@ struct Item: Identifiable, Equatable {
 //        
 //        // Olahan
 //        Item(id: UUID(), name: "Keju", price: 8, aisle: "Olahan", imageAssetPath: ""),
-//        Item(id: UUID(), name: "Susu", price: 7, aisle: "Olahan", imageAssetPath: ""),
+        Item(id: UUID(), name: "Milk", price: 7, aisle: "Olahan", imageAssetPath: ""),
 //        Item(id: UUID(), name: "Sosis", price: 7, aisle: "Olahan", imageAssetPath: ""),
 //        
 //        // Protein Harian
-//        Item(id: UUID(), name: "Ayam", price: 12, aisle: "Protein Harian", imageAssetPath: ""),
-//        Item(id: UUID(), name: "Ikan", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Egg", price: 5, aisle: "Protein Harian", imageAssetPath: "telur")
+        Item(id: UUID(), name: "Chicken", price: 12, aisle: "Protein Harian", imageAssetPath: ""),
+        Item(id: UUID(), name: "Fish", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
+        Item(id: UUID(), name: "Egg", price: 5, aisle: "Protein Harian", imageAssetPath: "telur"),
 //
-//        // Protein Premium
-//        Item(id: UUID(), name: "Daging Sapi", price: 18, aisle: "Protein Premium", imageAssetPath: ""),
+        // Protein Premium
+        Item(id: UUID(), name: "Beef", price: 18, aisle: "Protein Premium", imageAssetPath: "")
 //        Item(id: UUID(), name: "Udang", price: 20, aisle: "Protein Premium", imageAssetPath: "")
     ]
 }
