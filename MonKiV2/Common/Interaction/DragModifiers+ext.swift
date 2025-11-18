@@ -5,6 +5,13 @@
 //  Created by Aretha Natalova Wahyudi on 13/11/25.
 //
 
+//
+//  DragModifiers.swift
+//  MonKiV2
+//
+//  Created by Aretha Natalova Wahyudi on 13/11/25.
+//
+
 import SwiftUI
 
 /// For views that act as drag source
@@ -19,7 +26,10 @@ struct DraggableModifier: ViewModifier {
                     .onChanged { value in
                         if !manager.isDragging {
                             // Haptic feedback could go here
-                            manager.startDrag(item)
+                            
+                            // --- THIS IS THE FIX ---
+                            // Pass the startLocation from the gesture 'value'
+                            manager.startDrag(item, at: value.startLocation)
                         }
                         manager.currentDragLocation = value.location
                     }

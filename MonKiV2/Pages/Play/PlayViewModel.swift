@@ -7,8 +7,15 @@
 
 import SwiftUI
 
-// this is basically God class PlayViewModel
+struct FallingItem: Identifiable, Equatable {
+    let id = UUID()
+    let item: Item
+    let startPoint: CGPoint
+    let originPoint: CGPoint?
+}
+
 @Observable class PlayViewModel {
+    var fallingItems: [FallingItem] = []
     
     // Global Published Var for global state
     var initialBudget: Int = 0
@@ -53,42 +60,57 @@ import SwiftUI
                 self.handleMoneyDrop(zone: zone, price: price, draggedItem: draggedItem)
             }
         }
+        
+        dragManager.onDropFailed = { [weak self] draggedItem in
+            guard let self = self else { return }
+            self.handleDropFailed(draggedItem: draggedItem)
+        }
+    }
+    
+    func removeFallingItem(id: UUID) {
+        fallingItems.removeAll(where: { $0.id == id })
     }
 }
 
 // MARK: Drop Handlers
 private extension PlayViewModel {
+    
+    // --- REVISED: Only clears the item, does NOT animate ---
+    func handleDropFailed(draggedItem: DraggedItem) {
+        print("Drop failed (Invalid Zone). Clearing item without animation.")
+        
+        // We just clear the item.
+        // Using DispatchQueue ensures no flicker if we were dragging.
+        DispatchQueue.main.async {
+            self.dragManager.currentDraggedItem = nil
+        }
+    }
+    
     func handleGroceryDrop(zone: DropZoneType, groceryItem: Item, draggedItem: DraggedItem) {
         switch zone {
         case .cart:
-            withAnimation(.spring) {
-                handleGroceryDropOnCart(groceryItem: groceryItem, draggedItem: draggedItem)
-            }
+            handleGroceryDropOnCart(groceryItem: groceryItem, draggedItem: draggedItem)
         case .cashierLoadingCounter:
-            // No animation here
             handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
         case .cashierRemoveItem:
-            withAnimation(.spring) {
-                handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
-            }
+            handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
         case .shelfReturnItem:
             handleGroceryDropOnShelf(draggedItem: draggedItem)
         default:
-            break
+            DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
         }
     }
     
     func handleMoneyDrop(zone: DropZoneType, price: Int, draggedItem: DraggedItem) {
-//        withAnimation(.spring) {
-            switch zone {
-            case .cashierPaymentCounter:
-                handleMoneyDropOnPaymentCounter(price: price, draggedItem: draggedItem)
-            case .wallet:
-                handleMoneyDropOnWallet(price: price, draggedItem: draggedItem)
-            default:
-                print("Dropped money on an invalid zone (\(zone.rawValue))")
-            }
-//        }
+        switch zone {
+        case .cashierPaymentCounter:
+            handleMoneyDropOnPaymentCounter(price: price, draggedItem: draggedItem)
+        case .wallet:
+            handleMoneyDropOnWallet(price: price, draggedItem: draggedItem)
+        default:
+            print("Dropped money on an invalid zone (\(zone.rawValue))")
+            DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
+        }
     }
     
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
@@ -99,42 +121,57 @@ private extension PlayViewModel {
             case .cashierCounter:
                 // from counter
                 if self.cartVM.isFull {
-                    DispatchQueue.main.async {
-                        print("Cart full, item not moved.")
-                        AudioManager.shared.play(.dropFail)
-                    }
+                    // --- ANIMATION HERE (CART FULL) ---
+                    print("Cart full, item not moved.")
+                    AudioManager.shared.play(.dropFail)
+                    
+                    let fall = FallingItem(
+                        item: groceryItem,
+                        startPoint: self.dragManager.currentDragLocation,
+                        originPoint: nil
+                    )
+                    self.fallingItems.append(fall)
+                    self.dragManager.currentDraggedItem = nil
                     return
                 }
+                
                 if let cartItem = self.cashierVM.popFromCounter(withId: draggedItem.id) {
                     DispatchQueue.main.async {
                         self.cartVM.addExistingItem(cartItem)
                         AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
+                        self.dragManager.currentDraggedItem = nil
                     }
                 }
             case .cart:
-                // from cart itself
-                break
+                DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
             }
         } else {
             // from shelf
             if self.cartVM.isFull {
-                DispatchQueue.main.async {
-                    print("Cart full, item not added.")
-                    AudioManager.shared.play(.dropFail)
-                }
+                // --- ANIMATION HERE (CART FULL) ---
+                print("Cart full, item not added.")
+                AudioManager.shared.play(.dropFail)
+                
+                let fall = FallingItem(
+                    item: groceryItem,
+                    startPoint: self.dragManager.currentDragLocation,
+                    originPoint: self.dragManager.dragStartLocation
+                )
+                self.fallingItems.append(fall)
+                self.dragManager.currentDraggedItem = nil
                 return
             }
 
             DispatchQueue.main.async {
                 self.cartVM.addNewItem(groceryItem)
                 AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
+                self.dragManager.currentDraggedItem = nil
             }
         }
     }
     
     func handleGroceryDropOnRemoveZone(draggedItem: DraggedItem) {
         print("Remove from cart")
-        
         AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
         
         if let source = draggedItem.source {
@@ -142,10 +179,12 @@ private extension PlayViewModel {
             case .cart:
                 DispatchQueue.main.async {
                     self.cartVM.removeItem(withId: draggedItem.id)
+                    self.dragManager.currentDraggedItem = nil
                 }
             case .cashierCounter:
                 DispatchQueue.main.async {
                     self.cashierVM.removeFromCounter(withId: draggedItem.id)
+                    self.dragManager.currentDraggedItem = nil
                 }
             }
         }
@@ -156,45 +195,40 @@ private extension PlayViewModel {
             AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
             DispatchQueue.main.async {
                 self.cartVM.removeItem(withId: draggedItem.id)
-                
+                self.dragManager.currentDraggedItem = nil
             }
+        } else {
+            DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
         }
     }
     
     func handleMoneyDropOnPaymentCounter(price: Int, draggedItem: DraggedItem) {
-        //        print("Dropped money (\(price)) on payment counter")
-        //        self.walletVM.removeItem(withId: draggedItem.id)
-        //        let droppedMoney = Money(price: price)
-        //        self.cashierVM.acceptMoney(droppedMoney)
         let requiredAmount = self.cashierVM.totalPrice
         let draggedAmount = price
         
-        // KONDISI 1: Gaada barang yg harus dibayar
+        // Guard checks
         guard requiredAmount > 0 else {
+            DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
             return
         }
-        
-        // KONDISI 2: Duitnya ga cukup
         guard draggedAmount >= requiredAmount else {
+            DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
             return
         }
         
-        // KONDISI 3: Duitnya Cukup (Lunas atau Ada Kembalian)
+        // Success logic
         AudioManager.shared.play(.paymentSuccess, pitchVariation: 0.02)
         self.walletVM.removeItem(withId: draggedItem.id)
         let droppedMoney = Money(price: draggedAmount)
         self.cashierVM.acceptMoney(droppedMoney)
         
-        // Itung kembalian kalau ada
         let changeAmount = draggedAmount - requiredAmount
         currentBudget = changeAmount
         
         if changeAmount >= 0 {
-            // Case ada kembalian
             print("Giving change: \(changeAmount)")
             let changeMoney = Money(price: changeAmount)
             
-            // kasih kembalian
             DispatchQueue.main.async {
                 withAnimation {
                     self.walletVM.addMoney(changeMoney)
@@ -203,28 +237,36 @@ private extension PlayViewModel {
         }
         
         self.cashierVM.checkOutSuccess()
+        
+        DispatchQueue.main.async {
+            self.dragManager.currentDraggedItem = nil
+        }
     }
     
     func handleMoneyDropOnWallet(price: Int, draggedItem: DraggedItem) {
         print("Dropped money (\(price)) back on wallet")
+        DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
     }
     
     func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {
+        guard let source = draggedItem.source, source == .cart else {
+            DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
+            return
+        }
         
-        guard let source = draggedItem.source, source == .cart else { return }
-      
-        // If counter is full
         if !self.cashierVM.isLimitCounterReached() {
             AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
             if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
                 DispatchQueue.main.async {
                     self.cashierVM.addToCounter(cartItem)
+                    self.dragManager.currentDraggedItem = nil
                 }
             }
             return
         }
         
         AudioManager.shared.play(.dropFail)
+        DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
     }
 }
 

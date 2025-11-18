@@ -21,7 +21,6 @@ enum PayloadSourceType {
     case cashierCounter
 }
 
-// A wrapper for the data being dragged
 struct DraggedItem: Equatable {
     var id: UUID = UUID()
     var payload: DragPayload
@@ -34,49 +33,57 @@ struct DraggedItem: Equatable {
 
 enum DragPayload: Equatable {
     case grocery(Item)
-    // Future proofing:
      case money(Int)
 }
 
 @Observable class DragManager {
-    // STATE
     var currentDraggedItem: DraggedItem?
     var currentDragLocation: CGPoint = .zero
     var isDragging: Bool = false
+    var dragStartLocation: CGPoint = .zero
     
-    // REGISTERED ZONES (The map of the screen)
-    // We store the Frame (CGRect) and the Type of zone
     var dropZones: [UUID: (frame: CGRect, type: DropZoneType)] = [:]
     
-    // EVENTS
-    // Your ViewModels will listen to this to know if they received an item
     var onDropSuccess: ((DropZoneType, DraggedItem) -> Void)?
+    var onDropFailed: ((DraggedItem) -> Void)?
     
-    // LOGIC
     func updateZone(id: UUID, frame: CGRect, type: DropZoneType) {
         dropZones[id] = (frame, type)
     }
     
     func handleDrop() {
         isDragging = false
+        var didHitZone = false
         
         for (_, zone) in dropZones {
             if zone.frame.contains(currentDragLocation) {
                 if let item = currentDraggedItem {
                     print("Hit zone: \(zone.type)")
+                    
+                    // --- THIS PREVENTS onDropFailed FROM RUNNING ON SUCCESS ---
+                    didHitZone = true
+                    
                     onDropSuccess?(zone.type, item)
+                    break
                 }
             }
         }
-        currentDraggedItem = nil
-
+        
+        if !didHitZone {
+            if let item = currentDraggedItem {
+                print("Hit no valid zone. Failing drop.")
+                onDropFailed?(item)
+            }
+        }
+        // currentDraggedItem = nil (Handled by VM)
     }
     
-    func startDrag(_ item: DraggedItem) {
+    func startDrag(_ item: DraggedItem, at startLocation: CGPoint) {
         if isDragging { return }
         
-        isDragging = true
-        currentDraggedItem = item
+        self.dragStartLocation = startLocation
+        self.isDragging = true
+        self.currentDraggedItem = item
         AudioManager.shared.play(.pickShelf, pitchVariation: 0.04)
     }
 }
