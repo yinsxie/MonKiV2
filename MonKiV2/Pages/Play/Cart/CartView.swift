@@ -34,6 +34,34 @@ struct CartView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
+            
+            // LAYER 1: THE DROP ZONE (STATIC)
+            Color.clear
+                .contentShape(Rectangle())
+                .makeDropZone(type: .cart)
+                .frame(width: 581, height: 550)
+            
+            // LAYER 2: THE VISUALS (ANIMATED)
+            cartVisuals
+                .geometryGroup()
+                
+                .keyframeAnimator(initialValue: 0.0, trigger: cartVM.shakeTrigger) { content, value in
+                    content.offset(x: value)
+                } keyframes: { _ in
+                    KeyframeTrack {
+                        CubicKeyframe(0, duration: 0.01)
+                        CubicKeyframe(-10, duration: 0.1)
+                        CubicKeyframe(10, duration: 0.1)
+                        CubicKeyframe(-10, duration: 0.1)
+                        CubicKeyframe(0, duration: 0.1)
+                    }
+                }
+        }
+        .frame(width: 581, height: 550, alignment: .bottom)
+    }
+    
+    private var cartVisuals: some View {
+        ZStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: -30) {
                 ForEach(0..<emptyRows, id: \.self) { _ in
                     Color.clear
@@ -46,16 +74,18 @@ struct CartView: View {
                             GroceryItemView(item: cartItem.item)
                                 .transition(.scale.combined(with: .opacity))
                                 .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .cart))
-                                .opacity(manager.currentDraggedItem?.id == cartItem.id ? 0.0 : 1.0)
+                                .opacity(
+                                    manager.currentDraggedItem?.id == cartItem.id ||
+                                    playVM.itemsCurrentlyAnimating.contains(cartItem.id)
+                                    ? 0.0
+                                    : 1.0
+                                )
                         }
                     }
                     .frame(height: rowHeight)
-//                    .border(Color.blue, width: 5)
                     .padding(.leading, CGFloat(index) * (2-indentPerRow))
-//                    .border(Color.yellow, width: 5)
                 }
             }
-//            .background(Color.green.opacity(0.8))
             .frame(maxWidth: 350)
             .padding(.bottom, 200)
             .padding(.trailing, 0)
@@ -65,7 +95,8 @@ struct CartView: View {
                 Image("cart")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 581, alignment: .bottom)
+                    .frame(width: 581)
+                    .aspectRatio(contentMode: .fit)
                 
                 Rectangle()
                     .foregroundColor(priceColor)
@@ -88,10 +119,7 @@ struct CartView: View {
             }
             .allowsHitTesting(false)
         }
-        .frame(width: 581, alignment: .bottom)
-//        .border(Color.green, width: 5)
-        .clipped()
-        .makeDropZone(type: .cart)
+        .frame(width: 581, height: 550, alignment: .bottom)
     }
 }
 

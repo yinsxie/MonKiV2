@@ -9,19 +9,21 @@ import SwiftUI
 
 struct DragOverlayView: View {
     @Environment(DragManager.self) var manager
+    @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
-        if let item = manager.currentDraggedItem {
-            Group {
-                switch item.payload {
-                case .grocery(let groceryItem):
-                    GroceryItemView(item: groceryItem)
-                case .money(let currency):
-                    MoneyView(money: Money(forCurrency: currency), isBeingDragged: true)
+            
+            if let item = manager.currentDraggedItem {
+                Group {
+                    switch item.payload {
+                    case .grocery(let groceryItem):
+                        GroceryItemView(item: groceryItem)
+                    case .money(let currency):
+                        MoneyView(money: Money(forCurrency: currency), isBeingDragged: true)
+                    }
                 }
+                .position(manager.currentDragLocation)
+                .allowsHitTesting(false)
             }
-            .position(manager.currentDragLocation)
-            .allowsHitTesting(false) // very importanto line of code
-        }
     }
 }

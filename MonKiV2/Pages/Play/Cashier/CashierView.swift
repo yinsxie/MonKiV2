@@ -66,7 +66,8 @@ struct CashierView: View {
                                     )
                                 )
                                 .opacity(
-                                    dragManager.currentDraggedItem?.id == cartItem.id
+                                    dragManager.currentDraggedItem?.id == cartItem.id ||
+                                    playViewModel.itemsCurrentlyAnimating.contains(cartItem.id)
                                     ? 0 : 1
                                 )
                                 .padding(.horizontal, -20)
