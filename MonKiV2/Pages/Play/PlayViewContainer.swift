@@ -18,7 +18,8 @@ struct PlayViewContainer: View {
             AnyView(CashierView()),
             AnyView(Color.clear),
             AnyView(IngredientInputView()),
-            AnyView(CreateDishView())
+            AnyView(CreateDishView()),
+            AnyView(DishBookView())
         ]
     }
     

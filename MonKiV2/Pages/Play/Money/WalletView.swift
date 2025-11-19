@@ -12,8 +12,8 @@ struct WalletView: View {
     @Environment(DragManager.self) var manager
     
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(spacing: 0) {
+        VStack(spacing: -70) {
+            VStack(spacing: -70) {
                 ForEach(viewModel.walletSorted) { moneyGroup in
                     MoneyView(money: moneyGroup.money, isMoreThanOne: moneyGroup.count > 1)
                         .opacity(((manager.currentDraggedItem?.id == moneyGroup.money.id) && (moneyGroup.count == 1)) ? 0 : 1)

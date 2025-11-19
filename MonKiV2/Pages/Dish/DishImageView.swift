@@ -100,7 +100,8 @@ struct DishImageView: View {
                     viewModel.setIngredients(from: purchasedItems)
                 }
                 // 2. Start generating
-                viewModel.generate()
+//                viewModel.generate()
+                viewModel.generateMock()
                 
             }) {
                 ZStack {
