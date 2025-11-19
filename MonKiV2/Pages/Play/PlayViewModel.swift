@@ -8,7 +8,8 @@
 import SwiftUI
 
 @Observable class PlayViewModel {
-    var floatingItems: [FloatingItemFeedback] = []
+    var floatingItems: [FloatingItemFeedback] = [] // track items that need animating floating item feedback
+    var itemsCurrentlyAnimating: [UUID] = [] // tracks items that are animating but MUST become visible again (no fade)
     
     // Global Published Var for global state
     var initialBudget: Int = 0
@@ -60,6 +61,14 @@ import SwiftUI
         dragManager.onDropFailed = { [weak self] draggedItem in
             guard let self = self else { return }
             self.handleDropFailed(draggedItem: draggedItem)
+        }
+    }
+    
+    func clearVisualAnimationState(id: UUID, trackedItemID: UUID, wasFadingOut: Bool) {
+        floatingItems.removeAll(where: { $0.id == id })
+        
+        if !wasFadingOut {
+            itemsCurrentlyAnimating.removeAll(where: { $0 == trackedItemID })
         }
     }
     
@@ -146,11 +155,15 @@ private extension PlayViewModel {
                     AudioManager.shared.play(.dropFail)
                     
                     let fall = FloatingItemFeedback(
+                        id: UUID(),
                         item: groceryItem,
                         startPoint: self.dragManager.currentDragLocation,
-                        originPoint: self.dragManager.dragStartLocation
+                        originPoint: self.dragManager.dragStartLocation,
+                        shouldFadeOut: false, // NO FADE
+                        trackedItemID: draggedItem.id
                     )
                     self.floatingItems.append(fall)
+                    self.itemsCurrentlyAnimating.append(draggedItem.id) // Hide original item
                     self.dragManager.currentDraggedItem = nil
                     return
                 }
@@ -173,15 +186,18 @@ private extension PlayViewModel {
                 AudioManager.shared.play(.dropFail)
                 
                 let fall = FloatingItemFeedback(
+                    id: UUID(),
                     item: groceryItem,
                     startPoint: self.dragManager.currentDragLocation,
-                    originPoint: self.dragManager.dragStartLocation
+                    originPoint: self.dragManager.dragStartLocation,
+                    shouldFadeOut: true, // FADE OUT
+                    trackedItemID: draggedItem.id
                 )
                 self.floatingItems.append(fall)
                 self.dragManager.currentDraggedItem = nil
                 return
             }
-
+            
             DispatchQueue.main.async {
                 self.cartVM.addNewItem(groceryItem)
                 AudioManager.shared.play(.dropItemCart, pitchVariation: 0.03)
@@ -209,7 +225,6 @@ private extension PlayViewModel {
             }
         }
     }
-    
     
     func handleGroceryDropOnShelf(draggedItem: DraggedItem) {
         if draggedItem.source == .cart {
@@ -314,11 +329,7 @@ private extension PlayViewModel {
             return
         }
         
-        guard let source = draggedItem.source, source == .cart else { return }
-        
-        AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
-        
-        // If counter is full
+        // If counter is not full
         if !self.cashierVM.isLimitCounterReached() {
             AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
             if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
@@ -328,10 +339,21 @@ private extension PlayViewModel {
                 }
             }
             return
+        } else {
+            AudioManager.shared.play(.dropFail)
+            
+            let fall = FloatingItemFeedback(
+                id: UUID(),
+                item: groceryItem,
+                startPoint: self.dragManager.currentDragLocation,
+                originPoint: self.dragManager.dragStartLocation,
+                shouldFadeOut: false, // NO FADE
+                trackedItemID: draggedItem.id
+            )
+            self.floatingItems.append(fall)
+            self.itemsCurrentlyAnimating.append(draggedItem.id) // Hide original item
+            self.dragManager.currentDraggedItem = nil
         }
-        
-        AudioManager.shared.play(.dropFail)
-        DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
     }
 }
 

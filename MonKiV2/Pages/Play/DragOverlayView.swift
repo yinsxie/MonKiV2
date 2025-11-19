@@ -15,12 +15,15 @@ struct DragOverlayView: View {
         ZStack {
             ForEach(playVM.floatingItems) { fall in
                 FloatingItemFeedbackView(
+                    id: fall.id,
                     item: fall.item,
                     startPoint: fall.startPoint,
                     originPoint: fall.originPoint,
-                    onAnimationComplete: {
-                        playVM.removeFallingItem(id: fall.id)
-                    }
+                    trackedItemID: fall.trackedItemID,
+                    onAnimationComplete: { id, trackedItemID, wasFadingOut in
+                        playVM.clearVisualAnimationState(id: id, trackedItemID: trackedItemID, wasFadingOut: wasFadingOut)
+                    },
+                    shouldFadeOut: fall.shouldFadeOut
                 )
             }
             
