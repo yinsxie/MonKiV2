@@ -57,17 +57,37 @@ struct PlayViewContainer: View {
                 .padding(.leading, 80)
                 .padding(.top, 80)
                 .ignoresSafeArea(.all)
-
+                
             }
             
             .overlay(alignment: .bottomTrailing) {
                 let currentIndex = playVM.currentPageIndex ?? 0
                 if currentIndex < 3 {
                     WalletView()
-//                        .padding(.bottom, 50)
+                    //                        .padding(.bottom, 50)
                         .padding(.trailing, 30)
                         .offset(y: 125)
                 }
+            }
+            
+            .overlay(alignment: .trailing) {
+                let currentIndex = playVM.currentPageIndex ?? 0
+                
+                ShoppingBagSideBarView()
+                    .opacity(currentIndex == 4 ? 1 : 0)
+                    .disabled(currentIndex != 4)
+            }
+           
+            .overlay {
+                ZStack {
+                    if playVM.dishVM.isStartCookingTapped {
+                        Color.black.opacity(0.4)
+                        DishImageView()
+                    }
+                }
+                .ignoresSafeArea()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .zIndex(5)
             }
             
             AnimationOverlayView()

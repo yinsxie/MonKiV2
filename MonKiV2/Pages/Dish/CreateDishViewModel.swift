@@ -20,11 +20,38 @@ final class CreateDishViewModel {
     var isLoading = false
     var inputText: String = ""
     
+    var isBagTapped = false
+    var isStartCookingTapped = false
+    
     var totalPurchasedPrice: Int {
         guard let parent = parent else { return 0 }
         return parent.cashierVM.purchasedItems.reduce(0) { $0 + $1.item.price }
     }
     
+    var groceriesList: [GroceryItem] {
+        guard let cartItems = parent?.cashierVM.purchasedItems else { return [] }
+        
+        // Extract items
+        let items: [Item] = cartItems.map { $0.item }
+        
+        // Group items by their item.id
+        let grouped = Dictionary(grouping: items, by: { $0.id })
+        
+        print("Refreshing groceries list...")
+        
+        // Convert grouped items into GroceryItem, then sort by quantity
+        return grouped.map { (_, items) in
+            GroceryItem(
+                id: UUID(),
+                item: items.first ?? Item.mockItem,
+                quantity: items.count
+            )
+        }
+        .sorted { $0.quantity > $1.quantity }
+    }
+
+    var createDishItem: [CartItem] = []
+
     func setIngredients(from cartItems: [CartItem]) {
         let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
         

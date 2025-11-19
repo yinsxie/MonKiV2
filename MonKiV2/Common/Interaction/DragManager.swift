@@ -14,11 +14,15 @@ enum DropZoneType: String {
     case cashierPaymentCounter // for handing over money
     case wallet // for handling kembalian
     case cashierRemoveItem // for removing cart item
+    case createDish // for placing items to create dish
+    case createDishOverlay
 }
 
 enum PayloadSourceType {
     case cart
     case cashierCounter
+    case createDishOverlay
+    case createDish
 }
 
 struct DraggedItem: Equatable {

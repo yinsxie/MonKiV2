@@ -9,45 +9,35 @@ import SwiftUI
 
 struct CreateDishView: View {
     @Environment(CreateDishViewModel.self) var viewModel
+    @Environment(DragManager.self) var dragManager
     
     var body: some View {
-        HStack(spacing: 20) {
+        ZStack {
             
-            VStack(alignment: .center) {
-                Spacer()
+            VStack(alignment: .leading) {
+                monkiFace
+                
                 ZStack {
-                    Image("chef_monki")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 413)
-                    
-                    ZStack(alignment: .center) {
-                        Image("speech_bubble")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 202)
-                        
-                        if viewModel.cgImage == nil {
-                            Image("food_speech_bubble")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 64)
-                        } else {
-                            Text("Yummy")
-                                .font(.wendyOne(size: 36))
-                                .foregroundStyle(.black)
+                    Color.green.opacity(0.4)
+                        .makeDropZone(type: .createDish)
+                    HStack {
+                        ForEach(viewModel.createDishItem) { cartItem in
+                            GroceryItemView(item: cartItem.item)
+                                .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
+                            
+                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                            
                         }
                     }
-                    .offset(x: 150, y: -100)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
                 }
-                Spacer()
+                .frame(width: 700, height: 300)
                 
-                ShoppingBagView()
-                
-                Spacer()
+               bottomButton
             }
-            .frame(maxWidth: .infinity)
-            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 30)
             .onAppear {
                 if viewModel.cgImage == nil && viewModel.checkCheckoutItems(),
                    let purchasedItems = viewModel.parent?.cashierVM.purchasedItems,
@@ -63,10 +53,95 @@ struct CreateDishView: View {
                     viewModel.setIngredients(from: purchasedItems)
                 }
             }
-            
-            DishImageView()
-                .frame(maxWidth: .infinity)
+            //            DishImageView() .frame(maxWidth: .infinity)
         }
         .padding(.horizontal)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        
     }
+    
+    private var monkiFace: some View {
+        ZStack {
+            Image("chef_monki")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 413)
+            
+            ZStack(alignment: .center) {
+                Image("speech_bubble")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 202)
+                
+                if viewModel.cgImage == nil {
+                    Image("food_speech_bubble")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 64)
+                } else {
+                    Text("Yummy")
+                        .font(.wendyOne(size: 36))
+                        .foregroundStyle(.black)
+                }
+            }
+            .offset(x: 150, y: -100)
+        }
+    }
+    
+    private var bottomButton: some View {
+        // This function returns true if the input text is EMPTY
+        let isInputEmpty = viewModel.checkCheckoutItems()
+        let hasImage = viewModel.cgImage != nil
+        
+        // The button is disabled if:
+        // 1. We are currently loading (isLoading == true)
+        // 2. We have NO image generated yet AND the input is empty
+        //    (meaning no purchased items were loaded)
+        let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+        
+        return Button(action: {
+            // MODIFIED ACTION:
+            // 1. Always get the fresh list of purchased items
+            viewModel.isStartCookingTapped = true
+            AudioManager.shared.play(.buttonClick)
+            if let createDishItem = viewModel.parent?.dishVM.createDishItem {
+                viewModel.setIngredients(from: createDishItem)
+            }
+            // 2. Start generating
+            viewModel.generate()
+            
+        }) {
+            ZStack {
+                Image(isDisabled ? "button_disable" : "button_active")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 100)
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.white)
+                        .scaleEffect(1.5)
+                } else {
+                    HStack(spacing: 10) {
+                        // MODIFIED: Text changes based on hasImage
+                        Text("New Dish")
+                            .font(.wendyOne(size: 40))
+                            .foregroundColor(.white)
+                        
+                        Image("Spatula")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 30)
+                    }
+                    .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
+                }
+            }
+        }
+        .disabled(isDisabled) // Use the new isDisabled logic
+    }
+}
+
+#Preview {
+    PlayViewContainer()
 }
