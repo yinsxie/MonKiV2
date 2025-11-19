@@ -167,7 +167,7 @@ struct CashierView: View {
                         Text("\(viewModel.totalPrice)")
                             .font(.VT323(size: 40))
                             .offset(x: 180, y: -169)
-                            .foregroundStyle(Color(hex: "#89E219"))
+                            .foregroundStyle(ColorPalette.cashierNominal)
                         
                         ShoppingBagView()
                             .offset(x: 520, y: 27)
