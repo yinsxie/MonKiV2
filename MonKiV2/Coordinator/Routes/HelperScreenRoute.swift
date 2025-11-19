@@ -9,6 +9,7 @@ import SwiftUI
 
 enum HelperScreenRoute {
     case startingPage
+    case dishBook
 }
 
 extension HelperScreenRoute: SubRouteProtocol {
@@ -17,6 +18,8 @@ extension HelperScreenRoute: SubRouteProtocol {
         switch self {
         case .startingPage:
             StartingPageView()
+        case .dishBook:
+            DishBookView()
         }
     }
 }
