@@ -8,11 +8,11 @@
 import SwiftUI
 
 extension Font {
-
+    
     static func wendyOne(size: CGFloat) -> Font {
         return Font.custom("WendyOne-Regular", size: size)
     }
-
+    
     static func wendyOne(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
         return Font.custom("WendyOne-Regular", size: size, relativeTo: style)
     }
@@ -24,6 +24,39 @@ extension Font {
     static func VT323(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
         return Font.custom("VT323-Regular", size: size, relativeTo: style)
     }
+    
+    static func fredoka(_ weight: Font.Weight = .regular, size: CGFloat) -> Font {
+        let fontName: String
+        
+        switch weight {
+        case .light:
+            fontName = "Fredoka-Light"
+        case .medium:
+            fontName = "Fredoka-Medium"
+        case .semibold:
+            fontName = "Fredoka-SemiBold"
+        case .bold:
+            fontName = "Fredoka-Bold"
+        default:
+            fontName = "Fredoka-Regular"
+        }
+        
+        return Font.custom(fontName, size: size)
+    }
+    
+    static func fredoka(_ weight: Font.Weight = .regular, size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
+        let fontName: String
+        
+        switch weight {
+        case .light:       fontName = "Fredoka-Light"
+        case .medium:      fontName = "Fredoka-Medium"
+        case .semibold:    fontName = "Fredoka-SemiBold"
+        case .bold:        fontName = "Fredoka-Bold"
+        default:           fontName = "Fredoka-Regular"
+        }
+        
+        return Font.custom(fontName, size: size, relativeTo: style)
+    }
 }
 
 extension Font {
@@ -33,7 +66,7 @@ extension Font {
     private static func systemRounded(size: CGFloat, weight: Font.Weight) -> Font {
         return .system(size: size, weight: weight, design: .rounded)
     }
-
+    
     // MARK: - Typography Styles (Matching Figma)
     
     // --- Large Title ---
@@ -52,7 +85,7 @@ extension Font {
     static var largeTitleEmphasized: Font {
         return .systemRounded(size: 34, weight: .bold)
     }
-
+    
     // --- Title 1 ---
     static var title1Regular: Font {
         return .systemRounded(size: 28, weight: .regular)
@@ -69,7 +102,7 @@ extension Font {
     static var title1Emphasized: Font {
         return .systemRounded(size: 28, weight: .bold)
     }
-
+    
     // --- Title 2 ---
     static var title2Regular: Font {
         return .systemRounded(size: 22, weight: .regular)
@@ -188,7 +221,7 @@ extension Font {
     static var footnoteEmphasized: Font {
         return .systemRounded(size: 13, weight: .bold)
     }
-
+    
     // --- Caption1 ---
     static var caption1Regular: Font {
         return .systemRounded(size: 12, weight: .regular)

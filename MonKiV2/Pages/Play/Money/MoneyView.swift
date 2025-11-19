@@ -15,19 +15,18 @@ struct MoneyView: View {
     var body: some View {
         ZStack {
             if isMoreThanOne {
-                Rectangle()
-                    .fill(money.currency.backgroundColor).brightness(-0.25)
-                    .frame(width: 250, height: isBeingDragged ? 128 : 64)
-                    .offset(x: 8, y: 8)
+                Image(money.currency.imageAssetPath)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 250)
+                    .brightness(-0.3)
+                    .offset(x: 6, y: 6)
             }
             
-            Rectangle()
-                .fill(money.currency.backgroundColor)
-                .frame(width: 250, height: isBeingDragged ? 128 : 64)
-            
-            Text("\(money.currency.value)")
-                .font(.custom("WendyOne-Regular", size: 40))
-                .foregroundStyle(.white)
+            Image(money.currency.imageAssetPath)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 250)
         }
     }
 }

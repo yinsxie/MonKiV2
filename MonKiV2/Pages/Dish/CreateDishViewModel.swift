@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import CoreData
 
 @Observable
 final class CreateDishViewModel {
@@ -68,4 +69,68 @@ final class CreateDishViewModel {
         return trimmedInput.isEmpty
     }
     
+    // function untuk dev di simulator tanpa capability image playground (pengganti function generate)
+    func generateMock() {
+        guard !checkCheckoutItems() else { return }
+        
+        isLoading = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            let renderer = UIGraphicsImageRenderer(size: CGSize(width: 512, height: 512))
+            let img = renderer.image { ctx in
+                UIColor.orange.setFill()
+                ctx.fill(CGRect(x: 0, y: 0, width: 512, height: 512))
+                
+                let symbol = UIImage(systemName: "fork.knife.circle")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                symbol?.draw(in: CGRect(x: 106, y: 106, width: 300, height: 300))
+            }
+            
+            self.cgImage = img.cgImage
+            
+            self.saveDishToCollection()
+            
+            self.isLoading = false
+            print("Mock Image Generated AND Saved successfully!")
+            AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
+        }
+    }
+    
+    // function sementara untuk simpen foto hasil image playground ke album
+    func saveDishToCollection() {
+        guard let cgImage = self.cgImage else { return }
+        let uiImage = UIImage(cgImage: cgImage)
+        
+        guard let savedFileName = ImageStorage.saveImage(uiImage) else {
+            print("Failed to save image to disk")
+            return
+        }
+        
+        let context = CoreDataManager.shared.viewContext
+        
+        let newDish = Dish(context: context)
+        newDish.id = UUID()
+        newDish.timestamp = Date()
+        // ngambil dari function atas totalPurchasedPrice cashierVM
+        newDish.totalPrice = Int32(self.totalPurchasedPrice)
+        newDish.imageFileName = savedFileName
+        
+        // masih ngambil dari semua item di cart
+        guard let cartItems = parent?.cashierVM.purchasedItems else { return }
+        
+        let groupedItems = Dictionary(grouping: cartItems, by: { $0.item.id })
+        
+        for (_, items) in groupedItems {
+            if let firstItem = items.first?.item {
+                let ingredient = Ingredient(context: context)
+                ingredient.id = UUID()
+                ingredient.name = firstItem.name
+                ingredient.quantity = Int16(items.count)
+                
+                ingredient.dish = newDish
+            }
+        }
+        
+        CoreDataManager.shared.save()
+        print("Dish saved successfully!")
+    }
 }
