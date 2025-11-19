@@ -77,6 +77,12 @@ struct CartView: View {
                         )
                     .offset(x: 65, y: -45)
                     .allowsHitTesting(false)
+                
+                Rectangle()
+                    .foregroundColor(Color.clear)
+                    .floatingPriceFeedback(value: cartVM.totalPrice)
+                    .frame(width: 100, height: 100)
+                    .offset(x: 200, y: -30)
             }
             .allowsHitTesting(false)
         }
