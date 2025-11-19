@@ -20,6 +20,7 @@ struct ATMOption {
     
     var showFlyingMoney: Bool = false
     var flyingMoneyValue: Int = 0
+    var isProcessing: Bool = false
     
     var cooldownProgress: [Int: Double] = [50: 0.0, 20: 0.0, 10: 0.0]
     var activeCooldownProgress: Double {
@@ -39,9 +40,9 @@ struct ATMOption {
     }
     
     func handleOpenATM() {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                isZoomed = true
-            }
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            isZoomed = true
+        }
     }
     
     func handleCloseATM() {
@@ -54,22 +55,39 @@ struct ATMOption {
         guard let option = options.first(where: { $0.amount == amount }) else { return }
         guard atmBalance >= amount else { return }
         guard (cooldownProgress[amount] ?? 0) == 0 else { return }
+        guard !isProcessing else { return }
         
         guard let parent = self.parent else {
             print("Guard: Parent PlayViewModel nil. Transaksi dibatalkan agar uang tidak hilang.")
             return
         }
         
-        atmBalance -= amount
-        startCooldown(for: option)
+        self.isProcessing = true
+        self.flyingMoneyValue = amount
         
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-            self.isZoomed = false
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [] in
-            print("Kasih sinyal animasi uang \(amount) ke PlayVM")
-            parent.triggerMoneyFlyAnimation(amount: amount)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            
+            guard self.atmBalance >= amount else {
+                self.isProcessing = false
+                self.flyingMoneyValue = 0
+                return
+            }
+            
+            self.atmBalance -= amount
+            self.startCooldown(for: option)
+            
+            self.isProcessing = false
+            self.flyingMoneyValue = 0
+            
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                self.isZoomed = false
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                print("Kasih sinyal animasi uang \(amount) ke PlayVM")
+                parent.triggerMoneyFlyAnimation(amount: amount)
+            }
         }
     }
     
