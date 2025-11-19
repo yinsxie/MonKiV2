@@ -29,7 +29,7 @@ struct FloatingPriceTextView: View {
             .onAppear {
                 withAnimation(.easeOut(duration: 1.0)) {
                     offset = -50
-                    opacity = 0
+                    opacity = 0.5
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
