@@ -41,6 +41,13 @@ struct StartingPageView: View {
                             .scaledToFit()
                     })
                     .disabled(true)
+                    
+                    Button(action: {
+                        AudioManager.shared.play(.buttonClick)
+                        appCoordinator.goTo(.helperScreen(.dishBook))
+                    }, label: {
+                        Text("Book")
+                    })
                 }
             }
             .padding(115)

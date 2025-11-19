@@ -25,37 +25,12 @@ extension Font {
         return Font.custom("VT323-Regular", size: size, relativeTo: style)
     }
     
-    static func fredoka(_ weight: Font.Weight = .regular, size: CGFloat) -> Font {
-        let fontName: String
-        
-        switch weight {
-        case .light:
-            fontName = "Fredoka-Light"
-        case .medium:
-            fontName = "Fredoka-Medium"
-        case .semibold:
-            fontName = "Fredoka-SemiBold"
-        case .bold:
-            fontName = "Fredoka-Bold"
-        default:
-            fontName = "Fredoka-Regular"
-        }
-        
-        return Font.custom(fontName, size: size)
+    static func fredokaOne(size: CGFloat) -> Font {
+        return Font.custom("FredokaOne-Regular", size: size)
     }
     
-    static func fredoka(_ weight: Font.Weight = .regular, size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
-        let fontName: String
-        
-        switch weight {
-        case .light:       fontName = "Fredoka-Light"
-        case .medium:      fontName = "Fredoka-Medium"
-        case .semibold:    fontName = "Fredoka-SemiBold"
-        case .bold:        fontName = "Fredoka-Bold"
-        default:           fontName = "Fredoka-Regular"
-        }
-        
-        return Font.custom(fontName, size: size, relativeTo: style)
+    static func fredokaOne(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
+        return Font.custom("FredokaOne-Regular", size: size, relativeTo: style)
     }
 }
 
