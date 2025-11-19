@@ -12,20 +12,6 @@ struct DragOverlayView: View {
     @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
-        ZStack {
-            ForEach(playVM.floatingItems) { fall in
-                FloatingItemFeedbackView(
-                    id: fall.id,
-                    item: fall.item,
-                    startPoint: fall.startPoint,
-                    originPoint: fall.originPoint,
-                    trackedItemID: fall.trackedItemID,
-                    onAnimationComplete: { id, trackedItemID, wasFadingOut in
-                        playVM.clearVisualAnimationState(id: id, trackedItemID: trackedItemID, wasFadingOut: wasFadingOut)
-                    },
-                    shouldFadeOut: fall.shouldFadeOut
-                )
-            }
             
             if let item = manager.currentDraggedItem {
                 Group {
@@ -39,6 +25,5 @@ struct DragOverlayView: View {
                 .position(manager.currentDragLocation)
                 .allowsHitTesting(false)
             }
-        }
     }
 }
