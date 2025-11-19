@@ -70,15 +70,14 @@ struct PlayViewContainer: View {
                 }
             }
             
-            .overlay(alignment: .bottom) {
-                let currentIndex = playVM.currentPageIndex ?? 0
-                let cartVisibleIndices = [0, 1]
-                
-                CartView()
-                    .offset(y: 160)
-                    .opacity(cartVisibleIndices.contains(currentIndex) ? 1 : 0)
-                
-            }
+            AnimationOverlayView()
+            
+            let currentIndex = playVM.currentPageIndex ?? 0
+            let cartVisibleIndices = [0, 1]
+            
+            CartView()
+                .offset(y: 160)
+                .opacity(cartVisibleIndices.contains(currentIndex) ? 1 : 0)
             
             DragOverlayView()
         }

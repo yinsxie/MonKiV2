@@ -9,6 +9,8 @@ import SwiftUI
 @Observable class CartViewModel {
     
     weak var parent: PlayViewModel?
+    
+    var shakeTrigger: Int = 0
 
     init(parent: PlayViewModel?) {
         self.parent = parent
@@ -19,6 +21,10 @@ import SwiftUI
     private let maxCapacity = 12
     var isFull: Bool {
         items.count >= maxCapacity
+    }
+    
+    func triggerShake() {
+        shakeTrigger += 1
     }
   
     func addNewItem(_ item: Item) {      
