@@ -19,7 +19,7 @@ struct CreateDishView: View {
                 
                 ZStack {
                     Color.green.opacity(0.4)
-                        .makeDropZone(type: .createDish)
+                        
                     HStack {
                         ForEach(viewModel.createDishItem) { cartItem in
                             GroceryItemView(item: cartItem.item)
@@ -31,6 +31,7 @@ struct CreateDishView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     
+                    Color.clear.makeDropZone(type: .createDish)
                 }
                 .frame(width: 700, height: 300)
                 
