@@ -103,4 +103,7 @@ struct ColorPalette {
     
     static let money1Foreground = neutral400
     static let money1Background = neutral300
+    
+    static let cashierNominal = Color(hex: "#89E219")
+    static let disableATM = Color(hex: "#CFD1D2").opacity(0.2)
 }
