@@ -19,11 +19,10 @@ struct PriceChangeFeedbackModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .overlay(alignment: .top) { // Align top so they float up from the center-top
+            .overlay(alignment: .top) {
                 ZStack {
                     ForEach(floatingItems) { item in
                         FloatingPriceTextView(data: item) { id in
-                            // Remove item from array when animation is done
                             floatingItems.removeAll(where: { $0.id == id })
                         }
                     }
@@ -40,7 +39,6 @@ struct PriceChangeFeedbackModifier: ViewModifier {
                     floatingItems.append(newItem)
                 }
                 
-                // Update tracker
                 previousValue = newValue
             }
     }
