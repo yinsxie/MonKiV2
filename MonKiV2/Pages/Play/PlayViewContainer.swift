@@ -146,7 +146,8 @@ extension PlayViewContainer {
             .zIndex(5)
         }
         
-        
+        // this needs to be here so that cart animations happen behind cart
+        AnimationOverlayView()
         
         // Cart View
         let currentIndex = playVM.currentPageIndex ?? 0
@@ -159,8 +160,6 @@ extension PlayViewContainer {
     
     @ViewBuilder
     private var visualEffectsLayer: some View {
-        AnimationOverlayView()
-        
         DragOverlayView()
         
         if playVM.isFlyingMoney, let currency = playVM.flyingMoneyCurrency {
