@@ -109,7 +109,7 @@ struct CartView: View {
                     .offset(x: 65, y: -45)
                     .allowsHitTesting(false)
                 
-                if (playVM.currentPageIndex ?? 0) != 1 {
+                if (playVM.currentPageIndex ?? 0) != 2 {
                     Rectangle()
                         .foregroundColor(Color.clear)
                         .floatingPriceFeedback(value: cartVM.totalPrice)
