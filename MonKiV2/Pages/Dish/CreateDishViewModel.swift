@@ -47,7 +47,7 @@ final class CreateDishViewModel {
                 quantity: items.count
             )
         }
-        .sorted { $0.quantity > $1.quantity }
+        .sorted { $0.item.name < $1.item.name }
     }
 
     var createDishItem: [CartItem] = []
