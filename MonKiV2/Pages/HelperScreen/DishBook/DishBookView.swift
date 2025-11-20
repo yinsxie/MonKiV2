@@ -86,7 +86,6 @@ struct DishBookView: View {
 }
 
 // MARK: - Book Structure Subviews
-
 struct BookCoverView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -208,7 +207,6 @@ struct BinderRingsView: View {
 }
 
 // MARK: - Page Content Views
-
 struct RecipePageView: View {
     let dish: Dish?
     let pageNumber: Int
@@ -217,26 +215,32 @@ struct RecipePageView: View {
     var body: some View {
         VStack(spacing: 0) {
             if let dish = dish {
-                VStack(spacing: 15) {
-                    // 1. Image Area - Aligned LEADING
-                    DishHeaderView(dish: dish, onDelete: onDelete)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 80)
-                    
-                    // 2. Visual Money Breakdown - Aligned CENTER
-                    MoneyBreakdownView(totalPrice: Int(dish.totalPrice))
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    
-                    // 3. Ingredients List - Aligned CENTER
-                    IngredientsGridView(ingredients: dish.ingredients)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    
-                    Spacer()
-                    
+                ZStack(alignment: .top) {
+                    VStack(spacing: 70) {
+                        // 1. Image Area
+                        DishHeaderView(dish: dish, onDelete: onDelete)
+
+                        VStack(spacing: 70) {
+                            // 2. Visual Money Breakdown
+                            MoneyBreakdownView(totalPrice: Int(dish.totalPrice))
+                            
+                            // 3. Ingredients List
+                            IngredientsGridView(ingredients: dish.ingredients)
+                        }
+                        Spacer()
+                    }
+                    .frame(maxHeight: .infinity)
+                    .padding(.bottom, 100)
+                    .padding(.top, 100)
+
                     // 4. Page Number
-                    PageNumberView(number: pageNumber)
-                        .padding(.bottom, 20)
+                    VStack {
+                        Spacer()
+                        PageNumberView(number: pageNumber)
+                            .padding(.bottom, 30)
+                    }
                 }
+                .frame(width: 540, height: 776)
             } else {
                 EmptyStateView(pageNumber: pageNumber)
             }
@@ -251,47 +255,43 @@ struct DishHeaderView: View {
     let onDelete: (Dish) -> Void
     
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            Group {
-                if let fileName = dish.imageFileName,
-                   let uiImage = ImageStorage.loadImage(from: fileName) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 260, height: 260)
-                        .clipped()
-                } else {
-                    RoundedRectangle(cornerRadius: 0)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 240, height: 240)
-                        .overlay(Image(systemName: "photo").foregroundColor(.gray))
+        VStack {
+            ZStack(alignment: .topTrailing) {
+                Group {
+                    if let fileName = dish.imageFileName,
+                       let uiImage = ImageStorage.loadImage(from: fileName) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 280, height: 280)
+                            .clipped()
+                    } else {
+                        RoundedRectangle(cornerRadius: 0)
+                            .fill(Color.white)
+                            .frame(width: 280, height: 280)
+                            .overlay(Image(systemName: "photo").foregroundColor(.gray))
+                    }
                 }
+                
+                Button(action: {
+                    AudioManager.shared.play(.buttonClick)
+                    onDelete(dish)
+                }, label: {
+                    Image("removeButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 72, height: 72)
+                })
+                .offset(x: 20, y: -20)
+                
+                Text("\(dish.totalPrice) Coins")
+                    .font(.title2)
+                    .bold()
+                    .foregroundColor(.black)
+                    .offset(x: 0, y: 200)
+                
             }
-            .padding(24)
-            .background(Color.white)
-            .rotationEffect(.degrees(-4))
-            
-            Button(action: {
-                AudioManager.shared.play(.buttonClick)
-                onDelete(dish)
-            }) {
-                Image("removeButton")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 72, height: 72)
-            }
-            .offset(x: 20, y: -20)
-            
-            Text("\(dish.totalPrice) Coins")
-                .font(.title2)
-                .bold()
-                .foregroundColor(.black)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                .rotationEffect(.degrees(-4))
-                .offset(x: 0, y: -50)
-            
         }
-        .frame(width: 350, height: 320)
     }
 }
 
@@ -430,13 +430,13 @@ struct ArrowButton: View {
         Button(action: {
             AudioManager.shared.play(.buttonClick)
             action()
-        }) {
+        }, label: {
             Image("arrowButton")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 122, height: 122)
                 .scaleEffect(x: direction == .left ? 1 : -1, y: 1)
-        }
+        })
     }
 }
 
@@ -447,12 +447,12 @@ struct ReturnButton: View {
         Button(action: {
             AudioManager.shared.play(.buttonClick)
             action()
-        }) {
+        }, label: {
             Image("returnButton")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 122, height: 122)
-        }
+        })
     }
 }
 
