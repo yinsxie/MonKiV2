@@ -49,8 +49,8 @@ import SwiftUI
         
         setupGameLogic()
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
-                let currencyBreakdown = Currency.breakdown(from: budget)
-                walletVM.addMoney(currencyBreakdown)
+//                let currencyBreakdown = Currency.breakdown(from: budget)
+//                walletVM.addMoney(currencyBreakdown)
     }
     
     private func setupGameLogic() {
