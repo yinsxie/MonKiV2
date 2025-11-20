@@ -52,7 +52,7 @@ struct ShoppingBagSideBarView: View {
             .padding(.horizontal, 30)
         }
         .onChange(of: playVM.currentPageIndex, { _, newValue in
-            if newValue == 4 {
+            if newValue == 5 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     self.toggleBag(to: true)
                 }

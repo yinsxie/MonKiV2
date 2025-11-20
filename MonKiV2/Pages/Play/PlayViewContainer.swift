@@ -72,6 +72,7 @@ extension PlayViewContainer {
             }
             .scrollTargetLayout()
         }
+        
         .scrollPosition(id: $playVM.currentPageIndex)
         .scrollBounceBehavior(.basedOnSize)
         .contentMargins(0, for: .scrollContent)
@@ -81,6 +82,7 @@ extension PlayViewContainer {
         .onChange(of: playVM.currentPageIndex) { _, newIndex in
             handlePageChange(newIndex)
         }
+        
     }
     
     @ViewBuilder
@@ -125,18 +127,26 @@ extension PlayViewContainer {
                     })
             }
         }
-      
-        .overlay {
-                ZStack {
-                    if playVM.dishVM.isStartCookingTapped {
-                        Color.black.opacity(0.4)
-                        DishImageView()
-                    }
-                }
-                .ignoresSafeArea()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .zIndex(5)
+        .overlay(alignment: .trailing) {
+            let currentIndex = playVM.currentPageIndex ?? 0
+            
+            ShoppingBagSideBarView()
+                .opacity(currentIndex == 5 ? 1 : 0)
+                .disabled(currentIndex != 5)
         }
+        .overlay {
+            ZStack {
+                if playVM.dishVM.isStartCookingTapped {
+                    Color.black.opacity(0.4)
+                    DishImageView()
+                }
+            }
+            .ignoresSafeArea()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .zIndex(5)
+        }
+        
+        
         
         // Cart View
         let currentIndex = playVM.currentPageIndex ?? 0

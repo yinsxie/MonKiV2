@@ -19,7 +19,7 @@ struct CreateDishView: View {
                 
                 ZStack {
                     Color.green.opacity(0.4)
-                        
+                    
                     HStack {
                         ForEach(viewModel.createDishItem) { cartItem in
                             GroceryItemView(item: cartItem.item)
@@ -35,7 +35,7 @@ struct CreateDishView: View {
                 }
                 .frame(width: 700, height: 300)
                 
-               bottomButton
+                bottomButton
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 30)
@@ -46,12 +46,11 @@ struct CreateDishView: View {
                     viewModel.setIngredients(from: purchasedItems)
                 }
             }
-            .onChange(of: viewModel.parent?.cashierVM.purchasedItems) { _, newPurchasedItems in
-                if let purchasedItems = newPurchasedItems,
-                   !purchasedItems.isEmpty &&
-                    viewModel.cgImage == nil &&
-                    viewModel.checkCheckoutItems() {
-                    viewModel.setIngredients(from: purchasedItems)
+            .onChange(of: viewModel.createDishItem) { _, newPurchasedItems in
+                if !newPurchasedItems.isEmpty &&
+                        viewModel.cgImage == nil &&
+                        viewModel.checkCheckoutItems() {
+                    viewModel.setIngredients(from: newPurchasedItems)
                 }
             }
             //            DishImageView() .frame(maxWidth: .infinity)
