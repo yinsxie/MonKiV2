@@ -58,7 +58,8 @@ struct DishImageView: View {
     private var imageDisplayBox: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 83)
-                .fill(Color.white)
+//                .fill(Color.white) // biar keliatan outlinenya, gw ganti bg ke black dulu
+                .fill(Color.black)
                 .frame(width: 600, height: 600)
             
             ZStack {
