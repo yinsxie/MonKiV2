@@ -37,8 +37,7 @@ import SwiftUI
     
     init() {
         // On Game Start
-//        let budget = generateBudget(min: 30, max: 100, step: 10)
-        let budget = 88
+        let budget = generateBudget(min: 30, max: 100, step: 10)
         self.initialBudget = budget
         
         self.shelfVM = ShelfViewModel(parent: self)

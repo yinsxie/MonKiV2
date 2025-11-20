@@ -84,6 +84,8 @@ struct ATMOption {
                 self.isZoomed = false
             }
             
+            self.parent?.walletVM.isWalletOpen = true
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 print("Kasih sinyal animasi uang \(amount) ke PlayVM")
                 parent.triggerMoneyFlyAnimation(amount: amount)

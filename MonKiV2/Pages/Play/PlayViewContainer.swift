@@ -118,7 +118,6 @@ extension PlayViewContainer {
         }
         .overlay(alignment: .bottomTrailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
-            if currentIndex < 4 && !playVM.atmVM.isZoomed {
                 WalletView()
                     .padding(.trailing, 30)
                     .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
@@ -126,7 +125,8 @@ extension PlayViewContainer {
                     .background(GeometryReader { geo in
                         Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
                     })
-            }
+                    .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
+            
         }
         .overlay(alignment: .trailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
