@@ -124,7 +124,8 @@ struct ShoppingBagSideBarView: View {
                     }
                     .frame(minHeight: 350)
                     .padding(.top, 40)
-                    .padding(.bottom, 100)
+                    
+                    
                 }
                 .background(ColorPalette.receiptBackgroud)
                 // measure the receipt content height
@@ -133,6 +134,11 @@ struct ShoppingBagSideBarView: View {
                         Color.clear.preference(key: HeightKey.self, value: geo.size.height)
                     }
                 )
+                Image("receipt_top")
+                    .resizable()
+                    .scaledToFit()
+                    .offset(y: 4)
+                    .rotationEffect(.degrees(180))
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 30)
