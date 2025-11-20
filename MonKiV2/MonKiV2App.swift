@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import CoreData
 
 @main
 struct MonKiV2App: App {
     
     // MARK: Project Init
     @StateObject var appCoordinator: AppCoordinator = AppCoordinator()
+    let coreDataManager = CoreDataManager.shared
     
     init() {
         _ = AudioManager.shared
@@ -21,6 +23,7 @@ struct MonKiV2App: App {
         WindowGroup {
             AppCoordinatorView()
                 .environmentObject(appCoordinator)
+                .environment(\.managedObjectContext, coreDataManager.viewContext)
         }
     }
 }

@@ -23,15 +23,21 @@ import SwiftUI
     var cashierVM: CashierViewModel!
     var walletVM: WalletViewModel!
     var dishVM: CreateDishViewModel!
+    var atmVM: ATMViewModel!
     
     var currentPageIndex: Int? = 0
     
     var dragManager = DragManager()
     
+    var atmFrame: CGRect = .zero
+    var walletFrame: CGRect = .zero
+    
+    var isFlyingMoney: Bool = false
+    var flyingMoneyCurrency: Currency?
+    
     init() {
         // On Game Start
-        let budget = generateBudget(min: 20, max: 100, step: 10)
-        print("Budget for this session: \(budget)")
+        let budget = generateBudget(min: 30, max: 100, step: 10)
         self.initialBudget = budget
         
         self.shelfVM = ShelfViewModel(parent: self)
@@ -39,10 +45,12 @@ import SwiftUI
         self.cashierVM = CashierViewModel(parent: self)
         self.walletVM = WalletViewModel(parent: self)
         self.dishVM = CreateDishViewModel(parent: self)
+        self.atmVM = ATMViewModel(parent: self, initialBalance: budget)
         
         setupGameLogic()
-        let currencyBreakdown = Currency.breakdown(from: budget)
-        walletVM.addMoney(currencyBreakdown)
+        // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
+        //        let currencyBreakdown = Currency.breakdown(from: budget)
+        //        walletVM.addMoney(currencyBreakdown)
     }
     
     private func setupGameLogic() {
@@ -78,6 +86,38 @@ import SwiftUI
     
     func onCancelPayment() {
         dropMoneyBackToWallet()
+    }
+    
+    func triggerMoneyFlyAnimation(amount: Int) {
+        print("PlayVM: start animasi uang masuk ke wallet untuk nominal \(amount)")
+        
+        let currency = Currency(value: amount)
+        self.flyingMoneyCurrency = currency
+        
+        withAnimation(.easeInOut(duration: 0.1)) {
+            self.isFlyingMoney = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            guard let self = self else { return }
+            
+            self.isFlyingMoney = false
+            self.flyingMoneyCurrency = nil
+            
+            print("PlayVM: Animasi selesai. Add money to Wallet.")
+            
+            let breakdown = Currency.breakdown(from: amount)
+            
+            if breakdown.isEmpty {
+                print("Breakdown currency kosong untuk amount \(amount)!")
+            }
+            
+            Task { @MainActor in
+                withAnimation {
+                    self.walletVM.addMoney(breakdown)
+                }
+            }
+        }
     }
 }
 
@@ -393,7 +433,10 @@ private extension PlayViewModel {
 
 private extension PlayViewModel {
     func generateBudget(min: Int, max: Int, step: Int) -> Int {
-        let range = stride(from: min, through: max, by: step).map { $0 }
+        let range = stride(from: min, through: max, by: step)
+            .map { $0 }
+            .filter { $0 != 50 }
+        
         return range.randomElement() ?? min
     }
 }

@@ -72,9 +72,23 @@ enum Currency {
         }
     }
     
-    // TODO: Update when design dropped
     var imageAssetPath: String {
-        return ""
+        switch self {
+        case .idr100:
+            return "idr100"
+        case .idr50:
+            return "idr50"
+        case .idr20:
+            return "idr20"
+        case .idr10:
+            return "idr10"
+        case .idr5:
+            return "idr5"
+        case .idr2:
+            return "idr2"
+        case .idr1:
+            return "idr1"
+        }
     }
     
     init(value: Int) {
