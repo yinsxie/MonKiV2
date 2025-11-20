@@ -62,7 +62,7 @@ struct CartView: View {
     
     private var cartVisuals: some View {
         ZStack(alignment: .bottom) {
-            VStack(alignment: .leading, spacing: -30) {
+            VStack(alignment: .leading, spacing: -35) {
                 ForEach(0..<emptyRows, id: \.self) { _ in
                     Color.clear
                         .frame(height: rowHeight)
@@ -89,7 +89,7 @@ struct CartView: View {
             .frame(maxWidth: 350)
             .padding(.bottom, 200)
             .padding(.trailing, 0)
-            .padding(.leading, 120)
+            .padding(.leading, 145)
             
             ZStack(alignment: .center) {
                 Image("cart")
