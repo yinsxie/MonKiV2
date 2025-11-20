@@ -167,7 +167,7 @@ extension PlayViewContainer {
             FlyingMoneyAnimationView(
                 currency: currency,
                 startPoint: CGPoint(x: playVM.atmFrame.midX, y: playVM.atmFrame.midY + 120),
-                endPoint: CGPoint(x: playVM.walletFrame.midX, y: playVM.walletFrame.midY)
+                endPoint: CGPoint(x: playVM.walletFrame.midX, y: playVM.walletFrame.midY + 180)
             )
         }
     }

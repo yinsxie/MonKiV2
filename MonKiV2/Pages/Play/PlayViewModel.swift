@@ -105,16 +105,16 @@ import SwiftUI
             self.flyingMoneyCurrency = nil
             
             print("PlayVM: Animasi selesai. Add money to Wallet.")
+            let breakdown = Currency.breakdown(from: amount)
+            
+            if breakdown.isEmpty {
+                print("Breakdown currency kosong untuk amount \(amount)!")
+            }
+            withAnimation {
+                self.walletVM.addMoney(breakdown)
+            }
         }
         
-        let breakdown = Currency.breakdown(from: amount)
-        
-        if breakdown.isEmpty {
-            print("Breakdown currency kosong untuk amount \(amount)!")
-        }
-        withAnimation {
-            walletVM.addMoney(breakdown)
-        }
     }
 }
 

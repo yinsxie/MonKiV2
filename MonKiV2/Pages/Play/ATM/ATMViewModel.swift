@@ -62,6 +62,7 @@ struct ATMOption {
             return
         }
         
+        self.parent?.walletVM.isWalletOpen = true
         self.isProcessing = true
         self.flyingMoneyValue = amount
         
@@ -82,7 +83,6 @@ struct ATMOption {
             
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                 self.isZoomed = false
-                self.parent?.walletVM.isWalletOpen = true
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
