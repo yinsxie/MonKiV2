@@ -38,11 +38,7 @@ struct DishImageView: View {
                 .overlay(alignment: .bottom) {
                     VStack(spacing: 10) {
                         Button {
-                            //MARK: Ideally make 1 function in viewModel
-                            viewModel.isStartCookingTapped = false
-                            //TODO: Store the image and ingredients to core data and image storage
-                            //Remove the item used for image gen
-                            viewModel.createDishItem.removeAll()
+                            viewModel.onSaveButtonTapped()
                         } label: {
                             Text("Simpan")
                         }

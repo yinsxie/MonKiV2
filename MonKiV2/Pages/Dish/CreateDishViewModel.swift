@@ -25,8 +25,7 @@ final class CreateDishViewModel {
     var isStartCookingTapped = false
     
     var totalPurchasedPrice: Int {
-        guard let parent = parent else { return 0 }
-        return parent.cashierVM.purchasedItems.reduce(0) { $0 + $1.item.price }
+        return createDishItem.reduce(0) { $0 + $1.item.price }
     }
     
     var groceriesList: [GroceryItem] {
@@ -122,6 +121,12 @@ final class CreateDishViewModel {
         }
     }
     
+    func onSaveButtonTapped() {
+        isStartCookingTapped = false
+        saveDishToCollection()
+        createDishItem.removeAll()
+    }
+    
     // function sementara untuk simpen foto hasil image playground ke album
     func saveDishToCollection() {
         guard let cgImage = self.cgImage else { return }
@@ -141,10 +146,7 @@ final class CreateDishViewModel {
         newDish.totalPrice = Int32(self.totalPurchasedPrice)
         newDish.imageFileName = savedFileName
         
-        // masih ngambil dari semua item di cart
-        guard let cartItems = parent?.cashierVM.purchasedItems else { return }
-        
-        let groupedItems = Dictionary(grouping: cartItems, by: { $0.item.id })
+        let groupedItems = Dictionary(grouping: createDishItem, by: { $0.item.id })
         
         for (_, items) in groupedItems {
             if let firstItem = items.first?.item {
