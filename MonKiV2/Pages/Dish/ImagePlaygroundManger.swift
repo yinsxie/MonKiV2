@@ -71,10 +71,10 @@ final class ImagePlaygroundManager {
         }
         
         if !ingredientsList.isEmpty {
-            return "Made a gourmet dish that containing only \(ingredientsList), \(milkSide), absolutely nothing else is allowed in the image. No extra ingredients, no garnish, no sauce, no herbs, no background objects. Pure white background, clean and simple composition, top-down view, vibrant food illustration style."
+            return "Made a gourmet dish of \(ingredientsList), \(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, top-down view, vibrant illustration style."
         }
         
-        return "\(milkSide), absolutely nothing else is allowed in the image. No background objects. Pure white background, clean and simple composition, top-down view, vibrant food illustration style."
+        return "\(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, top-down view, vibrant illustration style."
     }
     
     // MARK: - Generate Function
