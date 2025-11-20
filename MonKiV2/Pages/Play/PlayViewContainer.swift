@@ -72,6 +72,7 @@ extension PlayViewContainer {
             }
             .scrollTargetLayout()
         }
+        
         .scrollPosition(id: $playVM.currentPageIndex)
         .scrollBounceBehavior(.basedOnSize)
         .contentMargins(0, for: .scrollContent)
@@ -81,6 +82,7 @@ extension PlayViewContainer {
         .onChange(of: playVM.currentPageIndex) { _, newIndex in
             handlePageChange(newIndex)
         }
+        
     }
     
     @ViewBuilder
@@ -125,6 +127,27 @@ extension PlayViewContainer {
                     })
             }
         }
+        .overlay(alignment: .trailing) {
+            let currentIndex = playVM.currentPageIndex ?? 0
+            
+            ShoppingBagSideBarView()
+                .opacity(currentIndex == 5 ? 1 : 0)
+                .disabled(currentIndex != 5)
+        }
+        .overlay {
+            ZStack {
+                if playVM.dishVM.isStartCookingTapped {
+                    Color.black.opacity(0.4)
+                    DishImageView()
+                }
+            }
+            .ignoresSafeArea()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .zIndex(5)
+        }
+        
+        // this needs to be here so that cart animations happen behind cart
+        AnimationOverlayView()
         
         // Cart View
         let currentIndex = playVM.currentPageIndex ?? 0
@@ -137,8 +160,6 @@ extension PlayViewContainer {
     
     @ViewBuilder
     private var visualEffectsLayer: some View {
-        AnimationOverlayView()
-        
         DragOverlayView()
         
         if playVM.isFlyingMoney, let currency = playVM.flyingMoneyCurrency {

@@ -21,11 +21,37 @@ final class CreateDishViewModel {
     var isLoading = false
     var inputText: String = ""
     
+    var isBagTapped = false
+    var isStartCookingTapped = false
+    
     var totalPurchasedPrice: Int {
-        guard let parent = parent else { return 0 }
-        return parent.cashierVM.purchasedItems.reduce(0) { $0 + $1.item.price }
+        return createDishItem.reduce(0) { $0 + $1.item.price }
     }
     
+    var groceriesList: [GroceryItem] {
+        guard let cartItems = parent?.cashierVM.purchasedItems else { return [] }
+        
+        // Extract items
+        let items: [Item] = cartItems.map { $0.item }
+        
+        // Group items by their item.id
+        let grouped = Dictionary(grouping: items, by: { $0.id })
+        
+        print("Refreshing groceries list...")
+        
+        // Convert grouped items into GroceryItem, then sort by quantity
+        return grouped.map { (_, items) in
+            GroceryItem(
+                id: UUID(),
+                item: items.first ?? Item.mockItem,
+                quantity: items.count
+            )
+        }
+        .sorted { $0.quantity > $1.quantity }
+    }
+
+    var createDishItem: [CartItem] = []
+
     func setIngredients(from cartItems: [CartItem]) {
         let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
         
@@ -95,6 +121,12 @@ final class CreateDishViewModel {
         }
     }
     
+    func onSaveButtonTapped() {
+        isStartCookingTapped = false
+        saveDishToCollection()
+        createDishItem.removeAll()
+    }
+    
     // function sementara untuk simpen foto hasil image playground ke album
     func saveDishToCollection() {
         guard let cgImage = self.cgImage else { return }
@@ -114,10 +146,7 @@ final class CreateDishViewModel {
         newDish.totalPrice = Int32(self.totalPurchasedPrice)
         newDish.imageFileName = savedFileName
         
-        // masih ngambil dari semua item di cart
-        guard let cartItems = parent?.cashierVM.purchasedItems else { return }
-        
-        let groupedItems = Dictionary(grouping: cartItems, by: { $0.item.id })
+        let groupedItems = Dictionary(grouping: createDishItem, by: { $0.item.id })
         
         for (_, items) in groupedItems {
             if let firstItem = items.first?.item {

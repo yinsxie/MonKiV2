@@ -36,9 +36,16 @@ struct DishImageView: View {
                     }
                 }
                 .overlay(alignment: .bottom) {
-                    bottomButton
-                        .padding(.horizontal, 16)
-                        .offset(y: 50)
+                    VStack(spacing: 10) {
+                        Button {
+                            viewModel.onSaveButtonTapped()
+                        } label: {
+                            Text("Simpan")
+                        }
+                        bottomButton
+                            .padding(.horizontal, 16)
+                            .offset(y: 50)
+                    }
                 }
             
             Spacer()
@@ -81,56 +88,53 @@ struct DishImageView: View {
     
     // MARK: - Bottom Button
     // MARK: - Bottom Button
-        private var bottomButton: some View {
-            // This function returns true if the input text is EMPTY
-            let isInputEmpty = viewModel.checkCheckoutItems()
-            let hasImage = viewModel.cgImage != nil
+    private var bottomButton: some View {
+        // This function returns true if the input text is EMPTY
+        let isInputEmpty = viewModel.checkCheckoutItems()
+        let hasImage = viewModel.cgImage != nil
+        
+        // The button is disabled if:
+        // 1. We are currently loading (isLoading == true)
+        // 2. We have NO image generated yet AND the input is empty
+        //    (meaning no purchased items were loaded)
+        let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+        
+        return Button(action: {
+            // MODIFIED ACTION:
+            // 1. Always get the fresh list of purchased items
+            AudioManager.shared.play(.buttonClick)
+            viewModel.setIngredients(from: viewModel.createDishItem)
+            // 2. Start generating
+            viewModel.generate()
             
-            // The button is disabled if:
-            // 1. We are currently loading (isLoading == true)
-            // 2. We have NO image generated yet AND the input is empty
-            //    (meaning no purchased items were loaded)
-            let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
-            
-            return Button(action: {
-                // MODIFIED ACTION:
-                // 1. Always get the fresh list of purchased items
-                AudioManager.shared.play(.buttonClick)
-                if let purchasedItems = viewModel.parent?.cashierVM.purchasedItems {
-                    viewModel.setIngredients(from: purchasedItems)
-                }
-                // 2. Start generating
-                viewModel.generate()
-//                viewModel.generateMock()
+        }) {
+            ZStack {
+                Image(isDisabled ? "button_disable" : "button_active")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 100)
                 
-            }) {
-                ZStack {
-                    Image(isDisabled ? "button_disable" : "button_active")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 100)
-                    
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .tint(.white)
-                            .scaleEffect(1.5)
-                    } else {
-                        HStack(spacing: 10) {
-                            // MODIFIED: Text changes based on hasImage
-                            Text(hasImage ? "New Dish" : "Start Cook")
-                                .font(.wendyOne(size: 40))
-                                .foregroundColor(.white)
-                            
-                            Image("Spatula")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 30)
-                        }
-                        .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.white)
+                        .scaleEffect(1.5)
+                } else {
+                    HStack(spacing: 10) {
+                        // MODIFIED: Text changes based on hasImage
+                        Text(hasImage ? "New Dish" : "Start Cook")
+                            .font(.wendyOne(size: 40))
+                            .foregroundColor(.white)
+                        
+                        Image("Spatula")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 30)
                     }
+                    .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
                 }
             }
-            .disabled(isDisabled) // Use the new isDisabled logic
         }
+        .disabled(isDisabled) // Use the new isDisabled logic
+    }
 }

@@ -142,6 +142,10 @@ private extension PlayViewModel {
             handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
         case .shelfReturnItem:
             handleGroceryDropOnShelf(draggedItem: draggedItem)
+        case .createDish:
+            handleGroceryDropOnCreateDish(groceryItem: groceryItem, draggedItem: draggedItem)
+        case .createDishOverlay:
+            handleGroceryDropOnCreateDishOverlay(groceryItem: groceryItem, draggedItem: draggedItem)
         default:
             DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
         }
@@ -217,6 +221,8 @@ private extension PlayViewModel {
                 }
             case .cart:
                 DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
+            default:
+                break
             }
         } else {
             // from shelf
@@ -262,6 +268,8 @@ private extension PlayViewModel {
                     self.cashierVM.removeFromCounter(withId: draggedItem.id)
                     self.dragManager.currentDraggedItem = nil
                 }
+            default:
+                break
             }
         }
     }
@@ -275,6 +283,32 @@ private extension PlayViewModel {
             }
         } else {
             DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
+        }
+    }
+    
+    func handleGroceryDropOnCreateDish(groceryItem: Item, draggedItem: DraggedItem) {
+        if draggedItem.source == .createDishOverlay {
+            DispatchQueue.main.async {
+                self.dishVM.createDishItem.append(CartItem(item: groceryItem))
+                if let index = self.cashierVM.purchasedItems.firstIndex(where: { $0.item.id == draggedItem.id }) {
+                    self.cashierVM.purchasedItems.remove(at: index)
+                }
+            }
+            dragManager.currentDraggedItem = nil
+        }
+    }
+    
+    func handleGroceryDropOnCreateDishOverlay(groceryItem: Item, draggedItem: DraggedItem) {
+        if draggedItem.source == .createDish {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.cashierVM.purchasedItems.append(CartItem(item: groceryItem))
+                    if let index = self.dishVM.createDishItem.firstIndex(where: { $0.id == draggedItem.id }) {
+                        self.dishVM.createDishItem.remove(at: index)
+                    }
+                }
+            }
+            dragManager.currentDraggedItem = nil
         }
     }
     

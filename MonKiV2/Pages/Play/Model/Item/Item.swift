@@ -14,7 +14,7 @@ struct Item: Identifiable, Equatable {
     let aisle: String?
     let imageAssetPath: String
     
-    static let mockItem = Item(id: UUID(), name: "Test item", price: 10, aisle: nil, imageAssetPath: "")
+    static let mockItem = Item(id: UUID(), name: "Carrot", price: 3, aisle: "Sayur", imageAssetPath: "wortel")
     
     // TODO: Add strings of actual asset + aisle adjustment
     static let items: [Item] = [
