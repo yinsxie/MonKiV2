@@ -82,9 +82,8 @@ struct ATMOption {
             
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                 self.isZoomed = false
+                self.parent?.walletVM.isWalletOpen = true
             }
-            
-            self.parent?.walletVM.isWalletOpen = true
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 print("Kasih sinyal animasi uang \(amount) ke PlayVM")
