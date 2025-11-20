@@ -107,9 +107,7 @@ struct DishImageView: View {
             // MODIFIED ACTION:
             // 1. Always get the fresh list of purchased items
             AudioManager.shared.play(.buttonClick)
-            if let purchasedItems = viewModel.parent?.cashierVM.purchasedItems {
-                viewModel.setIngredients(from: purchasedItems)
-            }
+            viewModel.setIngredients(from: viewModel.createDishItem)
             // 2. Start generating
             viewModel.generate()
             
