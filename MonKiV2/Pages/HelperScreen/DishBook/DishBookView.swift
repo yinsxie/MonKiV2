@@ -31,7 +31,17 @@ struct DishBookView: View {
                 BookCoverView()
                 
                 // 2. The Interactive Content
-                VStack(spacing: 20) {
+                ZStack {
+                    HStack {
+                        ArrowButton(direction: .left, action: viewModel.prevPage)
+                            .opacity(viewModel.currentPageIndex > 0 ? 1 : 0)
+                        Spacer()
+                        
+                        ArrowButton(direction: .right, action: { viewModel.nextPage(totalCount: dishes.count) })
+                            .opacity(viewModel.currentPageIndex + 2 < dishes.count ? 1 : 0)
+                    }
+                    .padding(.horizontal, 44)
+                    
                     // The Open Book (Pages + Spine + Rings)
                     BookSpreadView(
                         currentPageIndex: viewModel.currentPageIndex,
@@ -43,21 +53,6 @@ struct DishBookView: View {
             }
             
             // C. Navigation Overlay (Topmost Z-Index)
-            VStack {
-                Spacer()
-                HStack {
-                    ArrowButton(direction: .left, action: viewModel.prevPage)
-                        .opacity(viewModel.currentPageIndex > 0 ? 1 : 0)
-                    
-                    Spacer()
-                    
-                    ArrowButton(direction: .right, action: { viewModel.nextPage(totalCount: dishes.count) })
-                        .opacity(viewModel.currentPageIndex + 2 < dishes.count ? 1 : 0)
-                }
-                .padding(.horizontal, 82)
-                .padding(.bottom, 82)
-            }
-            
             VStack {
                 HStack {
                     ReturnButton(action: {
@@ -213,34 +208,42 @@ struct RecipePageView: View {
     let onDelete: (Dish) -> Void
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .top) {
+            Image("MonkiLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 30)
+                .opacity(0.3)
+                .padding(.top, 26)
+                .padding(.trailing, 26)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            
             if let dish = dish {
-                ZStack(alignment: .top) {
-                    VStack(spacing: 70) {
-                        // 1. Image Area
-                        DishHeaderView(dish: dish, onDelete: onDelete)
-
-                        VStack(spacing: 70) {
-                            // 2. Visual Money Breakdown
-                            MoneyBreakdownView(totalPrice: Int(dish.totalPrice))
-                            
-                            // 3. Ingredients List
-                            IngredientsGridView(ingredients: dish.ingredients)
-                        }
-                        Spacer()
+                VStack(spacing: 0) {
+                    
+                    DishHeaderView(dish: dish, onDelete: onDelete)
+                        .zIndex(1)
+                    
+                    Spacer().frame(minHeight: 20, maxHeight: 70)
+                    
+                    VStack(spacing: 20) {
+                        MoneyBreakdownView(totalPrice: Int(dish.totalPrice))
+                        
+                        IngredientsGridView(ingredients: dish.ingredients)
                     }
-                    .frame(maxHeight: .infinity)
-                    .padding(.bottom, 100)
-                    .padding(.top, 100)
-
-                    // 4. Page Number
-                    VStack {
-                        Spacer()
-                        PageNumberView(number: pageNumber)
-                            .padding(.bottom, 30)
-                    }
+                    
+                    Spacer()
                 }
-                .frame(width: 540, height: 776)
+                .padding(.top, 90)
+                .padding(.horizontal, 20)
+                
+                // 3. Page Number
+                VStack {
+                    Spacer()
+                    PageNumberView(number: pageNumber)
+                        .padding(.bottom, 30)
+                }
+                
             } else {
                 EmptyStateView(pageNumber: pageNumber)
             }
@@ -284,11 +287,9 @@ struct DishHeaderView: View {
                 })
                 .offset(x: 20, y: -20)
                 
-                Text("\(dish.totalPrice) Coins")
-                    .font(.title2)
-                    .bold()
-                    .foregroundColor(.black)
-                    .offset(x: 0, y: 200)
+                PriceTag(price: dish.totalPrice)
+                    .offset(x: 60, y: 250)
+                    .rotationEffect(Angle(degrees: 2.42))
                 
             }
         }
@@ -320,39 +321,41 @@ struct IngredientsGridView: View {
     let ingredients: NSSet?
     
     var body: some View {
-        VStack(alignment: .center, spacing: 15) {
-            if let ingredientsSet = ingredients as? Set<Ingredient> {
-                
-                let sorted = ingredientsSet.sorted { $0.name ?? "" < $1.name ?? "" }
-                
-                let allItems = Array(sorted.prefix(14))
-                
-                let firstRow = Array(allItems.prefix(7))
-                let secondRow = Array(allItems.dropFirst(7))
-                
-                if !firstRow.isEmpty {
-                    HStack(spacing: 8) {
-                        ForEach(firstRow, id: \.self) { ing in
-                            IngredientItemView(ingredient: ing)
-                        }
-                    }
-                }
-                
-                if !secondRow.isEmpty {
-                    HStack(spacing: 8) {
-                        ForEach(secondRow, id: \.self) { ing in
-                            IngredientItemView(ingredient: ing)
-                        }
-                    }
-                }
-                
-            } else {
+        let ingredientsSet = ingredients as? Set<Ingredient> ?? []
+        let sorted = ingredientsSet.sorted { $0.name ?? "" < $1.name ?? "" }
+        let allItems = Array(sorted.prefix(14))
+        
+        let firstRow = Array(allItems.prefix(7))
+        let secondRow = Array(allItems.dropFirst(7))
+        
+        VStack {
+            if allItems.isEmpty {
                 Text("No ingredients recorded")
                     .font(.caption)
                     .italic()
+                    .foregroundColor(.gray)
+            } else {
+                VStack(spacing: 10) {
+                    if !firstRow.isEmpty {
+                        HStack(spacing: 8) {
+                            ForEach(firstRow, id: \.self) { ing in
+                                IngredientItemView(ingredient: ing)
+                            }
+                        }
+                    }
+                    
+                    if !secondRow.isEmpty {
+                        HStack(spacing: 8) {
+                            ForEach(secondRow, id: \.self) { ing in
+                                IngredientItemView(ingredient: ing)
+                            }
+                        }
+                    }
+                }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(height: 190)
+        .frame(maxWidth: .infinity)
         .padding(.horizontal, 40)
     }
 }
@@ -367,7 +370,8 @@ struct IngredientItemView: View {
         let assetName = itemPath.isEmpty ? "wortel" : itemPath
         
         VStack(spacing: 0) {
-            ZStack {
+            // Icon + Quantity Bubble
+            ZStack(alignment: .top) {
                 Image(assetName)
                     .resizable()
                     .scaledToFit()
@@ -382,12 +386,16 @@ struct IngredientItemView: View {
                             .font(.fredokaOne(size: 16))
                             .foregroundColor(.black)
                     )
-                    .offset(x: 0, y: 30)
+                    .offset(y: 30)
                 
+                //TODO: Remove when all shelf item assets are in
                 Text(itemName)
-                    .font(.fredokaOne(size: 16))
+                    .font(.fredokaOne(size: 14))
                     .foregroundColor(.black.opacity(0.8))
+                    .lineLimit(1)
+                    .fixedSize()
             }
+            .frame(width: 48, height: 70)
         }
     }
 }
@@ -396,18 +404,33 @@ struct EmptyStateView: View {
     let pageNumber: Int
     
     var body: some View {
-        VStack {
-            Spacer()
-            Image(systemName: "pencil.and.scribble")
-                .font(.system(size: 50))
-                .foregroundColor(.gray.opacity(0.3))
-            Text("Empty Page")
-                .font(.headline)
-                .foregroundColor(.gray.opacity(0.3))
-            Spacer()
-            PageNumberView(number: pageNumber)
-                .padding(.bottom, 20)
+        ZStack(alignment: .top) {
+            Image("MonkiLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 30)
+                .opacity(0.3)
+                .padding(.top, 26)
+                .padding(.trailing, 26)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+
+            Image("emptyState")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 615)
+                .padding(.top, 90)
+                .padding(.horizontal, 20)
+            
+            // 3. Page Number
+            VStack {
+                Spacer()
+                PageNumberView(number: pageNumber)
+                    .padding(.bottom, 30)
+            }
+                
         }
+        .frame(width: 540, height: 776)
+        .clipped()
     }
 }
 
@@ -460,5 +483,5 @@ struct ReturnButton: View {
 #Preview {
     DishBookView()
         .environmentObject(AppCoordinator())
-        .environment(\.managedObjectContext, CoreDataManager.shared.viewContext)
+//        .environment(\.managedObjectContext, CoreDataManager.shared.viewContext)
 }
