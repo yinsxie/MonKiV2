@@ -127,7 +127,6 @@ final class CreateDishViewModel {
         createDishItem.removeAll()
     }
     
-    // function sementara untuk simpen foto hasil image playground ke album
     func saveDishToCollection() {
         guard let cgImage = self.cgImage else { return }
         let uiImage = UIImage(cgImage: cgImage)
@@ -142,7 +141,6 @@ final class CreateDishViewModel {
         let newDish = Dish(context: context)
         newDish.id = UUID()
         newDish.timestamp = Date()
-        // ngambil dari function atas totalPurchasedPrice cashierVM
         newDish.totalPrice = Int32(self.totalPurchasedPrice)
         newDish.imageFileName = savedFileName
         
