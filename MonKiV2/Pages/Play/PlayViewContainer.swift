@@ -121,7 +121,8 @@ extension PlayViewContainer {
             if currentIndex < 4 && !playVM.atmVM.isZoomed {
                 WalletView()
                     .padding(.trailing, 30)
-                    .offset(y: 125)
+                    .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
+                    .padding(.bottom, playVM.walletVM.isWalletOpen ? -125 : 0)
                     .background(GeometryReader { geo in
                         Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
                     })

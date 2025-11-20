@@ -15,6 +15,7 @@ import SwiftUI
     }
     
     var moneys: [Money] = []
+    var isWalletOpen: Bool = false
     
     var walletSorted: [MoneyGroup] {
         wallet.sorted { $0.money.currency.value > $1.money.currency.value }

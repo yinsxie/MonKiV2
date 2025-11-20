@@ -37,7 +37,8 @@ import SwiftUI
     
     init() {
         // On Game Start
-        let budget = generateBudget(min: 30, max: 100, step: 10)
+//        let budget = generateBudget(min: 30, max: 100, step: 10)
+        let budget = 88
         self.initialBudget = budget
         
         self.shelfVM = ShelfViewModel(parent: self)
@@ -49,8 +50,8 @@ import SwiftUI
         
         setupGameLogic()
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
-        //        let currencyBreakdown = Currency.breakdown(from: budget)
-        //        walletVM.addMoney(currencyBreakdown)
+                let currencyBreakdown = Currency.breakdown(from: budget)
+                walletVM.addMoney(currencyBreakdown)
     }
     
     private func setupGameLogic() {
