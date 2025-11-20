@@ -112,9 +112,7 @@ final class CreateDishViewModel {
             }
             
             self.cgImage = img.cgImage
-            
-            self.saveDishToCollection()
-            
+                        
             self.isLoading = false
             print("Mock Image Generated AND Saved successfully!")
             AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
