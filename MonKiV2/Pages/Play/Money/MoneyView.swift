@@ -23,7 +23,7 @@ struct MoneyView: View {
                         .frame(minWidth: width)
                         .frame(width: width)
                         .frame(maxWidth: width)
-                        .brightness(-0.3)
+                        .brightness(-0.15 * Double(index))
                         .offset(x: CGFloat(index * 8), y: CGFloat(index * 8))
                         .zIndex(-Double(index))
                 }
