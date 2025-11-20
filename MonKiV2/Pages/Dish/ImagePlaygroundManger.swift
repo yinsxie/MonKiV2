@@ -63,18 +63,18 @@ final class ImagePlaygroundManager {
         
         if let baseDisplay = base?.display {
             if !ingredientsList.isEmpty {
-                return "Made a gourmet dish of \(baseDisplay) with only \(ingredientsList), \(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, top-down view, vibrant illustration style."
+                return "Made a gourmet dish of \(baseDisplay) with only \(ingredientsList), \(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, no shadow, top-down view, vibrant illustration style."
             } else {
-                return "Made a gourmet dish of \(baseDisplay), \(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, top-down view, vibrant illustration style."
+                return "Made a gourmet dish of \(baseDisplay), \(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, no shadow, top-down view, vibrant illustration style."
             }
             
         }
         
         if !ingredientsList.isEmpty {
-            return "Made a gourmet dish of \(ingredientsList), \(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, top-down view, vibrant illustration style."
+            return "Made a gourmet dish of \(ingredientsList), \(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, no shadow, top-down view, vibrant illustration style."
         }
         
-        return "\(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, top-down view, vibrant illustration style."
+        return "\(milkSide), nothing else is allowed. Pure white background, clean composition, no utensils, no cutlery, no tableware of any kind, no garnish, no sauce, no herbs, no extra items, no decoration, no shadow, top-down view, vibrant illustration style."
     }
     
     // MARK: - Generate Function

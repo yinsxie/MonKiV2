@@ -12,6 +12,7 @@ import CoreData
 @Observable
 final class CreateDishViewModel {
     weak var parent: PlayViewModel?
+    private let bgProcessor = BackgroundRemoverProcessor()
     
     init(parent: PlayViewModel?) {
         self.parent = parent
@@ -49,9 +50,9 @@ final class CreateDishViewModel {
         }
         .sorted { $0.quantity > $1.quantity }
     }
-
+    
     var createDishItem: [CartItem] = []
-
+    
     func setIngredients(from cartItems: [CartItem]) {
         let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
         
@@ -76,9 +77,17 @@ final class CreateDishViewModel {
             
             do {
                 print(inputText)
-                let image = try await ImagePlaygroundManager.shared.generateDish(from: inputText)
+                let rawCgImage = try await ImagePlaygroundManager.shared.generateDish(from: inputText)
+                let rawUiImage = UIImage(cgImage: rawCgImage)
+                let processedUiImage = try await bgProcessor.process(rawUiImage)
+                
+                if let finalCgImage = processedUiImage.cgImage {
+                    self.cgImage = finalCgImage
+                } else { // Fallback
+                    self.cgImage = rawCgImage
+                }
+                
                 let time = CFAbsoluteTimeGetCurrent() - start
-                cgImage = image
                 print("Generated in \(String(format: "%.2f", time))s")
                 
                 AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
@@ -86,6 +95,7 @@ final class CreateDishViewModel {
             } catch {
                 print("Generate failed: \(error.localizedDescription)")
             }
+            
             isLoading = false
         }
     }
@@ -112,7 +122,7 @@ final class CreateDishViewModel {
             }
             
             self.cgImage = img.cgImage
-                        
+            
             self.isLoading = false
             print("Mock Image Generated AND Saved successfully!")
             AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
