@@ -42,8 +42,8 @@ struct WalletView: View {
                                     .fixedSize()
                             }
                         }
-                        .padding(.top, 25)
-                        .padding(.bottom, 35)
+                        .padding(.top, viewModel.walletSorted.count == 0 ? 0 : 25)
+                        .padding(.bottom, viewModel.walletSorted.count == 0 ? 0 : 35)
                         .padding(.horizontal)
                         .frame(maxWidth: .infinity)
                         .background(
