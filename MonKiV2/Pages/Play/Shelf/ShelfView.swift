@@ -37,7 +37,7 @@ struct ShelfView: View {
                 
                 // shelves
                 VStack(alignment: .leading, spacing: -85) {
-                    HStack {
+                    HStack(alignment: .bottom) {
                         ZStack(alignment: .top) {
                             Image("shelf_jagung")
                                 .resizable()
@@ -47,8 +47,8 @@ struct ShelfView: View {
                             
                             if let cornItem = cornItem {
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 180)
+//                                  .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
@@ -64,12 +64,12 @@ struct ShelfView: View {
                                 .scaledToFit()
                                 .frame(width: 377)
                                 .spotlight(id: "CarrotItem")
-
+                            
                             if let carrotItem = carrotItem {
                                 
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 155)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
@@ -80,58 +80,83 @@ struct ShelfView: View {
                         }
                     }
                     
-                    HStack {
+                    HStack(alignment: .bottom) {
                         ZStack(alignment: .top) {
-                            Image("shelf_tomat")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 377, height: 389)
-                                .spotlight(id: "TomatoItem")
-
+                            VStack {
+                                Image("shelf_tomat")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                                    .spotlight(id: "TomatoItem")
+                                
+                                Image("shelf_tomat_2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                            }
+                            
                             if let tomatoItem = tomatoItem {
                                 
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 200)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
                                             payload: .grocery(tomatoItem)
                                         )
-                                    )}
+                                    )
+                                    .padding(.top, 25)
+                            }
                         }
                         
                         ZStack(alignment: .top) {
-                            Image("shelf_brokoli")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 377)
-                                .spotlight(id: "BroccoliItem")
-                                .padding(.bottom, 32)
-
+                            VStack {
+                                Image("shelf_brokoli")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                                    .spotlight(id: "BroccoliItem")
+                                
+                                Image("shelf_brokoli_2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                            }
+                            
                             if let broccoliItem = broccoliItem {
                                 
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //                                .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 220)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
                                             payload: .grocery(broccoliItem)
                                         )
                                     )
+                                    .padding(.top, 30)
                             }
                         }
                         
                         ZStack(alignment: .top) {
-                            Image("shelf_telur")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 251)
+                            VStack {
+                                Image("shelf_telur")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 251)
+                                    .spotlight(id: "EggItem")
+                                
+                                Image("shelf_telur_2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 251)
+                            }
+                            
                             if let eggItem = eggItem {
                                 Color.clear
-                                    .frame(width: 251, height: 100)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 251, height: 180)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
@@ -146,7 +171,7 @@ struct ShelfView: View {
                 
                 Color.clear
                     .frame(width: 1050, height: 400)
-//                    .background(Color.green.opacity(0.3))
+                //                    .background(Color.green.opacity(0.3))
                     .contentShape(Rectangle())
                     .allowsHitTesting(false)
                     .makeDropZone(type: .shelfReturnItem)

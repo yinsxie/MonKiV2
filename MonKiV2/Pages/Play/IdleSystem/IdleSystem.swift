@@ -68,62 +68,97 @@ struct IdleSpotlightOverlay: View {
     var body: some View {
         if isIdle {
             GeometryReader { geo in
-                Color.black.opacity(0.7)
-                    .mask(
-                        ZStack {
-                            // 1. Base Canvas (White = Opaque Overlay)
-                            Color.white
-                            
-                            // 2. The Holes (Black = Transparent Hole)
-                            ForEach(items, id: \.id) { item in
-                                let rect = geo[item.anchor]
-                                
-                                if geo.frame(in: .local).intersects(rect) {
-                                    
-                                    // Check if this ID has a custom image associated with it
-                                    if let imageName = getImageName(for: item.id) {
-                                        // CUSTOM SHAPE LOGIC
-                                        Image(imageName)
-                                            .renderingMode(.template) // 1. Strip colors
-                                            .resizable()
-                                            .scaledToFit()
-                                            .foregroundColor(.black)  // 2. Make pure black (Hole)
-                                            .frame(width: rect.width, height: rect.height)
-                                            .position(x: rect.midX, y: rect.midY)
-                                    } else {
-                                        // DEFAULT RECTANGLE LOGIC (Fallback)
-                                        RoundedRectangle(cornerRadius: 15)
-                                            .fill(Color.black)
-                                            .frame(width: rect.width + 20, height: rect.height + 20)
-                                            .position(x: rect.midX, y: rect.midY)
-                                    }
-                                }
-                            }
+                let holeRects: [CGRect] = items.compactMap { item in
+                    let rect = geo[item.anchor]
+                    return geo.frame(in: .local).intersects(rect) ? rect : nil
+                }
+
+                ZStack {
+                    // LAYER A: VISUALS (Touch Disabled)
+                    VisualLayer(geo: geo, items: items)
+                        .allowsHitTesting(false)
+                    
+                    // LAYER B: HITBOX (Touch Enabled)
+                    DonutHitBox(holes: holeRects)
+                        .fill(Color.white.opacity(0.01))
+                        .contentShape(DonutHitBox(holes: holeRects), eoFill: true)
+                        .onTapGesture {
+                            onWakeUp()
                         }
-                        .compositingGroup()
-                        .luminanceToAlpha()
-                    )
-                    .ignoresSafeArea()
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        onWakeUp()
-                    }
-                    .transition(.opacity)
+                }
             }
             .zIndex(999)
         }
     }
     
-    // MARK: - Image Lookup Helper
-    private func getImageName(for id: String) -> String? {
-        switch id {
-        case "Cart": return "cart"
-        case "CornItem": return "shelf_jagung"
-        case "CarrotItem": return "shelf_wortel"
-        case "TomatoItem": return "shelf_tomat"
-        case "BroccoliItem": return "shelf_brokoli"
-        case "EggItem": return "shelf_telur"
-        default: return nil
+    // MARK: - Component A: Visuals
+    struct VisualLayer: View {
+        let geo: GeometryProxy
+        let items: [SpotlightItem]
+        
+        var body: some View {
+            Color.black.opacity(0.7)
+                .mask(
+                    ZStack {
+                        Color.white
+                        ForEach(items, id: \.id) { item in
+                            let rect = geo[item.anchor]
+                            if geo.frame(in: .local).intersects(rect) {
+                                if let imageName = getImageName(for: item.id) {
+                                    Image(imageName)
+                                        .renderingMode(.template)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(.black)
+                                        .frame(width: rect.width, height: rect.height)
+                                        .position(x: rect.midX, y: rect.midY)
+                                } else {
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .fill(Color.black)
+                                        .frame(width: rect.width, height: rect.height)
+                                        .position(x: rect.midX, y: rect.midY)
+                                }
+                            }
+                        }
+                    }
+                    .compositingGroup()
+                    .luminanceToAlpha()
+                )
+                .ignoresSafeArea()
+                .transition(.opacity)
+        }
+        
+        private func getImageName(for id: String) -> String? {
+            switch id {
+            case "Cart": return "cart"
+            case "CornItem": return "shelf_jagung"
+            case "CarrotItem": return "shelf_wortel"
+            case "TomatoItem": return "shelf_tomat"
+            case "BroccoliItem": return "shelf_brokoli"
+            case "EggItem": return "shelf_telur"
+            default: return nil
+            }
+        }
+    }
+    
+    // MARK: - Component B: The Shape Logic
+    struct DonutHitBox: Shape {
+        var holes: [CGRect]
+        
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            // 1. Add Full Screen Rect
+            path.addRect(rect)
+            
+            // 2. Add Hole Rects
+            for hole in holes {
+                // We cut a hole slightly larger than the item
+                path.addRoundedRect(
+                    in: hole.insetBy(dx: -10, dy: -10),
+                    cornerSize: CGSize(width: 15, height: 15)
+                )
+            }
+            return path
         }
     }
 }

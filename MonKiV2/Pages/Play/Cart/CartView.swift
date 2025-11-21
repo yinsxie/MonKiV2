@@ -107,6 +107,7 @@ struct CartView: View {
                             .font(.wendyOne(size: 40))
                             .foregroundColor(Color.white)
                         )
+                    .spotlight(id: "Price")
                     .offset(x: 65, y: -45)
                     .allowsHitTesting(false)
                 
