@@ -95,9 +95,10 @@ struct CartView: View {
                 Image("cart")
                     .resizable()
                     .scaledToFit()
+                    .spotlight(id: "Cart")
                     .frame(width: 581)
                     .aspectRatio(contentMode: .fit)
-                
+
                 Rectangle()
                     .foregroundColor(priceColor)
                     .frame(width: 172, height: 47)

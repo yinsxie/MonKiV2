@@ -43,6 +43,7 @@ struct ShelfView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 377)
+                                .spotlight(id: "CornItem")
                             
                             if let cornItem = cornItem {
                                 Color.clear
@@ -62,6 +63,8 @@ struct ShelfView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 377)
+                                .spotlight(id: "CarrotItem")
+
                             if let carrotItem = carrotItem {
                                 
                                 Color.clear
@@ -83,6 +86,8 @@ struct ShelfView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 377, height: 389)
+                                .spotlight(id: "TomatoItem")
+
                             if let tomatoItem = tomatoItem {
                                 
                                 Color.clear
@@ -100,7 +105,10 @@ struct ShelfView: View {
                             Image("shelf_brokoli")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 377).padding(.bottom, 32)
+                                .frame(width: 377)
+                                .spotlight(id: "BroccoliItem")
+                                .padding(.bottom, 32)
+
                             if let broccoliItem = broccoliItem {
                                 
                                 Color.clear

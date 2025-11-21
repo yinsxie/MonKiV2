@@ -10,6 +10,7 @@ import SwiftUI
 struct PlayViewContainer: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var playVM = PlayViewModel()
+    @State private var inactivityManager = InactivityManager()
     
     // Store views here
     private var pages: [AnyView] {
@@ -39,6 +40,28 @@ struct PlayViewContainer: View {
             
             // 4. Visual Effect (Drag, Animation, Money)
             visualEffectsLayer
+        }
+        // MARK: - Idle System (get items, get interaction, check for pages)
+        .overlayPreferenceValue(SpotlightKey.self) { items in
+            IdleSpotlightOverlay(
+                isIdle: $inactivityManager.isIdle,
+                items: items,
+                onWakeUp: { inactivityManager.userDidInteract() }
+            )
+            .ignoresSafeArea()
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in inactivityManager.userDidInteract() }
+                .onEnded { _ in inactivityManager.userDidInteract() }
+        )
+        .onChange(of: playVM.currentPageIndex, initial: true) { _, newIndex in
+            let pagesWithIdleTutorial = [1]
+            if let index = newIndex, pagesWithIdleTutorial.contains(index) {
+                inactivityManager.startMonitoring()
+            } else {
+                inactivityManager.stopMonitoring()
+            }
         }
         // MARK: - Environment Injection
         .environment(playVM)
