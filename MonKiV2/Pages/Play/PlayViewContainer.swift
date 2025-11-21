@@ -120,14 +120,15 @@ extension PlayViewContainer {
         }
         .overlay(alignment: .bottomTrailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
-            if currentIndex < 4 && !playVM.atmVM.isZoomed {
                 WalletView()
                     .padding(.trailing, 30)
-                    .offset(y: 125)
+                    .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
+                    .padding(.bottom, playVM.walletVM.isWalletOpen ? -125 : 0)
                     .background(GeometryReader { geo in
                         Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
                     })
-            }
+                    .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
+            
         }
         .overlay(alignment: .trailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
@@ -168,7 +169,7 @@ extension PlayViewContainer {
             FlyingMoneyAnimationView(
                 currency: currency,
                 startPoint: CGPoint(x: playVM.atmFrame.midX, y: playVM.atmFrame.midY + 120),
-                endPoint: CGPoint(x: playVM.walletFrame.midX, y: playVM.walletFrame.midY)
+                endPoint: CGPoint(x: playVM.walletFrame.midX, y: playVM.walletFrame.midY + 180)
             )
         }
     }

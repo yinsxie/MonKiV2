@@ -15,7 +15,7 @@ struct FlyingMoneyAnimationView: View {
     @State private var progress: CGFloat = 0.0
     
     var body: some View {
-        MoneyView(money: Money(forCurrency: currency), isMoreThanOne: false, isBeingDragged: true)
+        MoneyView(money: Money(forCurrency: currency), isBeingDragged: true)
             .scaleEffect(progress == 0 ? 0.5 : 0.3)
             .position(x: startPoint.x + (endPoint.x - startPoint.x) * progress,
                       y: startPoint.y + (endPoint.y - startPoint.y) * progress)

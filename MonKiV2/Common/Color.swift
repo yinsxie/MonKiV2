@@ -110,5 +110,5 @@ struct ColorPalette {
     static let delayATMButton = Color(hex: "#A5A7AA")
     
     // Cashier related
-    static let receiptBackgroud = Color(hex: "#EFF0F0")
+    static let overlayBackground = Color(hex: "#EFF0F0")
 }

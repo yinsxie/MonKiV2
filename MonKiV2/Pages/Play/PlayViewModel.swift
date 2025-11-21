@@ -49,8 +49,8 @@ import SwiftUI
         
         setupGameLogic()
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
-        //        let currencyBreakdown = Currency.breakdown(from: budget)
-        //        walletVM.addMoney(currencyBreakdown)
+        //                let currencyBreakdown = Currency.breakdown(from: budget)
+        //                walletVM.addMoney(currencyBreakdown)
     }
     
     private func setupGameLogic() {
@@ -105,19 +105,16 @@ import SwiftUI
             self.flyingMoneyCurrency = nil
             
             print("PlayVM: Animasi selesai. Add money to Wallet.")
-            
             let breakdown = Currency.breakdown(from: amount)
             
             if breakdown.isEmpty {
                 print("Breakdown currency kosong untuk amount \(amount)!")
             }
-            
-            Task { @MainActor in
-                withAnimation {
-                    self.walletVM.addMoney(breakdown)
-                }
+            withAnimation {
+                self.walletVM.addMoney(breakdown)
             }
         }
+        
     }
 }
 

@@ -127,7 +127,7 @@ struct ShoppingBagSideBarView: View {
                     
                     
                 }
-                .background(ColorPalette.receiptBackgroud)
+                .background(ColorPalette.overlayBackground)
                 // measure the receipt content height
                 .background(
                     GeometryReader { geo in
