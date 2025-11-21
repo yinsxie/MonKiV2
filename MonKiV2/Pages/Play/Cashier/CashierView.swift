@@ -51,33 +51,64 @@ struct CashierView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         // ITEMS FROM RIGHT → LEFT
-                        HStack {
-                            ForEach(viewModel.checkOutItems) { cartItem in
-                                GroceryItemView(item: cartItem.item)
-                                    .scaleEffect(1)
-                                    .shadow(radius: 2)
-                                    .transition(.scale.combined(with: .opacity))
-                                    .makeDraggable(
-                                        item: DraggedItem(
-                                            id: cartItem.id,
-                                            payload: .grocery(cartItem.item),
-                                            source: .cashierCounter
-                                        )
-                                    )
-                                    .opacity(
-                                        dragManager.currentDraggedItem?.id == cartItem.id ||
-                                        playViewModel.itemsCurrentlyAnimating.contains(cartItem.id)
-                                        ? 0 : 1
-                                    )
-                                    .padding(.horizontal, -20)
+                        VStack(alignment:.trailing, spacing: -50) {
+                            // 2nd Row (Top/Back) - Items 10 to 12
+                            if viewModel.checkOutItems.count > 7 {
+                                HStack {
+                                    ForEach(Array(viewModel.checkOutItems.dropFirst(7))) { cartItem in
+                                        GroceryItemView(item: cartItem.item)
+                                            .scaleEffect(0.85)
+                                            .shadow(radius: 2)
+                                            .transition(.scale.combined(with: .opacity))
+                                            .makeDraggable(
+                                                item: DraggedItem(
+                                                    id: cartItem.id,
+                                                    payload: .grocery(cartItem.item),
+                                                    source: .cashierCounter
+                                                )
+                                            )
+                                            .opacity(
+                                                dragManager.currentDraggedItem?.id == cartItem.id ||
+                                                playViewModel.itemsCurrentlyAnimating.contains(cartItem.id)
+                                                ? 0 : 1
+                                            )
+                                            .padding(.horizontal, -25)
+                                    }
+                                }
+                                .environment(\.layoutDirection, .rightToLeft)
+                                .padding(.trailing, 80)
                             }
+                            
+                            // 1st Row (Bottom/Front) - Items 1 to 9
+                            HStack {
+                                ForEach(Array(viewModel.checkOutItems.prefix(7))) { cartItem in
+                                    GroceryItemView(item: cartItem.item)
+                                        .scaleEffect(0.85)
+                                        .shadow(radius: 2)
+                                        .transition(.scale.combined(with: .opacity))
+                                        .makeDraggable(
+                                            item: DraggedItem(
+                                                id: cartItem.id,
+                                                payload: .grocery(cartItem.item),
+                                                source: .cashierCounter
+                                            )
+                                        )
+                                        .opacity(
+                                            dragManager.currentDraggedItem?.id == cartItem.id ||
+                                            playViewModel.itemsCurrentlyAnimating.contains(cartItem.id)
+                                            ? 0 : 1
+                                        )
+                                        .padding(.horizontal, -25)
+                                }
+                            }
+                            .environment(\.layoutDirection, .rightToLeft)
                         }
-                        .environment(\.layoutDirection, .rightToLeft)
-                        .padding(.leading, 0)
+                        .padding(.horizontal, 10)
                     }
-                    .frame(maxWidth: 460, alignment: .leading)
+                    .frame(maxWidth: 620, alignment: .leading)
                     .padding(.top, 82)
                     .makeDropZone(type: .cashierLoadingCounter)
+                    //                    .background(Color.green.opacity(0.5))
                     .offset(y: -95)
                     .zIndex(1)
                     
@@ -168,6 +199,7 @@ struct CashierView: View {
                             .frame(width: 465, height: 406)
                             .contentShape(Rectangle())
                             .makeDropZone(type: .cashierPaymentCounter)
+                        //                            .background(Color.green.opacity(0.5))
                             .offset(x: 450)
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
@@ -182,7 +214,7 @@ struct CashierView: View {
                     .padding(.horizontal, 20)
             }
             .frame(alignment: .leading)
-
+            
             .padding(.leading, -35)
             .padding(.bottom, 120)
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in
