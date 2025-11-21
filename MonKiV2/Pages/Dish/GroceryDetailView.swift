@@ -11,7 +11,7 @@ struct GroceryDetailView: View {
     var grocery: GroceryItem
     
     let size: CGFloat = 136
-    let offset: CGFloat = 20
+    let offset: CGFloat = 30
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -20,16 +20,16 @@ struct GroceryDetailView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: size, maxHeight: size)
-            
-            Text("\(grocery.quantity)")
-                .opacity(grocery.quantity > 1 ? 1 : 0)
-                .font(.wendyOne(size: 45))
-                .offset(x: offset, y: offset)
+           
+            if grocery.quantity > 1 {
+                CircleNumberView(number: grocery.quantity)
+                    .offset(x: offset, y: offset)
+            }
         }
         .frame(maxWidth: .infinity)
     }
 }
 
 #Preview {
-    GroceryDetailView(grocery: GroceryItem(id: UUID(), item: Item.mockItem, quantity: 1))
+    GroceryDetailView(grocery: GroceryItem(id: UUID(), item: Item.mockItem, quantity: 2))
 }

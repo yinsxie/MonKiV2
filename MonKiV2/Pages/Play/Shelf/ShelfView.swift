@@ -36,7 +36,7 @@ struct ShelfView: View {
                 }
                 
                 // shelves
-                VStack(alignment: .leading, spacing: -45) {
+                VStack(alignment: .leading, spacing: -85) {
                     HStack {
                         ZStack(alignment: .top) {
                             Image("shelf_jagung")
@@ -45,16 +45,6 @@ struct ShelfView: View {
                                 .frame(width: 377)
                             
                             if let cornItem = cornItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(cornItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                    )
-                                    .offset(x: -150, y: 150)
-                                
                                 Color.clear
                                     .frame(width: 377, height: 150)
                                 //  .background(Color.green.opacity(0.2))
@@ -73,15 +63,6 @@ struct ShelfView: View {
                                 .scaledToFit()
                                 .frame(width: 377)
                             if let carrotItem = carrotItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(carrotItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                    )
-                                    .offset(x: -150, y: 150)
                                 
                                 Color.clear
                                     .frame(width: 377, height: 150)
@@ -101,17 +82,8 @@ struct ShelfView: View {
                             Image("shelf_tomat")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 377)
+                                .frame(width: 377, height: 389)
                             if let tomatoItem = tomatoItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(tomatoItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                    )
-                                    .offset(x: -150, y: 120)
                                 
                                 Color.clear
                                     .frame(width: 377, height: 150)
@@ -128,17 +100,8 @@ struct ShelfView: View {
                             Image("shelf_brokoli")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 377)
+                                .frame(width: 377).padding(.bottom, 32)
                             if let broccoliItem = broccoliItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(broccoliItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                    )
-                                    .offset(x: -150, y: 135)
                                 
                                 Color.clear
                                     .frame(width: 377, height: 150)
@@ -158,16 +121,6 @@ struct ShelfView: View {
                                 .scaledToFit()
                                 .frame(width: 251)
                             if let eggItem = eggItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(eggItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                    )
-                                    .offset(x: -80, y: 110)
-                                
                                 Color.clear
                                     .frame(width: 251, height: 100)
                                 //  .background(Color.green.opacity(0.2))
