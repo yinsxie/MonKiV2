@@ -62,6 +62,7 @@ struct ATMOption {
             return
         }
         
+        self.parent?.walletVM.isWalletOpen = true
         self.isProcessing = true
         self.flyingMoneyValue = amount
         

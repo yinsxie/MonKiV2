@@ -40,6 +40,8 @@ struct PlayViewContainer: View {
             
             // 4. Visual Effect (Drag, Animation, Money)
             visualEffectsLayer
+            
+            topPageControl
         }
         // MARK: - Idle System (get items, get interaction, check for pages)
         .overlayPreferenceValue(SpotlightKey.self) { items in
@@ -141,14 +143,15 @@ extension PlayViewContainer {
         }
         .overlay(alignment: .bottomTrailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
-            if currentIndex < 4 && !playVM.atmVM.isZoomed {
                 WalletView()
                     .padding(.trailing, 30)
-                    .offset(y: 125)
+                    .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
+                    .padding(.bottom, playVM.walletVM.isWalletOpen ? -125 : 0)
                     .background(GeometryReader { geo in
                         Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
                     })
-            }
+                    .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
+            
         }
         .overlay(alignment: .trailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
@@ -189,10 +192,56 @@ extension PlayViewContainer {
             FlyingMoneyAnimationView(
                 currency: currency,
                 startPoint: CGPoint(x: playVM.atmFrame.midX, y: playVM.atmFrame.midY + 120),
-                endPoint: CGPoint(x: playVM.walletFrame.midX, y: playVM.walletFrame.midY)
+                endPoint: CGPoint(x: playVM.walletFrame.midX, y: playVM.walletFrame.midY + 180)
             )
         }
     }
+    
+    @ViewBuilder
+        private var topPageControl: some View {
+            VStack {
+                GeometryReader { geo in
+                    let totalWidth = geo.size.width
+                    
+                    HStack(spacing: 0) {
+                        ForEach(pages.indices, id: \.self) { index in
+                            Circle()
+                                .fill(isCurrentPage(index) ? Color.white : Color.white.opacity(0.4))
+                                .frame(width: 10, height: 10)
+                                .scaleEffect(isCurrentPage(index) ? 1.2 : 1.0)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .frame(height: geo.size.height)
+                    
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                let locationX = value.location.x
+                                let itemWidth = totalWidth / CGFloat(pages.count)
+                                let newIndex = Int(locationX / itemWidth)
+                                
+                                if newIndex >= 0 && newIndex < pages.count {
+                                    if playVM.currentPageIndex != newIndex {
+                                        withAnimation(.interactiveSpring(response: 0.3, dampingFraction: 0.7)) {
+                                            playVM.currentPageIndex = newIndex
+                                        }
+                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                    }
+                                }
+                            }
+                    )
+                }
+                .frame(width: 200, height: 40)
+                .background(.ultraThinMaterial, in: Capsule())
+                Spacer()
+            }
+        }
+        
+        private func isCurrentPage(_ index: Int) -> Bool {
+            return (playVM.currentPageIndex ?? 0) == index
+        }
 }
 
 // MARK: - Helper Logic functions
@@ -208,7 +257,7 @@ extension PlayViewContainer {
         }
     }
     
-    private func handleFrameUpdates(_ frames: [String : CGRect]) {
+    private func handleFrameUpdates(_ frames: [String: CGRect]) {
         DispatchQueue.main.async {
             if let atm = frames["ATM"], self.playVM.atmFrame != atm {
                 self.playVM.atmFrame = atm
