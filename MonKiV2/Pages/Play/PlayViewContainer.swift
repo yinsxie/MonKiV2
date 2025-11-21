@@ -90,7 +90,9 @@ extension PlayViewContainer {
             HStack(spacing: 0) {
                 ForEach(pages.indices, id: \.self) { index in
                     pages[index]
-                        .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
+                        .containerRelativeFrame(
+                        .horizontal, count: 1, spacing: 0,
+                        alignment: index == 2 ? .leading : .center)
                         .ignoresSafeArea()
                         .id(index)
                 }
