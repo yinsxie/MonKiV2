@@ -108,6 +108,7 @@ struct ColorPalette {
     static let disableATM = Color(hex: "#CFD1D2").opacity(0.2)
     static let defaultATMButton = Color(hex: "#BABCBE")
     static let delayATMButton = Color(hex: "#A5A7AA")
+    static let buttonOnHold = Color(hex: "#9B1109")
     
     // Cashier related
     static let overlayBackground = Color(hex: "#EFF0F0")

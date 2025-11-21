@@ -115,23 +115,17 @@ extension PlayViewContainer {
         if !playVM.atmVM.isZoomed {
             VStack {
                 HStack {
-                    Button(action: {
-                        AudioManager.shared.play(.buttonClick)
+                    HoldButton(type: .home, size: 122, strokeWidth: 10, onComplete: {
                         appCoordinator.popToRoot()
-                    }, label: {
-                        Image("home_button")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 112, height: 112)
                     })
-                    .padding(.leading, 80)
-                    .padding(.top, 80)
+                    .padding(.leading, 16)
+                    .padding(.top, 16)
                     
                     Spacer()
                 }
                 Spacer()
             }
-            .ignoresSafeArea(.all)
+            //            .ignoresSafeArea(.all)
         }
     }
     
@@ -143,14 +137,14 @@ extension PlayViewContainer {
         }
         .overlay(alignment: .bottomTrailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
-                WalletView()
-                    .padding(.trailing, 30)
-                    .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
-                    .padding(.bottom, playVM.walletVM.isWalletOpen ? -125 : 0)
-                    .background(GeometryReader { geo in
-                        Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
-                    })
-                    .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
+            WalletView()
+                .padding(.trailing, 30)
+                .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
+                .padding(.bottom, playVM.walletVM.isWalletOpen ? -125 : 0)
+                .background(GeometryReader { geo in
+                    Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
+                })
+                .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
             
         }
         .overlay(alignment: .trailing) {
@@ -198,50 +192,50 @@ extension PlayViewContainer {
     }
     
     @ViewBuilder
-        private var topPageControl: some View {
-            VStack {
-                GeometryReader { geo in
-                    let totalWidth = geo.size.width
-                    
-                    HStack(spacing: 0) {
-                        ForEach(pages.indices, id: \.self) { index in
-                            Circle()
-                                .fill(isCurrentPage(index) ? Color.white : Color.white.opacity(0.4))
-                                .frame(width: 10, height: 10)
-                                .scaleEffect(isCurrentPage(index) ? 1.2 : 1.0)
-                                .frame(maxWidth: .infinity)
-                        }
+    private var topPageControl: some View {
+        VStack {
+            GeometryReader { geo in
+                let totalWidth = geo.size.width
+                
+                HStack(spacing: 0) {
+                    ForEach(pages.indices, id: \.self) { index in
+                        Circle()
+                            .fill(isCurrentPage(index) ? Color.white : Color.white.opacity(0.4))
+                            .frame(width: 10, height: 10)
+                            .scaleEffect(isCurrentPage(index) ? 1.2 : 1.0)
+                            .frame(maxWidth: .infinity)
                     }
-                    .frame(height: geo.size.height)
-                    
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                let locationX = value.location.x
-                                let itemWidth = totalWidth / CGFloat(pages.count)
-                                let newIndex = Int(locationX / itemWidth)
-                                
-                                if newIndex >= 0 && newIndex < pages.count {
-                                    if playVM.currentPageIndex != newIndex {
-                                        withAnimation(.interactiveSpring(response: 0.3, dampingFraction: 0.7)) {
-                                            playVM.currentPageIndex = newIndex
-                                        }
-                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                }
+                .frame(height: geo.size.height)
+                
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            let locationX = value.location.x
+                            let itemWidth = totalWidth / CGFloat(pages.count)
+                            let newIndex = Int(locationX / itemWidth)
+                            
+                            if newIndex >= 0 && newIndex < pages.count {
+                                if playVM.currentPageIndex != newIndex {
+                                    withAnimation(.interactiveSpring(response: 0.3, dampingFraction: 0.7)) {
+                                        playVM.currentPageIndex = newIndex
                                     }
+                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                 }
                             }
-                    )
-                }
-                .frame(width: 200, height: 40)
-                .background(.ultraThinMaterial, in: Capsule())
-                Spacer()
+                        }
+                )
             }
+            .frame(width: 200, height: 40)
+            .background(.ultraThinMaterial, in: Capsule())
+            Spacer()
         }
-        
-        private func isCurrentPage(_ index: Int) -> Bool {
-            return (playVM.currentPageIndex ?? 0) == index
-        }
+    }
+    
+    private func isCurrentPage(_ index: Int) -> Bool {
+        return (playVM.currentPageIndex ?? 0) == index
+    }
 }
 
 // MARK: - Helper Logic functions
