@@ -15,7 +15,7 @@ struct ShoppingBagView: View {
             Image("shopping_bag")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 210)
+                .frame(width: 251)
             
             ZStack {
                 // 1st item (middle)
