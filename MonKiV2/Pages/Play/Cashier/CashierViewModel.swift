@@ -55,34 +55,19 @@ final class CashierViewModel {
     
     var checkOutItems: [CartItem] = []
     var purchasedItems: [CartItem] = []
+    var bagVisualItems: [CartItem] = []
+    
+    var bagOffset: CGFloat = 0
+    var bagOpacity: Double = 1.0
     
     var purchasedItemVisualized: [CartItem] {
-        // If item less or equal to 3, show all
-        if purchasedItems.count <= 3 {
-            return purchasedItems
+        let items = purchasedItems
+        
+        if items.count > 12 {
+            return Array(items.suffix(12))
         }
-
-        var seenItemIDs = Set<UUID>()
-        var result: [CartItem] = []
-
-        // 1) Add up to 3 unique item types (preserving order)
-        for cart in purchasedItems {
-            if !seenItemIDs.contains(cart.item.id) {
-                seenItemIDs.insert(cart.item.id)
-                result.append(cart)
-                if result.count == 3 { return result }
-            }
-        }
-
-        // 2) If fewer than 3 unique types, fill with other CartItem instances
-        for cart in purchasedItems {
-            // skip ones already added (by cartItem id)
-            if result.contains(where: { $0.id == cart.item.id }) { continue }
-            result.append(cart)
-            if result.count == 3 { break }
-        }
-
-        return result
+        
+        return items
     }
     
     let maxItemsInCounter: Int = 6
@@ -110,11 +95,44 @@ final class CashierViewModel {
     }
     
     func checkOutSuccess() {
-        DispatchQueue.main.async {
-            withAnimation {
-                self.purchasedItems.append(contentsOf: self.checkOutItems)
-                self.checkOutItems.removeAll()
+        guard !checkOutItems.isEmpty else { return }
+        
+        self.bagVisualItems = self.checkOutItems
+        self.checkOutItems.removeAll()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                self.parent?.walletVM.isWalletOpen = false
             }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                
+                withAnimation(.easeIn(duration: 0.8)) {
+                    self.bagOffset = 1000
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    self.finalizePurchase()
+                }
+            }
+        }
+    }
+    
+    private func finalizePurchase() {
+        let freshItems = self.bagVisualItems.map { oldItem in
+            CartItem(item: oldItem.item)
+        }
+        
+        self.purchasedItems.append(contentsOf: freshItems)
+        print("Saved \(freshItems.count) items to inventory.")
+        
+        self.bagVisualItems.removeAll()
+        
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            self.bagOffset = 0
         }
     }
 }
