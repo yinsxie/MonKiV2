@@ -19,6 +19,13 @@ final class CashierViewModel {
     
     init(parent: PlayViewModel?) {
         self.parent = parent
+        
+        // MARK: Get 1 rice by default (temporary implementation since we only have 1 type of chef for now)
+        // TODO: Change carrot with rice after asset and shelf is implemented
+        if let carrotItem = Item.items.first(where: { $0.name == "Carrot" }) {
+            let carrotCartItem = CartItem(item: carrotItem)
+            self.purchasedItems.append(carrotCartItem)
+        }
     }
     
     var currentPage: CashierPage {
