@@ -14,29 +14,49 @@ struct CreateDishView: View {
     
     var body: some View {
         ZStack {
-            
-            VStack(alignment: .leading) {
-                monkiFace
-                
-                ZStack {
-                    Color.green.opacity(0.4)
-                    
-                    HStack {
-                        ForEach(viewModel.createDishItem) { cartItem in
-                            GroceryItemView(item: cartItem.item)
-                                .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
+            monkiFace
+                .offset(x: -100, y: -230)
+                        
+            VStack(alignment: .trailing, spacing: 6) {
+                HStack(alignment: .bottom) {
+                    dishBook
+                        .padding(.trailing, 50)
+
+                    VStack {
+                        ZStack {
+                            Color.green.opacity(0.4)
                             
-                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                            HStack {
+                                ForEach(viewModel.createDishItem) { cartItem in
+                                    GroceryItemView(item: cartItem.item)
+                                        .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
+                                    
+                                        .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                    
+                                }
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                             
+                            Color.clear.makeDropZone(type: .createDish)
                         }
+                        .frame(width: 408, height: 231)
+                        
+                        Image("teflon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 386, height: 148)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    
-                    Color.clear.makeDropZone(type: .createDish)
+                    .padding(.trailing, 160)
                 }
-                .frame(width: 700, height: 300)
-                
-                bottomButton
+
+                ZStack(alignment: .trailing) {
+                    Rectangle()
+                        .foregroundStyle(Color(hex: "#CFD1D2"))
+                        .frame(width: 846, height: 189)
+                                  
+                    bottomButton
+                        .padding(.trailing, 140)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.horizontal, 30)
@@ -115,6 +135,12 @@ struct CreateDishView: View {
         }
     }
     
+    private var dishBook: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(Color(hex: "#85DCFA"))
+            .frame(width: 171, height: 205)
+    }
+    
     private var bottomButton: some View {
         // This function returns true if the input text is EMPTY
         let isInputEmpty = viewModel.checkCheckoutItems()
@@ -142,7 +168,7 @@ struct CreateDishView: View {
                 Image(isDisabled ? "button_disable" : "button_active")
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 100)
+                    .frame(height: 107)
                 
                 if viewModel.isLoading {
                     ProgressView()
@@ -152,8 +178,8 @@ struct CreateDishView: View {
                 } else {
                     HStack(spacing: 10) {
                         // MODIFIED: Text changes based on hasImage
-                        Text("New Dish")
-                            .font(.wendyOne(size: 40))
+                        Text("Masak Sekarang")
+                            .font(.fredokaOne(size: 40))
                             .foregroundColor(.white)
                         
                         Image("Spatula")
