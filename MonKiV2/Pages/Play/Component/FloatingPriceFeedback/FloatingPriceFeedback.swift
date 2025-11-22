@@ -21,7 +21,7 @@ struct FloatingPriceTextView: View {
     
     var body: some View {
         Text(data.value > 0 ? "+\(data.value)" : "\(data.value)")
-            .font(.VT323(size: 42))
+            .font(.VT323(size: 52))
             .foregroundStyle(Color(hex: "3D3D3D"))
             .offset(y: offset)
             .opacity(opacity)
