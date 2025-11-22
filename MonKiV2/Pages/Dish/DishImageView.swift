@@ -117,7 +117,6 @@ struct DishImageView: View {
     
     // MARK: - Helper: Item View
     private func ingredientItemView(_ groceryItem: GroceryItem) -> some View {
-        let itemName = groceryItem.item.name
         let itemPath = groceryItem.item.imageAssetPath
         let assetName = itemPath.isEmpty ? "wortel" : itemPath
         
@@ -165,6 +164,7 @@ struct DishImageView: View {
         let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
         
         return Button(action: {
+            AudioManager.shared.play(.buttonClick)
             viewModel.onSaveButtonTapped()
         }, label: {
             ZStack {
