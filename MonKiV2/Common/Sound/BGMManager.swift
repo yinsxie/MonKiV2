@@ -17,11 +17,16 @@ final class BGMManager: ObservableObject{
     static let shared = BGMManager()
     
     private var player: AVAudioPlayer?
+    private var isPlaying: Bool{
+        player?.isPlaying == true
+    }
     @Published var isMuted = false
     
     private init() {}
     
     func play(track: BGMTrack, volume: Float = 0.3) {
+        if isPlaying { return }
+        
         guard !isMuted else { return }
         
         stop()
