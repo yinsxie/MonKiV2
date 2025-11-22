@@ -121,8 +121,8 @@ extension PlayViewContainer {
                     HoldButton(type: .home, size: 122, strokeWidth: 10, onComplete: {
                         appCoordinator.popToRoot()
                     })
-                    .padding(.leading, 16)
-                    .padding(.top, 16)
+                    .padding(.leading, 48)
+                    .padding(.top, 48)
                     
                     Spacer()
                 }
