@@ -18,9 +18,9 @@ struct CartView: View {
     
     private var priceColor: Color {
         if cartVM.totalPrice > playVM.currentBudget {
-            return Color(hex: "#CD4947")
+            return ColorPalette.cartTotalOver
         } else {
-            return Color(hex: "#65C466")
+            return ColorPalette.cartTotalUnder
         }
     }
     
@@ -98,17 +98,11 @@ struct CartView: View {
                     .spotlight(id: "Cart")
                     .frame(width: 581)
                     .aspectRatio(contentMode: .fit)
-
-                Rectangle()
+                
+                Text("\(cartVM.totalPrice)")
+                    .font(.VT323(size: 42))
                     .foregroundColor(priceColor)
-                    .frame(width: 172, height: 47)
-                    .overlay(
-                        Text("\(cartVM.totalPrice)")
-                            .font(.wendyOne(size: 40))
-                            .foregroundColor(Color.white)
-                        )
-                    .spotlight(id: "Price")
-                    .offset(x: 65, y: -45)
+                    .offset(x: 65, y: -80)
                     .allowsHitTesting(false)
                 
                 if (playVM.currentPageIndex ?? 0) != 2 {
@@ -116,7 +110,7 @@ struct CartView: View {
                         .foregroundColor(Color.clear)
                         .floatingPriceFeedback(value: cartVM.totalPrice)
                         .frame(width: 100, height: 100)
-                        .offset(x: 200, y: -30)
+                        .offset(x: 170, y: -30)
                 }
             }
             .allowsHitTesting(false)

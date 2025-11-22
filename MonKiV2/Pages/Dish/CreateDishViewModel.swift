@@ -53,6 +53,22 @@ final class CreateDishViewModel {
     
     var createDishItem: [CartItem] = []
     
+    // Grouping createDishItem array into unique items with quantities for DishImageView
+    var groupedDishItems: [GroceryItem] {
+        let grouped = Dictionary(grouping: createDishItem, by: { $0.item.id })
+        
+        let groceryItems = grouped.compactMap { (_, items) -> GroceryItem? in
+            guard let firstItem = items.first?.item else { return nil }
+            return GroceryItem(
+                id: UUID(),
+                item: firstItem,
+                quantity: items.count
+            )
+        }
+        
+        return groceryItems.sorted { $0.item.name < $1.item.name }
+    }
+    
     func setIngredients(from cartItems: [CartItem]) {
         let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
         

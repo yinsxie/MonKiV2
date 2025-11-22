@@ -32,12 +32,8 @@ struct PriceChangeFeedbackModifier: ViewModifier {
             .onChange(of: currentValue) { oldValue, newValue in
                 let diff = newValue - oldValue
                 
-                if diff != 0 {
-                    let color: Color = diff > 0 ? .green : .red
-                    
-                    let newItem = FloatingPriceTextData(value: diff, color: color)
-                    floatingItems.append(newItem)
-                }
+                let newItem = FloatingPriceTextData(value: diff)
+                floatingItems.append(newItem)
                 
                 previousValue = newValue
             }

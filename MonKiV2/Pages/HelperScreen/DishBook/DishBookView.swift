@@ -276,14 +276,18 @@ struct DishHeaderView: View {
                     }
                 }
                 
-                Button(action: {
-                    AudioManager.shared.play(.buttonClick)
+                //                Button(action: {
+                //                    AudioManager.shared.play(.buttonClick)
+                //                    onDelete(dish)
+                //                }, label: {
+                //                    Image("removeButton")
+                //                        .resizable()
+                //                        .scaledToFit()
+                //                        .frame(width: 72, height: 72)
+                //                })
+                
+                HoldButton(type: .remove, size: 72, strokeWidth: 6, onComplete: {
                     onDelete(dish)
-                }, label: {
-                    Image("removeButton")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 72, height: 72)
                 })
                 .offset(x: 20, y: -20)
                 
@@ -329,12 +333,7 @@ struct IngredientsGridView: View {
         let secondRow = Array(allItems.dropFirst(7))
         
         VStack {
-            if allItems.isEmpty {
-                Text("No ingredients recorded")
-                    .font(.caption)
-                    .italic()
-                    .foregroundColor(.gray)
-            } else {
+            if !allItems.isEmpty {
                 VStack(spacing: 10) {
                     if !firstRow.isEmpty {
                         HStack(spacing: 8) {
@@ -383,11 +382,11 @@ struct IngredientItemView: View {
                     .offset(y: 15)
                 
                 //TODO: Remove when all shelf item assets are in
-                Text(itemName)
-                    .font(.fredokaOne(size: 14))
-                    .foregroundColor(.black.opacity(0.8))
-                    .lineLimit(1)
-                    .fixedSize()
+//                Text(itemName)
+//                    .font(.fredokaOne(size: 14))
+//                    .foregroundColor(.black.opacity(0.8))
+//                    .lineLimit(1)
+//                    .fixedSize()
             }
             .frame(width: 48, height: 70)
         }
@@ -407,7 +406,7 @@ struct EmptyStateView: View {
                 .padding(.top, 26)
                 .padding(.trailing, 26)
                 .frame(maxWidth: .infinity, alignment: .trailing)
-
+            
             Image("emptyState")
                 .resizable()
                 .scaledToFit()
@@ -421,7 +420,7 @@ struct EmptyStateView: View {
                 PageNumberView(number: pageNumber)
                     .padding(.bottom, 30)
             }
-                
+            
         }
         .frame(width: 540, height: 776)
         .clipped()
@@ -477,5 +476,5 @@ struct ReturnButton: View {
 #Preview {
     DishBookView()
         .environmentObject(AppCoordinator())
-        .environment(\.managedObjectContext, CoreDataManager.shared.viewContext)
+    //        .environment(\.managedObjectContext, CoreDataManager.shared.viewContext)
 }

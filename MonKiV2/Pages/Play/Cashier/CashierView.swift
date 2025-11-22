@@ -101,7 +101,8 @@ struct CashierView: View {
                             }
                             .environment(\.layoutDirection, .rightToLeft)
                         }
-                        .padding(.horizontal, 10)
+                        .padding(.bottom, -10)
+                        .padding(.horizontal, 30)
                     }
                     .frame(maxWidth: 620, alignment: .leading)
                     .padding(.top, 82)
