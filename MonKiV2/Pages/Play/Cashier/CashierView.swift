@@ -51,7 +51,7 @@ struct CashierView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         // ITEMS FROM RIGHT → LEFT
-                        VStack(alignment:.trailing, spacing: -50) {
+                        VStack(alignment: .trailing, spacing: -50) {
                             // 2nd Row (Top/Back) - Items 10 to 12
                             if viewModel.checkOutItems.count > 7 {
                                 HStack {
