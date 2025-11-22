@@ -276,14 +276,18 @@ struct DishHeaderView: View {
                     }
                 }
                 
-                Button(action: {
-                    AudioManager.shared.play(.buttonClick)
+                //                Button(action: {
+                //                    AudioManager.shared.play(.buttonClick)
+                //                    onDelete(dish)
+                //                }, label: {
+                //                    Image("removeButton")
+                //                        .resizable()
+                //                        .scaledToFit()
+                //                        .frame(width: 72, height: 72)
+                //                })
+                
+                HoldButton(type: .remove, size: 72, strokeWidth: 6, onComplete: {
                     onDelete(dish)
-                }, label: {
-                    Image("removeButton")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 72, height: 72)
                 })
                 .offset(x: 20, y: -20)
                 
@@ -407,7 +411,7 @@ struct EmptyStateView: View {
                 .padding(.top, 26)
                 .padding(.trailing, 26)
                 .frame(maxWidth: .infinity, alignment: .trailing)
-
+            
             Image("emptyState")
                 .resizable()
                 .scaledToFit()
@@ -421,7 +425,7 @@ struct EmptyStateView: View {
                 PageNumberView(number: pageNumber)
                     .padding(.bottom, 30)
             }
-                
+            
         }
         .frame(width: 540, height: 776)
         .clipped()
@@ -477,5 +481,5 @@ struct ReturnButton: View {
 #Preview {
     DishBookView()
         .environmentObject(AppCoordinator())
-        .environment(\.managedObjectContext, CoreDataManager.shared.viewContext)
+    //        .environment(\.managedObjectContext, CoreDataManager.shared.viewContext)
 }

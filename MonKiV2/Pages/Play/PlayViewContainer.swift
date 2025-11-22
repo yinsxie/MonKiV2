@@ -118,23 +118,17 @@ extension PlayViewContainer {
         if !playVM.atmVM.isZoomed {
             VStack {
                 HStack {
-                    Button(action: {
-                        AudioManager.shared.play(.buttonClick)
+                    HoldButton(type: .home, size: 122, strokeWidth: 10, onComplete: {
                         appCoordinator.popToRoot()
-                    }, label: {
-                        Image("home_button")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 112, height: 112)
                     })
-                    .padding(.leading, 80)
-                    .padding(.top, 80)
+                    .padding(.leading, 48)
+                    .padding(.top, 48)
                     
                     Spacer()
                 }
                 Spacer()
             }
-            .ignoresSafeArea(.all)
+            //            .ignoresSafeArea(.all)
         }
     }
     
@@ -146,14 +140,14 @@ extension PlayViewContainer {
         }
         .overlay(alignment: .bottomTrailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
-                WalletView()
-                    .padding(.trailing, 30)
-                    .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
-                    .padding(.bottom, playVM.walletVM.isWalletOpen ? -125 : 0)
-                    .background(GeometryReader { geo in
-                        Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
-                    })
-                    .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
+            WalletView()
+                .padding(.trailing, 30)
+                .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
+                .padding(.bottom, playVM.walletVM.isWalletOpen ? -125 : 0)
+                .background(GeometryReader { geo in
+                    Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
+                })
+                .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
             
         }
         .overlay(alignment: .trailing) {
@@ -201,23 +195,23 @@ extension PlayViewContainer {
     }
     
     @ViewBuilder
-        private var topPageControl: some View {
-            VStack {
-                PageControl(
-                    currentPageIndex: $playVM.currentPageIndex,
-                    pageCount: pages.count
-                )
-                
-                Spacer()
-            }
-            .padding(.top, 16)
-            .allowsHitTesting(!playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped)
-            .opacity((playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped) ? 0 : 1)
+    private var topPageControl: some View {
+        VStack {
+            PageControl(
+                currentPageIndex: $playVM.currentPageIndex,
+                pageCount: pages.count
+            )
+            
+            Spacer()
         }
-        
-        private func isCurrentPage(_ index: Int) -> Bool {
-            return (playVM.currentPageIndex ?? 0) == index
-        }
+        .padding(.top, 16)
+        .allowsHitTesting(!playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped)
+        .opacity((playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped) ? 0 : 1)
+    }
+    
+    private func isCurrentPage(_ index: Int) -> Bool {
+        return (playVM.currentPageIndex ?? 0) == index
+    }
 }
 
 // MARK: - Helper Logic functions
