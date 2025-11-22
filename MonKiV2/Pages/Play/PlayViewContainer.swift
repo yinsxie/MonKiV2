@@ -124,6 +124,20 @@ extension PlayViewContainer {
                     playVM.isIntroButtonVisible = false
                 }
             }
+            .scrollTargetLayout()
+        }
+        
+        .scrollPosition(id: $playVM.currentPageIndex)
+        .scrollBounceBehavior(.basedOnSize)
+        .contentMargins(0, for: .scrollContent)
+        .scrollTargetBehavior(.paging)
+        .scrollDisabled(playVM.dragManager.isDragging
+            || playVM.atmVM.isZoomed
+            || playVM.cashierVM.isReturnedMoneyPrompted
+        )
+        .scrollIndicators(.hidden)
+        .onChange(of: playVM.currentPageIndex) { _, newIndex in
+            handlePageChange(newIndex)
         }
     }
     
@@ -182,7 +196,22 @@ extension PlayViewContainer {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .zIndex(5)
         }
-        
+        .overlay {
+            ZStack {
+                if playVM.cashierVM.isReturnedMoneyPrompted {
+                    Color.black
+                        .opacity(0.4)
+                        .ignoresSafeArea()
+                    
+                    CashierMonkiView()
+                        .offset(x: 225, y: -68)
+                        .onTapGesture {
+                            playVM.cashierVM.onReturnedMoneyTapped()
+                        }
+                }
+            }
+            
+        }
         // this needs to be here so that cart animations happen behind cart
         AnimationOverlayView()
         

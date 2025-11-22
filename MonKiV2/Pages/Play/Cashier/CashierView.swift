@@ -12,8 +12,6 @@ struct CashierView: View {
     @Environment(DragManager.self) var dragManager
     @Environment(PlayViewModel.self) var playViewModel
     
-    @State private var bubbleOpacity: Double = 0
-    
     var body: some View {
         
         HStack(alignment: .bottom) {
@@ -122,65 +120,20 @@ struct CashierView: View {
                             .ignoresSafeArea()
                         
                         ZStack {
-                            ZStack {
-                                Image("cashier_monki")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 402)
-                                    .offset(x: -350, y: -160)
-                                
-                                ZStack(alignment: .center) {
-                                    Image("speech_bubble")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 202)
-                                    
-                                    if viewModel.isPaymentSufficient {
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(ColorPalette.green500)
-                                                .frame(width: 85, height: 60)
-                                            
-                                            Text("\(viewModel.totalPrice)")
-                                                .font(.custom("WendyOne-Regular", size: 40))
-                                                .foregroundStyle(.white)
-                                        }
-                                        .offset(x: 10)
-                                    } else {
-                                        Image(systemName: "xmark")
-                                            .resizable()
-                                            .frame(width: 60, height: 60)
-                                            .foregroundStyle(Color(hex: "#D84942"))
-                                            .offset(x: 10)
+                            CashierMonkiView()
+                                .opacity(viewModel.isReturnedMoneyPrompted ? 0 : 1)
+                                .scrollTransition(.animated, axis: .horizontal) { content, phase in
+                                    content
+                                        .offset(x: phase.isIdentity ? 0 : 1000)
+                                }
+                                .onTapGesture {
+                                    viewModel.onReturnedReceivedMoneyTapped()
+                                }
+                                .onChange(of: viewModel.currentPage) { _, newValue in
+                                    if newValue != .payment {
+                                        viewModel.onPageChangeWhileReceivedMoney()
                                     }
                                 }
-                                .offset(x: -110, y: -280)
-                                .opacity(bubbleOpacity)
-                            }
-                            .onChange(of: viewModel.currentPage) { _, newPage in
-                                if viewModel.totalPrice > 0 && newPage == .payment {
-                                    // Fade IN — 1.5 seconds
-                                    withAnimation(.easeInOut(duration: 1.2)) {
-                                        bubbleOpacity = 1
-                                    }
-                                } else {
-                                    // Fade OUT — default (fast)
-                                    withAnimation(.easeOut(duration: 0.1)) {
-                                        bubbleOpacity = 0
-                                    }
-                                }
-                            }
-                            .onChange(of: viewModel.totalPrice) { _, newTotalPrice in
-                                if newTotalPrice == 0 {
-                                    withAnimation(.easeOut(duration: 0.1)) {
-                                        bubbleOpacity = 0
-                                    }
-                                }
-                            }
-                            .scrollTransition(.animated, axis: .horizontal) { content, phase in
-                                content
-                                    .offset(x: phase.isIdentity ? 0 : 1000)
-                            }
                             
                             Image("cashier_register")
                                 .resizable()
@@ -205,9 +158,6 @@ struct CashierView: View {
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
                             }
-                        
-                        CashierPaymentView()
-                            .offset(x: 650)
                     }
                 }
                 
@@ -216,7 +166,7 @@ struct CashierView: View {
                     .offset(x: viewModel.bagOffset)
             }
             .frame(alignment: .leading)
-
+            
             .padding(.leading, -35)
             .padding(.bottom, 120)
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in

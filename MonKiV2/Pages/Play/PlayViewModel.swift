@@ -14,7 +14,7 @@ import SwiftUI
     // Global Published Var for global state
     var initialBudget: Int = 0
     var currentBudget: Int {
-        walletVM.moneys.reduce(0) { $0 + $1.currency.value } + cashierVM.totalReceivedMoney
+        walletVM.moneys.reduce(0) { $0 + $1.currency.value }
     }
     
     // VM's
@@ -51,8 +51,8 @@ import SwiftUI
         
         setupGameLogic()
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
-        //                let currencyBreakdown = Currency.breakdown(from: budget)
-        //                walletVM.addMoney(currencyBreakdown)
+//                        let currencyBreakdown = Currency.breakdown(from: budget)
+//                        walletVM.addMoney(currencyBreakdown)
     }
     
     private func setupGameLogic() {
@@ -180,10 +180,12 @@ private extension PlayViewModel {
     }
     
     func dropMoneyToCounter(withCurrency currency: Currency) {
+        print("Dropped money (\(currency.value)) on payment counter")
+
         if cashierVM.checkOutItems.isEmpty {
             return
         }
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.cashierVM.acceptMoney(Money(forCurrency: currency))
             self.walletVM.removeFirstMoney(withCurrency: currency)
         }
@@ -379,31 +381,63 @@ private extension PlayViewModel {
             }
         }
         
-        // Return unused (not used) bills intact
-        if !unusedMoney.isEmpty {
+        if unusedMoney.isEmpty && leftoverFromLastUsedBill == 0 {
+            // This means we had exact payment with unused bills
+            print("exact")
             DispatchQueue.main.async {
-                self.walletVM.moneys.append(contentsOf: unusedMoney)
+                self.cashierVM.receivedMoney.removeAll()
+                self.cashierVM.checkOutSuccess()
             }
+            return
         }
         
-        // If there is leftover from the last used bill, break it down and add to wallet
-        if leftoverFromLastUsedBill > 0 {
-            let changeCurrencies = Currency.breakdown(from: leftoverFromLastUsedBill)
-            if !changeCurrencies.isEmpty {
+        // Return unused (not used) bills intact
+        withAnimation {
+            cashierVM.isAnimatingReturnMoney = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+            if !unusedMoney.isEmpty {
                 DispatchQueue.main.async {
-                    self.walletVM.addMoney(changeCurrencies) // uses existing addMoney([Currency])
+                    // New Version : append to returned Money first
+                    self.cashierVM.returnedMoney.append(contentsOf: unusedMoney)
                 }
             }
-        }
-        
-        DispatchQueue.main.async {
-            self.cashierVM.receivedMoney.removeAll()
-            self.cashierVM.checkOutSuccess()
+            
+            // If there is leftover from the last used bill, break it down and add to wallet
+            if leftoverFromLastUsedBill > 0 {
+                let changeCurrencies = Currency.breakdown(from: leftoverFromLastUsedBill)
+                if !changeCurrencies.isEmpty {
+                    DispatchQueue.main.async {
+                        // New Version : add to returned Money first
+                        self.cashierVM.addReturnedMoney(changeCurrencies)
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                self.cashierVM.receivedMoney.removeAll()
+                // New Version: Dont trigger checkOutSuccess from here, trigger it when user collects returned money
+    //            self.cashierVM.checkOutSuccess()
+            }
+            
+             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                 withAnimation {
+                     self.cashierVM.isAnimatingReturnMoney = false
+                     self.cashierVM.isReturnedMoneyPrompted = true
+                 }
+                 self.cashierVM.checkOutSuccess()
+             }
         }
     }
     
     func handleMoneyDropOnWallet(currency: Currency, draggedItem: DraggedItem) {
         print("Dropped money (\(currency.value)) back on wallet")
+        DispatchQueue.main.async {
+            self.walletVM.addMoney(currency)
+            self.cashierVM.receivedMoney.removeAll(where: { $0.id == draggedItem.id })
+            self.dragManager.currentDraggedItem = nil
+        }
     }
     
     func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {

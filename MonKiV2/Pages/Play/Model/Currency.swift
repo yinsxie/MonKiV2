@@ -34,7 +34,7 @@ enum Currency {
         }
     }
     
-    var backgroundColor: Color {
+    var foregroundColor: Color {
         switch self {
         case .idr100:
             return ColorPalette.money100Foreground
@@ -53,7 +53,7 @@ enum Currency {
         }
     }
     
-    var foregroundColor: Color {
+    var backgroundColor: Color {
         switch self {
         case .idr100:
             return ColorPalette.money100Background
