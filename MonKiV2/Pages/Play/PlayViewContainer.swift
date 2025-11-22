@@ -55,7 +55,8 @@ struct PlayViewContainer: View {
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in inactivityManager.userDidInteract() }
-                .onEnded { _ in inactivityManager.userDidInteract() }
+                .onEnded { _ in inactivityManager.userDidInteract() },
+            including: playVM.currentPageIndex == 1 ? .all : .subviews
         )
         .onChange(of: playVM.currentPageIndex, initial: true) { _, newIndex in
             let pagesWithIdleTutorial = [1]
@@ -220,43 +221,16 @@ extension PlayViewContainer {
     @ViewBuilder
         private var topPageControl: some View {
             VStack {
-                GeometryReader { geo in
-                    let totalWidth = geo.size.width
-                    
-                    HStack(spacing: 0) {
-                        ForEach(pages.indices, id: \.self) { index in
-                            Circle()
-                                .fill(isCurrentPage(index) ? Color.white : Color.white.opacity(0.4))
-                                .frame(width: 10, height: 10)
-                                .scaleEffect(isCurrentPage(index) ? 1.2 : 1.0)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                    .frame(height: geo.size.height)
-                    
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                let locationX = value.location.x
-                                let itemWidth = totalWidth / CGFloat(pages.count)
-                                let newIndex = Int(locationX / itemWidth)
-                                
-                                if newIndex >= 0 && newIndex < pages.count {
-                                    if playVM.currentPageIndex != newIndex {
-                                        withAnimation(.interactiveSpring(response: 0.3, dampingFraction: 0.7)) {
-                                            playVM.currentPageIndex = newIndex
-                                        }
-                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                    }
-                                }
-                            }
-                    )
-                }
-                .frame(width: 200, height: 40)
-                .background(.ultraThinMaterial, in: Capsule())
+                PageControl(
+                    currentPageIndex: $playVM.currentPageIndex,
+                    pageCount: pages.count
+                )
+                
                 Spacer()
             }
+            .padding(.top, 16)
+            .allowsHitTesting(!playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped)
+            .opacity((playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped) ? 0 : 1)
         }
         
         private func isCurrentPage(_ index: Int) -> Bool {
