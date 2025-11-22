@@ -11,7 +11,8 @@ struct CreateDishView: View {
     @Environment(PlayViewModel.self) var playVM
     @Environment(CreateDishViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
-    
+    @EnvironmentObject var appCoordinator: AppCoordinator
+
     var body: some View {
         ZStack {
             monkiFace
@@ -19,8 +20,13 @@ struct CreateDishView: View {
                         
             VStack(alignment: .trailing, spacing: 6) {
                 HStack(alignment: .bottom) {
-                    dishBook
-                        .padding(.trailing, 50)
+                    Button(action: {
+                        AudioManager.shared.play(.buttonClick)
+                        appCoordinator.goTo(.helperScreen(.dishBook))
+                    }, label: {
+                        dishBook
+                            .padding(.trailing, 50)
+                    })
 
                     VStack {
                         ZStack {
@@ -197,4 +203,5 @@ struct CreateDishView: View {
 
 #Preview {
     PlayViewContainer()
+        .environmentObject(AppCoordinator())
 }
