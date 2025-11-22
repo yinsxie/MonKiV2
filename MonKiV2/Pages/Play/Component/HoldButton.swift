@@ -26,7 +26,7 @@ struct HoldButton: View {
     
     var size: CGFloat
     var strokeWidth: CGFloat
-    var holdDuration: TimeInterval = 2.0
+    var holdDuration: TimeInterval = 1.0
     
     var onComplete: () -> Void
     
