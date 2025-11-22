@@ -10,7 +10,6 @@ import SwiftUI
 struct FloatingPriceTextData: Identifiable, Equatable {
     let id = UUID()
     let value: Int
-    let color: Color
 }
 
 struct FloatingPriceTextView: View {
@@ -22,8 +21,8 @@ struct FloatingPriceTextView: View {
     
     var body: some View {
         Text(data.value > 0 ? "+\(data.value)" : "\(data.value)")
-            .font(.wendyOne(size: 60))
-            .foregroundStyle(data.color)
+            .font(.VT323(size: 52))
+            .foregroundStyle(Color(hex: "3D3D3D"))
             .offset(y: offset)
             .opacity(opacity)
             .onAppear {
