@@ -287,7 +287,6 @@ struct DishHeaderView: View {
                 //                })
                 
                 HoldButton(type: .remove, size: 72, strokeWidth: 6, onComplete: {
-                    AudioManager.shared.play(.buttonClick)
                     onDelete(dish)
                 })
                 .offset(x: 20, y: -20)
