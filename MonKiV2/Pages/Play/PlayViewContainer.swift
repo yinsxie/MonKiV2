@@ -195,19 +195,18 @@ extension PlayViewContainer {
     }
     
     @ViewBuilder
-        private var topPageControl: some View {
-            VStack {
-                PageControl(
-                    currentPageIndex: $playVM.currentPageIndex,
-                    pageCount: pages.count
-                )
-                
-                Spacer()
-            }
-            .padding(.top, 16)
-            .allowsHitTesting(!playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped)
-            .opacity((playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped) ? 0 : 1)
+    private var topPageControl: some View {
+        VStack {
+            PageControl(
+                currentPageIndex: $playVM.currentPageIndex,
+                pageCount: pages.count
+            )
+            
+            Spacer()
         }
+        .padding(.top, 16)
+        .allowsHitTesting(!playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped)
+        .opacity((playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped) ? 0 : 1)
     }
     
     private func isCurrentPage(_ index: Int) -> Bool {
