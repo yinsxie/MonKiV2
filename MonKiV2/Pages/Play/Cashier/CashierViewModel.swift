@@ -43,6 +43,38 @@ final class CashierViewModel {
     }
     
     var receivedMoney: [Money] = []
+   
+    var receivedMoneyGrouped: [MoneyGroup] {
+        var temp: [Currency: (money: Money, count: Int)] = [:]
+        
+        for money in receivedMoney {
+            if let existing = temp[money.currency] {
+                temp[money.currency] = (existing.money, existing.count + 1)
+            } else {
+                temp[money.currency] = (money, 1)
+            }
+        }
+        
+        let res = temp.values
+            .map { MoneyGroup(money: $0.money, count: $0.count) }
+            .sorted { $0.money.currency.value > $1.money.currency.value } // Sort by count descending
+        
+        print("Printing grouped received money:")
+        print(res)
+        return res
+    }
+
+    var returnedMoney: [Money] = []
+    var isAnimatingReturnMoney: Bool = false
+    var isReturnedMoneyPrompted: Bool = false
+    
+    func addReturnedMoney(_ currencies: [Currency]) {
+        for currency in currencies {
+            let newMoney = Money(forCurrency: currency)
+            returnedMoney.append(newMoney)
+            print("Money added to wallet: \(currency.value) (Instance ID: \(newMoney.id))")
+        }
+    }
     
     func acceptMoney(_ money: Money) {
         receivedMoney.append(money)
@@ -107,6 +139,20 @@ final class CashierViewModel {
     
     func isLimitCounterReached() -> Bool {
         return getCounterItemsCount() >= maxItemsInCounter
+    }
+    
+    func onReturnedMoneyTapped() {
+        
+        DispatchQueue.main.async {
+            self.parent?.walletVM.moneys.append(contentsOf: self.returnedMoney)
+            self.returnedMoney.removeAll()
+        }
+        
+        // TODO: animate flying money to wallet before removing the overlay
+        
+        withAnimation {
+            isReturnedMoneyPrompted = false
+        }
     }
     
     func checkOutSuccess() {
