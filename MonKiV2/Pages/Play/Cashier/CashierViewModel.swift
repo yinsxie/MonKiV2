@@ -16,6 +16,7 @@ enum CashierPage {
 @Observable
 final class CashierViewModel {
     weak var parent: PlayViewModel?
+    private var checkoutTask: Task<Void, Never>?
     
     init(parent: PlayViewModel?) {
         self.parent = parent
@@ -97,42 +98,64 @@ final class CashierViewModel {
     func checkOutSuccess() {
         guard !checkOutItems.isEmpty else { return }
         
+        if checkoutTask != nil || !bagVisualItems.isEmpty {
+            
+            checkoutTask?.cancel()
+            checkoutTask = nil
+            finalizePurchase(instantReset: true)
+            
+            Task { @MainActor in
+                self.parent?.walletVM.isWalletOpen = false
+            }
+        }
+        
         self.bagVisualItems = self.checkOutItems
         self.checkOutItems.removeAll()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            self.parent?.walletVM.isWalletOpen = false
+        }
+        
+        checkoutTask = Task { @MainActor in
+            if Task.isCancelled { return }
             
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                self.parent?.walletVM.isWalletOpen = false
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            do {
+                try await Task.sleep(nanoseconds: 1_500_000_000)
+                if Task.isCancelled { return }
+                
+                try await Task.sleep(nanoseconds: 500_000_000)
+                if Task.isCancelled { return }
                 
                 withAnimation(.easeIn(duration: 0.8)) {
                     self.bagOffset = 1000
                 }
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                    self.finalizePurchase()
-                }
+                try await Task.sleep(nanoseconds: 800_000_000)
+                if Task.isCancelled { return }
+                
+                self.finalizePurchase()
+                
+            } catch {
+                print("Task checkout baru dibatalkan (mungkin user checkout lagi).")
             }
         }
     }
     
-    private func finalizePurchase() {
-        let freshItems = self.bagVisualItems.map { oldItem in
-            CartItem(item: oldItem.item)
-        }
+    private func finalizePurchase(instantReset: Bool = false) {
+        guard !bagVisualItems.isEmpty else { return }
         
+        let freshItems = self.bagVisualItems.map { CartItem(item: $0.item) }
         self.purchasedItems.append(contentsOf: freshItems)
-        print("Saved \(freshItems.count) items to inventory.")
-        
         self.bagVisualItems.removeAll()
         
-        var transaction = Transaction()
-        transaction.disablesAnimations = true
-        withTransaction(transaction) {
+        if instantReset {
             self.bagOffset = 0
+        } else {
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                self.bagOffset = 0
+            }
         }
     }
 }
