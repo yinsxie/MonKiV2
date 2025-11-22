@@ -211,8 +211,9 @@ struct CashierView: View {
                     }
                 }
                 
-                ShoppingBagView()
+                ShoppingBagView(items: viewModel.bagVisualItems)
                     .padding(.horizontal, 20)
+                    .offset(x: viewModel.bagOffset)
             }
             .frame(alignment: .leading)
 
