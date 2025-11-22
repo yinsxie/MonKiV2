@@ -333,12 +333,7 @@ struct IngredientsGridView: View {
         let secondRow = Array(allItems.dropFirst(7))
         
         VStack {
-            if allItems.isEmpty {
-                Text("No ingredients recorded")
-                    .font(.caption)
-                    .italic()
-                    .foregroundColor(.gray)
-            } else {
+            if !allItems.isEmpty {
                 VStack(spacing: 10) {
                     if !firstRow.isEmpty {
                         HStack(spacing: 8) {
@@ -387,11 +382,11 @@ struct IngredientItemView: View {
                     .offset(y: 15)
                 
                 //TODO: Remove when all shelf item assets are in
-                Text(itemName)
-                    .font(.fredokaOne(size: 14))
-                    .foregroundColor(.black.opacity(0.8))
-                    .lineLimit(1)
-                    .fixedSize()
+//                Text(itemName)
+//                    .font(.fredokaOne(size: 14))
+//                    .foregroundColor(.black.opacity(0.8))
+//                    .lineLimit(1)
+//                    .fixedSize()
             }
             .frame(width: 48, height: 70)
         }

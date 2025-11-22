@@ -19,7 +19,7 @@ struct PlayViewContainer: View {
             AnyView(ShelfView()),
             AnyView(CashierView()),
             AnyView(Color.clear),
-            AnyView(IngredientInputView()),
+//            AnyView(IngredientInputView()),
             AnyView(CreateDishView())
         ]
     }
@@ -87,30 +87,44 @@ struct PlayViewContainer: View {
 extension PlayViewContainer {
     
     private var pagingScrollView: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 0) {
-                ForEach(pages.indices, id: \.self) { index in
-                    pages[index]
-                        .containerRelativeFrame(
-                        .horizontal, count: 1, spacing: 0,
-                        alignment: index == 2 ? .leading : .center)
-                        .ignoresSafeArea()
-                        .id(index)
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal) {
+                HStack(spacing: 0) {
+                    ForEach(pages.indices, id: \.self) { index in
+                        pages[index]
+                            .containerRelativeFrame(
+                                .horizontal, count: 1, spacing: 0,
+                                alignment: index == 2 ? .leading : .center)
+                            .ignoresSafeArea()
+                            .id(index)
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            
+            .scrollPosition(id: $playVM.currentPageIndex)
+            .scrollBounceBehavior(.basedOnSize)
+            .contentMargins(0, for: .scrollContent)
+            .scrollTargetBehavior(.paging)
+            .scrollDisabled(playVM.dragManager.isDragging || playVM.atmVM.isZoomed)
+            .scrollIndicators(.hidden)
+            .onChange(of: playVM.currentPageIndex) { _, newIndex in
+                handlePageChange(newIndex)
+            }
+            .onAppear {
+                playVM.currentPageIndex = pages.count-1
+                // Force jump to CreateDishView on load
+                DispatchQueue.main.async {
+                    proxy.scrollTo(pages.count-1, anchor: .center)
                 }
             }
-            .scrollTargetLayout()
+            .onChange(of: playVM.currentPageIndex) { _, newVal in
+                // If user interacts manually, hide the button
+                if newVal != pages.count-1 {
+                    playVM.isIntroButtonVisible = false
+                }
+            }
         }
-        
-        .scrollPosition(id: $playVM.currentPageIndex)
-        .scrollBounceBehavior(.basedOnSize)
-        .contentMargins(0, for: .scrollContent)
-        .scrollTargetBehavior(.paging)
-        .scrollDisabled(playVM.dragManager.isDragging || playVM.atmVM.isZoomed)
-        .scrollIndicators(.hidden)
-        .onChange(of: playVM.currentPageIndex) { _, newIndex in
-            handlePageChange(newIndex)
-        }
-        
     }
     
     @ViewBuilder
@@ -154,8 +168,8 @@ extension PlayViewContainer {
             let currentIndex = playVM.currentPageIndex ?? 0
             
             ShoppingBagSideBarView()
-                .opacity(currentIndex == 5 ? 1 : 0)
-                .disabled(currentIndex != 5)
+                .opacity(currentIndex == pages.count-1 ? 1 : 0)
+                .disabled(currentIndex != pages.count-1)
         }
         .overlay {
             ZStack {

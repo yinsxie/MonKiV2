@@ -25,7 +25,7 @@ struct PageControl: View {
             return ("Icon_atm_active", "Icon_atm_inactive")
         case 1:
             return ("Icon_shelf_1_active", "Icon_shelf_1_inactive")
-        case 5:
+        case 4:
             return ("Icon_dish_active", "Icon_dish_inactive")
         default:
             return nil

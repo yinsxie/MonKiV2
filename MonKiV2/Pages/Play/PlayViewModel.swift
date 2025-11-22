@@ -25,7 +25,9 @@ import SwiftUI
     var dishVM: CreateDishViewModel!
     var atmVM: ATMViewModel!
     
+    // Start at CreateDishView
     var currentPageIndex: Int? = 0
+    var isIntroButtonVisible: Bool = true
     
     var dragManager = DragManager()
     
@@ -69,6 +71,16 @@ import SwiftUI
         dragManager.onDropFailed = { [weak self] draggedItem in
             guard let self = self else { return }
             self.handleDropFailed(draggedItem: draggedItem)
+        }
+    }
+    
+    func startTour() {
+        withAnimation {
+             isIntroButtonVisible = false
+        }
+        
+        withAnimation(.easeInOut(duration: 2.5)) {
+            currentPageIndex = 0
         }
     }
     
