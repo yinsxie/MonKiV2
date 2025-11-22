@@ -39,20 +39,46 @@ struct CashierView: View {
                     // MAIN COUNTER AREA
                     ZStack(alignment: .leading) {
                         
-                        // COUNTER BACKGROUND + ITEMS
-                        ZStack(alignment: .bottomTrailing) {
+                        // GREEN BACKGROUND BAR (left-aligned)
+                        Color.green
+                            .opacity(0)
+                            .frame(width: 550, height: 200)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        // ITEMS FROM RIGHT → LEFT
+                        VStack(alignment: .trailing, spacing: -50) {
+                            // 2nd Row (Top/Back) - Items 10 to 12
+                            if viewModel.checkOutItems.count > 7 {
+                                HStack {
+                                    ForEach(Array(viewModel.checkOutItems.dropFirst(7))) { cartItem in
+                                        GroceryItemView(item: cartItem.item)
+                                            .scaleEffect(0.85)
+                                            .shadow(radius: 2)
+                                            .transition(.scale.combined(with: .opacity))
+                                            .makeDraggable(
+                                                item: DraggedItem(
+                                                    id: cartItem.id,
+                                                    payload: .grocery(cartItem.item),
+                                                    source: .cashierCounter
+                                                )
+                                            )
+                                            .opacity(
+                                                dragManager.currentDraggedItem?.id == cartItem.id ||
+                                                playViewModel.itemsCurrentlyAnimating.contains(cartItem.id)
+                                                ? 0 : 1
+                                            )
+                                            .padding(.horizontal, -25)
+                                    }
+                                }
+                                .environment(\.layoutDirection, .rightToLeft)
+                                .padding(.trailing, 80)
+                            }
                             
-                            // GREEN BACKGROUND BAR (left-aligned)
-                            Color.green
-                                .opacity(0)
-                                .frame(width: 550, height: 200)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            // ITEMS FROM RIGHT → LEFT
+                            // 1st Row (Bottom/Front) - Items 1 to 9
                             HStack {
-                                ForEach(viewModel.checkOutItems) { cartItem in
+                                ForEach(Array(viewModel.checkOutItems.prefix(7))) { cartItem in
                                     GroceryItemView(item: cartItem.item)
-                                        .scaleEffect(1)
+                                        .scaleEffect(0.85)
                                         .shadow(radius: 2)
                                         .transition(.scale.combined(with: .opacity))
                                         .makeDraggable(
@@ -67,17 +93,27 @@ struct CashierView: View {
                                             playViewModel.itemsCurrentlyAnimating.contains(cartItem.id)
                                             ? 0 : 1
                                         )
-                                        .padding(.horizontal, -20)
+                                        .padding(.horizontal, -25)
                                 }
                             }
                             .environment(\.layoutDirection, .rightToLeft)
-                            .padding(.leading, 0)
                         }
-                        .frame(maxWidth: 460, alignment: .leading)
-                        .padding(.top, 82)
-                        .makeDropZone(type: .cashierLoadingCounter)
-                        .offset(y: -95)
-                        .zIndex(1)
+                        .padding(.horizontal, 10)
+                    }
+                    .frame(maxWidth: 620, alignment: .leading)
+                    .padding(.top, 82)
+                    .makeDropZone(type: .cashierLoadingCounter)
+                    //                    .background(Color.green.opacity(0.5))
+                    .offset(y: -95)
+                    .zIndex(1)
+                    
+                    // CASHIER IMAGE
+                    ZStack {
+                        Image("cashier_counter")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 1622.78, height: 706)
+                            .ignoresSafeArea()
                         
                         // CASHIER IMAGE
                         ZStack {
@@ -121,6 +157,21 @@ struct CashierView: View {
                             //                        CashierPaymentView()
                             //                            .offset(x: 650)
                         }
+                        
+                        // Money DropZone
+                        // Edge Case: Make sure the drop zone is only active on the payment page
+                        Color.green.opacity(0)
+                            .frame(width: 465, height: 406)
+                            .contentShape(Rectangle())
+                            .makeDropZone(type: .cashierPaymentCounter)
+                        //                            .background(Color.green.opacity(0.5))
+                            .offset(x: 450)
+                            .scrollTransition { content, phase in
+                                content.offset(x: phase.isIdentity ? 140 : 0)
+                            }
+                        
+                        CashierPaymentView()
+                            .offset(x: 650)
                     }
                     
                     ShoppingBagView()
