@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CreateDishView: View {
+    @Environment(PlayViewModel.self) var playVM
     @Environment(CreateDishViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
     
@@ -37,7 +38,7 @@ struct CreateDishView: View {
                 
                 bottomButton
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .center)
             .padding(.horizontal, 30)
             .onAppear {
                 if viewModel.cgImage == nil && viewModel.checkCheckoutItems(),
@@ -54,10 +55,36 @@ struct CreateDishView: View {
                 }
             }
             //            DishImageView() .frame(maxWidth: .infinity)
+            
+            // Tour Button
+            if playVM.isIntroButtonVisible {
+                startTourButton
+            }
         }
-        .padding(.horizontal)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         
+    }
+    
+    private var startTourButton: some View {
+        Button(action: {
+            playVM.startTour()
+        }) {
+            HStack(spacing: 12) {
+                Text("Go to ATM")
+                    .font(.custom("WendyOne-Regular", size: 32))
+            }
+            .foregroundColor(.white)
+            .padding(.vertical, 80)
+            .padding(.horizontal, 50)
+            .background(
+                Ellipse()
+                    .fill(Color.orange)
+                    .shadow(radius: 5, y: 5)
+            )
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+        .padding(.leading, 25)
+        .padding(.bottom, 70)
     }
     
     private var monkiFace: some View {

@@ -58,7 +58,8 @@ struct ShoppingBagSideBarView: View {
         .frame(maxHeight: .infinity)
         .padding(.horizontal, 40)
         .onChange(of: playVM.currentPageIndex) { _, newValue in
-            if newValue == 5 {
+            // MARK: Change if turning on Debug IngredientsListView
+            if newValue == 4 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     toggleBag(to: true)
                 }
