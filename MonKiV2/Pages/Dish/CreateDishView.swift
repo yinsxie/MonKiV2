@@ -182,15 +182,7 @@ struct CreateDishView: View {
     }
     
     private var bottomButton: some View {
-        // This function returns true if the input text is EMPTY
-        let isInputEmpty = viewModel.checkCheckoutItems()
-        let hasImage = viewModel.cgImage != nil
-        
-        // The button is disabled if:
-        // 1. We are currently loading (isLoading == true)
-        // 2. We have NO image generated yet AND the input is empty
-        //    (meaning no purchased items were loaded)
-        let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+        let isDisabled = viewModel.createDishItem.count == 0
         
         return Button(action: {
             // MODIFIED ACTION:
