@@ -52,6 +52,9 @@ struct StartingPageView: View {
             }
             .padding(115)
         }
+        .onAppear{
+            BGMManager.shared.play(track: .supermarket)
+        }
     }
 }
 
