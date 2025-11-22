@@ -426,7 +426,6 @@ private extension PlayViewModel {
                      self.cashierVM.isAnimatingReturnMoney = false
                      self.cashierVM.isReturnedMoneyPrompted = true
                  }
-                 self.cashierVM.checkOutSuccess()
              }
         }
     }

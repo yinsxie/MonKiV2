@@ -106,7 +106,7 @@ extension PlayViewContainer {
             .scrollBounceBehavior(.basedOnSize)
             .contentMargins(0, for: .scrollContent)
             .scrollTargetBehavior(.paging)
-            .scrollDisabled(playVM.dragManager.isDragging || playVM.atmVM.isZoomed)
+            .scrollDisabled(playVM.dragManager.isDragging || playVM.atmVM.isZoomed || playVM.cashierVM.isReturnedMoneyPrompted)
             .scrollIndicators(.hidden)
             .onChange(of: playVM.currentPageIndex) { _, newIndex in
                 handlePageChange(newIndex)
