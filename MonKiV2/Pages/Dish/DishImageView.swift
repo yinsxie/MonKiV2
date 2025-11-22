@@ -11,131 +11,180 @@ struct DishImageView: View {
     @Environment(CreateDishViewModel.self) var viewModel
     
     var body: some View {
-        VStack {
-            imageDisplayBox
-                .frame(width: 600, height: 600)
-                .padding(.top, 115)
-                .overlay(alignment: .top) {
-                    ZStack {
-                        Image("extractor_hood")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 395)
-                        
-                        Rectangle()
-                            .fill(Color(hex: "#65C466"))
-                            .frame(width: 172, height: 47)
-                            .overlay(
-                                Text("\(viewModel.totalPurchasedPrice)")
-                                    .font(.wendyOne(size: 40))
-                                    .foregroundColor(.white)
-                                    .shadow(color: .black.opacity(0.2), radius: 1, y: 1)
-                            )
-                            .allowsHitTesting(false)
-                            .padding(.top, 40)
+        ZStack(alignment: .bottom) {
+            HStack(alignment: .center, spacing: 72) {
+                ZStack(alignment: .topLeading) {
+                    imageDisplay
+                    
+                    let isInputEmpty = viewModel.checkCheckoutItems()
+                    let hasImage = viewModel.cgImage != nil
+                    let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+                    
+                    if !isDisabled {
+                        retryButton
+                            .offset(x: -20, y: -20)
                     }
                 }
-                .overlay(alignment: .bottom) {
-                    VStack(spacing: 10) {
-                        Button {
-                            viewModel.onSaveButtonTapped()
-                        } label: {
-                            Text("Simpan")
-                        }
-                        bottomButton
-                            .padding(.horizontal, 16)
-                            .offset(y: 50)
-                    }
+                
+                Image("dividerLine")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 6)
+                
+                VStack(alignment: .center, spacing: 24) {
+                    MoneyBreakdownView(totalPrice: viewModel.totalPurchasedPrice)
+                    ingredientsGrid
                 }
+                .padding(0)
+                .frame(width: 432, alignment: .center)
+            }
+            .padding(48)
+            .frame(width: 1160, height: 584, alignment: .center)
+            .background(Color(red: 1, green: 0.94, blue: 0.8))
+            .cornerRadius(24)
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .inset(by: -12)
+                    .stroke(.white, lineWidth: 24)
+            )
             
-            Spacer()
+            saveButton
+                .offset(y: 70)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
     }
     
-    // MARK: - Image Display Box
-    private var imageDisplayBox: some View {
+    // MARK: - Image Display
+    private var imageDisplay: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 83)
-//                .fill(Color.white) // biar keliatan outlinenya, gw ganti bg ke black dulu
-                .fill(Color.black)
-                .frame(width: 600, height: 600)
-            
-            ZStack {
-                if let cgImage = viewModel.cgImage {
-                    Image(uiImage: UIImage(cgImage: cgImage))
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipShape(RoundedRectangle(cornerRadius: 24))
-                }
-                
-                // LOADING OVERLAY
-                if viewModel.isLoading {
-                    Color.black.opacity(0.4)
-                        .clipShape(RoundedRectangle(cornerRadius: 24))
-                        .overlay(
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .scaleEffect(1.5)
-                                .tint(.white)
-                        )
-                }
+            if let cgImage = viewModel.cgImage {
+                Image(uiImage: UIImage(cgImage: cgImage))
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
             }
-            .frame(width: 555, height: 555)
+            
+            // LOADING OVERLAY
+            if viewModel.isLoading {
+                Color.black.opacity(0.4)
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                    .overlay(
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .scaleEffect(1.5)
+                            .tint(.white)
+                    )
+            }
         }
-        .frame(width: 600, height: 600)
+        .frame(width: 488, height: 488)
+        
     }
     
-    // MARK: - Bottom Button
-    // MARK: - Bottom Button
-    private var bottomButton: some View {
-        // This function returns true if the input text is EMPTY
+    // MARK: - Ingredients Grid (Grouped)
+    private var ingredientsGrid: some View {
+        let sortedItems = viewModel.groupedDishItems
+        let limitedItems = Array(sortedItems.prefix(14))
+        
+        let firstRow = Array(limitedItems.prefix(7))
+        let secondRow = Array(limitedItems.dropFirst(7))
+        
+        return VStack {
+            if !limitedItems.isEmpty {
+                VStack(spacing: 10) {
+                    if !firstRow.isEmpty {
+                        HStack(spacing: 8) {
+                            ForEach(firstRow) { groceryItem in
+                                ingredientItemView(groceryItem)
+                            }
+                        }
+                    }
+                    
+                    if !secondRow.isEmpty {
+                        HStack(spacing: 8) {
+                            ForEach(secondRow) { groceryItem in
+                                ingredientItemView(groceryItem)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .frame(height: 190)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 40)
+    }
+    
+    // MARK: - Helper: Item View
+    private func ingredientItemView(_ groceryItem: GroceryItem) -> some View {
+        let itemName = groceryItem.item.name
+        let itemPath = groceryItem.item.imageAssetPath
+        let assetName = itemPath.isEmpty ? "wortel" : itemPath
+        
+        let quantity = groceryItem.quantity
+        
+        return VStack(spacing: 0) {
+            ZStack(alignment: .top) {
+                Image(assetName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 48, height: 48)
+                    .shadow(radius: 1)
+                
+                if quantity > 0 {
+                    CircleNumberView(number: quantity)
+                        .scaleEffect(0.45)
+                        .offset(y: 15)
+                }
+            }
+            .frame(width: 48, height: 70)
+        }
+    }
+    
+    // MARK: - Retry Button
+    private var retryButton: some View {
+        
+        return Button(action: {
+            AudioManager.shared.play(.buttonClick)
+            viewModel.setIngredients(from: viewModel.createDishItem)
+            viewModel.generate()
+        }, label: {
+            ZStack {
+                Image("retryButton")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 132)
+            }
+        })
+    }
+    
+    // MARK: - Save Button
+    private var saveButton: some View {
         let isInputEmpty = viewModel.checkCheckoutItems()
         let hasImage = viewModel.cgImage != nil
-        
-        // The button is disabled if:
-        // 1. We are currently loading (isLoading == true)
-        // 2. We have NO image generated yet AND the input is empty
-        //    (meaning no purchased items were loaded)
         let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
         
         return Button(action: {
-            // MODIFIED ACTION:
-            // 1. Always get the fresh list of purchased items
-            AudioManager.shared.play(.buttonClick)
-            viewModel.setIngredients(from: viewModel.createDishItem)
-            // 2. Start generating
-            viewModel.generate()
-            
-        }) {
+            viewModel.onSaveButtonTapped()
+        }, label: {
             ZStack {
                 Image(isDisabled ? "button_disable" : "button_active")
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 100)
+                    .frame(height: 127)
                 
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
-                        .scaleEffect(1.5)
-                } else {
                     HStack(spacing: 10) {
-                        // MODIFIED: Text changes based on hasImage
-                        Text(hasImage ? "New Dish" : "Start Cook")
-                            .font(.wendyOne(size: 40))
+                        Text("Simpan Resep")
+                            .font(.fredokaOne(size: 40))
                             .foregroundColor(.white)
                         
-                        Image("Spatula")
+                        Image("bookDownloadIcon")
                             .resizable()
                             .scaledToFit()
-                            .frame(height: 30)
+                            .frame(height: 36)
                     }
-                    .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
-                }
             }
-        }
-        .disabled(isDisabled) // Use the new isDisabled logic
+        })
+        .disabled(isDisabled)
     }
 }
