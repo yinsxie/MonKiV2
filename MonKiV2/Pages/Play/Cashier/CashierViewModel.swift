@@ -169,6 +169,8 @@ final class CashierViewModel {
         withAnimation {
             isReturnedMoneyPrompted = false
         }
+        
+        checkOutSuccess()
     }
     
     func checkOutSuccess() {
