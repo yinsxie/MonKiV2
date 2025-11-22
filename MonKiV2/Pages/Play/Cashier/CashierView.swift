@@ -128,6 +128,11 @@ struct CashierView: View {
                                 .onTapGesture {
                                     viewModel.onReturnedReceivedMoneyTapped()
                                 }
+                                .onChange(of: viewModel.currentPage) { _, newValue in
+                                    if newValue != .payment {
+                                        viewModel.onPageChangeWhileReceivedMoney()
+                                    }
+                                }
                             
                             Image("cashier_register")
                                 .resizable()

@@ -82,6 +82,7 @@ struct WalletView: View {
                 }
             }
         }
+        .makeDropZone(type: .wallet)
     }
     
 }

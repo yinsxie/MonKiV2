@@ -14,7 +14,7 @@ import SwiftUI
     // Global Published Var for global state
     var initialBudget: Int = 0
     var currentBudget: Int {
-        walletVM.moneys.reduce(0) { $0 + $1.currency.value } + cashierVM.totalReceivedMoney
+        walletVM.moneys.reduce(0) { $0 + $1.currency.value }
     }
     
     // VM's
@@ -168,10 +168,12 @@ private extension PlayViewModel {
     }
     
     func dropMoneyToCounter(withCurrency currency: Currency) {
+        print("Dropped money (\(currency.value)) on payment counter")
+
         if cashierVM.checkOutItems.isEmpty {
             return
         }
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.cashierVM.acceptMoney(Money(forCurrency: currency))
             self.walletVM.removeFirstMoney(withCurrency: currency)
         }
@@ -419,6 +421,11 @@ private extension PlayViewModel {
     
     func handleMoneyDropOnWallet(currency: Currency, draggedItem: DraggedItem) {
         print("Dropped money (\(currency.value)) back on wallet")
+        DispatchQueue.main.async {
+            self.walletVM.addMoney(currency)
+            self.cashierVM.receivedMoney.removeAll(where: { $0.id == draggedItem.id })
+            self.dragManager.currentDraggedItem = nil
+        }
     }
     
     func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {

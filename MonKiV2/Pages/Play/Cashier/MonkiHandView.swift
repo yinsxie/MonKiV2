@@ -27,6 +27,7 @@ struct MonkiHandView: View {
                     }
                     ForEach(cashierVM.receivedMoneyGrouped) { moneyGroup in
                         imageViewForMoney(moneyGroup.money)
+                            .makeDraggable(item: DraggedItem(id: moneyGroup.money.id, payload: .money(moneyGroup.money.currency), source: .monkiHand))
                     }
                     if cashierVM.returnedMoney.count > 0 {
                         ForEach(cashierVM.returnedMoney) { money in

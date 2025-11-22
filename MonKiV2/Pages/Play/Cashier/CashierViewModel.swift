@@ -59,8 +59,6 @@ final class CashierViewModel {
             .map { MoneyGroup(money: $0.money, count: $0.count) }
             .sorted { $0.money.currency.value > $1.money.currency.value } // Sort by count descending
         
-        print("Printing grouped received money:")
-        print(res)
         return res
     }
 
@@ -145,6 +143,13 @@ final class CashierViewModel {
         DispatchQueue.main.async {
             self.parent?.walletVM.moneys.append(contentsOf: self.returnedMoney)
             self.returnedMoney.removeAll()
+        }
+    }
+    
+    func onPageChangeWhileReceivedMoney() {
+        DispatchQueue.main.async {
+            self.parent?.walletVM.moneys.append(contentsOf: self.receivedMoney)
+            self.receivedMoney.removeAll()
         }
     }
     
