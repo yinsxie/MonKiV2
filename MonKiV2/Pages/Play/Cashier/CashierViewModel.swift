@@ -141,6 +141,13 @@ final class CashierViewModel {
         return getCounterItemsCount() >= maxItemsInCounter
     }
     
+    func onReturnedReceivedMoneyTapped() {
+        DispatchQueue.main.async {
+            self.parent?.walletVM.moneys.append(contentsOf: self.returnedMoney)
+            self.returnedMoney.removeAll()
+        }
+    }
+    
     func onReturnedMoneyTapped() {
         
         DispatchQueue.main.async {
