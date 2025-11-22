@@ -17,6 +17,7 @@ enum CashierPage {
 final class CashierViewModel {
     weak var parent: PlayViewModel?
     private var checkoutTask: Task<Void, Never>?
+    private var currentCheckoutID: UUID = UUID()
     
     init(parent: PlayViewModel?) {
         self.parent = parent
@@ -74,16 +75,26 @@ final class CashierViewModel {
     let maxItemsInCounter: Int = 6
     
     func addToCounter(_ item: CartItem) {
+        if checkoutTask != nil || bagOffset > 0 {
+            print("User scan barang saat animasi jalan -> Reset Tas")
+            checkoutTask?.cancel()
+            checkoutTask = nil
+            finalizePurchase(instantReset: true)
+        }
+        
         checkOutItems.append(item)
+        bagVisualItems.append(item)
     }
     
     func removeFromCounter(withId id: UUID) {
         checkOutItems.removeAll { $0.id == id }
+        bagVisualItems.removeAll { $0.id == id }
     }
     
     func popFromCounter(withId id: UUID) -> CartItem? {
         let item = checkOutItems.first { $0.id == id }
         checkOutItems.removeAll { $0.id == id }
+        bagVisualItems.removeAll { $0.id == id }
         return item
     }
     
@@ -96,20 +107,33 @@ final class CashierViewModel {
     }
     
     func checkOutSuccess() {
-        guard !checkOutItems.isEmpty else { return }
+        let itemsToCheckout = self.checkOutItems
+        guard !itemsToCheckout.isEmpty else { return }
         
-        if checkoutTask != nil || !bagVisualItems.isEmpty {
-            
+        let newTransactionID = UUID()
+        self.currentCheckoutID = newTransactionID
+        
+        if checkoutTask != nil || bagOffset > 0 {
             checkoutTask?.cancel()
             checkoutTask = nil
-            finalizePurchase(instantReset: true)
             
-            Task { @MainActor in
-                self.parent?.walletVM.isWalletOpen = false
+            if !bagVisualItems.isEmpty {
+                let oldItems = bagVisualItems.filter { oldItem in
+                    !itemsToCheckout.contains(where: { $0.id == oldItem.id })
+                }
+                let itemsToSave = oldItems.map { CartItem(item: $0.item) }
+                purchasedItems.append(contentsOf: itemsToSave)
+            }
+            
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                self.bagOffset = 0
             }
         }
         
-        self.bagVisualItems = self.checkOutItems
+        self.bagVisualItems = itemsToCheckout
+        
         self.checkOutItems.removeAll()
         
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -117,21 +141,20 @@ final class CashierViewModel {
         }
         
         checkoutTask = Task { @MainActor in
+            let myID = newTransactionID
+            
             if Task.isCancelled { return }
             
             do {
-                try await Task.sleep(nanoseconds: 1_500_000_000)
-                if Task.isCancelled { return }
-                
-                try await Task.sleep(nanoseconds: 500_000_000)
-                if Task.isCancelled { return }
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                guard self.currentCheckoutID == myID else { return }
                 
                 withAnimation(.easeIn(duration: 0.8)) {
                     self.bagOffset = 1000
                 }
                 
                 try await Task.sleep(nanoseconds: 800_000_000)
-                if Task.isCancelled { return }
+                guard self.currentCheckoutID == myID else { return }
                 
                 self.finalizePurchase()
                 
@@ -149,7 +172,11 @@ final class CashierViewModel {
         self.bagVisualItems.removeAll()
         
         if instantReset {
-            self.bagOffset = 0
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                self.bagOffset = 0
+            }
         } else {
             var transaction = Transaction()
             transaction.disablesAnimations = true
