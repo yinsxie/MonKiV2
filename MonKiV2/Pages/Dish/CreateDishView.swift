@@ -12,12 +12,12 @@ struct CreateDishView: View {
     @Environment(CreateDishViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
     @EnvironmentObject var appCoordinator: AppCoordinator
-
+    
     var body: some View {
         ZStack {
             monkiFace
                 .offset(x: -100, y: -230)
-                        
+            
             VStack(alignment: .trailing, spacing: 6) {
                 HStack(alignment: .bottom) {
                     Button(action: {
@@ -27,25 +27,58 @@ struct CreateDishView: View {
                         dishBook
                             .padding(.trailing, 50)
                     })
-
+                    
                     VStack {
                         ZStack {
-                            Color.green.opacity(0.4)
+                            // Green background area
+                            Color.green.opacity(0)
                             
-                            HStack {
-                                ForEach(viewModel.createDishItem) { cartItem in
-                                    GroceryItemView(item: cartItem.item)
-                                        .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
-                                    
-                                        .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
-                                    
+                            // 3-Row Item Grid
+                            VStack(alignment: .center, spacing: -50) {
+                                
+                                // ROW 3: Items 10-12
+                                if viewModel.createDishItem.count > 9 {
+                                    HStack(spacing: -44) {
+                                        ForEach(Array(viewModel.createDishItem.dropFirst(9).prefix(3))) { cartItem in
+                                            GroceryItemView(item: cartItem.item)
+                                                .scaleEffect(0.86)
+                                                .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
+                                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                        }
+                                    }
+                                }
+                                
+                                // ROW 2: Items 6-9
+                                if viewModel.createDishItem.count > 5 {
+                                    HStack(spacing: -44) {
+                                        ForEach(Array(viewModel.createDishItem.dropFirst(5).prefix(4))) { cartItem in
+                                            GroceryItemView(item: cartItem.item)
+                                                .scaleEffect(0.86)
+                                                .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
+                                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                        }
+                                    }
+                                }
+                                
+                                // ROW 1: Items 1-5
+                                if !viewModel.createDishItem.isEmpty {
+                                    HStack(spacing: -44) {
+                                        ForEach(Array(viewModel.createDishItem.prefix(5))) { cartItem in
+                                            GroceryItemView(item: cartItem.item)
+                                                .scaleEffect(0.86)
+                                                .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
+                                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                        }
+                                    }
                                 }
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(width: 380, height: 220, alignment: .bottom)
                             
+                            // Dropzone Overlay
                             Color.clear.makeDropZone(type: .createDish)
                         }
                         .frame(width: 408, height: 231)
+                        .padding(.bottom, -60)
                         
                         Image("teflon")
                             .resizable()
@@ -54,12 +87,12 @@ struct CreateDishView: View {
                     }
                     .padding(.trailing, 160)
                 }
-
+                
                 ZStack(alignment: .trailing) {
                     Rectangle()
                         .foregroundStyle(Color(hex: "#CFD1D2"))
                         .frame(width: 846, height: 189)
-                                  
+                    
                     bottomButton
                         .padding(.trailing, 140)
                 }
@@ -75,8 +108,8 @@ struct CreateDishView: View {
             }
             .onChange(of: viewModel.createDishItem) { _, newPurchasedItems in
                 if !newPurchasedItems.isEmpty &&
-                        viewModel.cgImage == nil &&
-                        viewModel.checkCheckoutItems() {
+                    viewModel.cgImage == nil &&
+                    viewModel.checkCheckoutItems() {
                     viewModel.setIngredients(from: newPurchasedItems)
                 }
             }
@@ -94,7 +127,8 @@ struct CreateDishView: View {
     private var startTourButton: some View {
         Button(action: {
             playVM.startTour()
-        }) {
+
+        }, label: {
             HStack(spacing: 12) {
                 Text("Go to ATM")
                     .font(.custom("WendyOne-Regular", size: 32))
@@ -107,7 +141,7 @@ struct CreateDishView: View {
                     .fill(Color.orange)
                     .shadow(radius: 5, y: 5)
             )
-        }
+        })
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
         .padding(.leading, 25)
         .padding(.bottom, 70)
@@ -168,8 +202,7 @@ struct CreateDishView: View {
             }
             // 2. Start generating
             viewModel.generate()
-            
-        }) {
+        }, label: {
             ZStack {
                 Image(isDisabled ? "button_disable" : "button_active")
                     .resizable()
@@ -196,7 +229,7 @@ struct CreateDishView: View {
                     .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
                 }
             }
-        }
+        })
         .disabled(isDisabled) // Use the new isDisabled logic
     }
 }
