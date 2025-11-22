@@ -383,15 +383,9 @@ struct IngredientItemView: View {
                     .frame(width: 48, height: 48)
                     .shadow(radius: 1)
                 
-                Circle()
-                    .frame(height: 32)
-                    .foregroundColor(.white)
-                    .overlay(
-                        Text("\(ingredient.quantity)")
-                            .font(.fredokaOne(size: 16))
-                            .foregroundColor(.black)
-                    )
-                    .offset(y: 30)
+                CircleNumberView(number: Int(ingredient.quantity))
+                    .scaleEffect(0.45)
+                    .offset(y: 15)
                 
                 //TODO: Remove when all shelf item assets are in
                 Text(itemName)
