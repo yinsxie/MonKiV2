@@ -85,7 +85,7 @@ final class CashierViewModel {
         return result
     }
     
-    let maxItemsInCounter: Int = 6
+    let maxItemsInCounter: Int = 12
     
     func addToCounter(_ item: CartItem) {
         checkOutItems.append(item)
