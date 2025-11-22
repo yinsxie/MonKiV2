@@ -214,7 +214,7 @@ struct CashierView: View {
                     .padding(.horizontal, 20)
             }
             .frame(alignment: .leading)
-            
+
             .padding(.leading, -35)
             .padding(.bottom, 120)
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in
