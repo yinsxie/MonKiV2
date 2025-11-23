@@ -74,6 +74,7 @@ final class CashierViewModel {
     var returnedMoney: [Money] = []
     var isAnimatingReturnMoney: Bool = false
     var isReturnedMoneyPrompted: Bool = false
+    var isPlayerStopScrollingWhileReceivedMoney: Bool = false
     
     func addReturnedMoney(_ currencies: [Currency]) {
         for currency in currencies {

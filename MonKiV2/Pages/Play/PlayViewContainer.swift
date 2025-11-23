@@ -134,6 +134,7 @@ extension PlayViewContainer {
         .scrollDisabled(playVM.dragManager.isDragging
             || playVM.atmVM.isZoomed
             || playVM.cashierVM.isReturnedMoneyPrompted
+                        || playVM.cashierVM.isPlayerStopScrollingWhileReceivedMoney
         )
         .scrollIndicators(.hidden)
         .onChange(of: playVM.currentPageIndex) { _, newIndex in
