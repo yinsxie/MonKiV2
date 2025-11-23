@@ -17,6 +17,7 @@ struct PlayViewContainer: View {
         [
             AnyView(ATMView()),
             AnyView(ShelfView()),
+            AnyView(SecondShelfView()),
             AnyView(CashierView()),
             AnyView(Color.clear),
             //            AnyView(IngredientInputView()),
@@ -94,7 +95,7 @@ extension PlayViewContainer {
                         pages[index]
                             .containerRelativeFrame(
                                 .horizontal, count: 1, spacing: 0,
-                                alignment: index == 2 ? .leading : .center)
+                                alignment: index == 3 ? .leading : .center)
                             .ignoresSafeArea()
                             .id(index)
                     }
@@ -177,7 +178,7 @@ extension PlayViewContainer {
                 .background(GeometryReader { geo in
                     Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
                 })
-                .opacity(currentIndex < 4 && !playVM.atmVM.isZoomed ? 1 : 0)
+                .opacity(currentIndex < 5 && !playVM.atmVM.isZoomed ? 1 : 0)
         }
         .overlay(alignment: .trailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
@@ -218,7 +219,7 @@ extension PlayViewContainer {
         
         // Cart View
         let currentIndex = playVM.currentPageIndex ?? 0
-        let cartVisibleIndices = [1, 2]
+        let cartVisibleIndices = [1, 2, 3]
         
         CartView()
             .offset(y: 160)

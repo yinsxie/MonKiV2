@@ -19,9 +19,9 @@ struct Item: Identifiable, Equatable {
     // TODO: Add strings of actual asset + aisle adjustment
     static let items: [Item] = [
         // Pokok
-        Item(id: UUID(), name: "Rice", price: 6, aisle: "Pokok", imageAssetPath: ""),
-        Item(id: UUID(), name: "Pasta", price: 6, aisle: "Pokok", imageAssetPath: ""),
-        Item(id: UUID(), name: "Bread", price: 7, aisle: "Pokok", imageAssetPath: ""),
+        Item(id: UUID(), name: "Rice", price: 6, aisle: "Pokok", imageAssetPath: "nasi"),
+        Item(id: UUID(), name: "Pasta", price: 6, aisle: "Pokok", imageAssetPath: "mie"),
+        Item(id: UUID(), name: "Bread", price: 7, aisle: "Pokok", imageAssetPath: "roti"),
         
         // Sayur
         Item(id: UUID(), name: "Carrot", price: 6, aisle: "Sayur", imageAssetPath: "wortel"),
@@ -30,15 +30,15 @@ struct Item: Identifiable, Equatable {
         Item(id: UUID(), name: "Corn", price: 6, aisle: "Sayur", imageAssetPath: "jagung"),
 
         // Olahan
-        Item(id: UUID(), name: "Milk", price: 12, aisle: "Olahan", imageAssetPath: ""),
+        Item(id: UUID(), name: "Milk", price: 12, aisle: "Olahan", imageAssetPath: "susu"),
 
         // Protein Harian
-        Item(id: UUID(), name: "Chicken", price: 15, aisle: "Protein Harian", imageAssetPath: ""),
-        Item(id: UUID(), name: "Fish", price: 18, aisle: "Protein Harian", imageAssetPath: ""),
+        Item(id: UUID(), name: "Chicken", price: 15, aisle: "Protein Harian", imageAssetPath: "ayam"),
+        Item(id: UUID(), name: "Fish", price: 18, aisle: "Protein Harian", imageAssetPath: "ikan"),
         Item(id: UUID(), name: "Egg", price: 5, aisle: "Protein Harian", imageAssetPath: "telur"),
 
         // Protein Premium
-        Item(id: UUID(), name: "Beef", price: 25, aisle: "Protein Premium", imageAssetPath: ""),
+        Item(id: UUID(), name: "Beef", price: 25, aisle: "Protein Premium", imageAssetPath: "beef"),
         
         // Barang di Cashier
         Item(id: UUID(), name: "Sausage", price: 12, aisle: "Kasir", imageAssetPath: ""),
