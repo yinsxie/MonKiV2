@@ -131,7 +131,8 @@ struct SecondShelfView: View {
                                     .rotation3DEffect(
                                         .degrees(viewModel.isSecondShelfLeftFridgeOpen ? -180 : 0),
                                         axis: (x: 0.0, y: 1.0, z: 0.0),
-                                        anchor: .leading
+                                        anchor: .leading,
+                                        perspective: 0.4
                                     )
                                     .onTapGesture {
                                         viewModel.animateLeftDoor()
@@ -143,7 +144,8 @@ struct SecondShelfView: View {
                                     .rotation3DEffect(
                                         .degrees(viewModel.isSecondShelfRightFridgeOpen ? 180 : 0),
                                         axis: (x: 0.0, y: 1.0, z: 0.0),
-                                        anchor: .trailing
+                                        anchor: .trailing,
+                                        perspective: 0.4
                                     )
                                     .onTapGesture {
                                         viewModel.animateRightDoor()
@@ -151,7 +153,6 @@ struct SecondShelfView: View {
                             }
                             .padding(.bottom, 20)
                             .padding(.all, 50)
-                            
                         }
                         .zIndex(1)
                         
