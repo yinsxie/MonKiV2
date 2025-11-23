@@ -11,6 +11,7 @@ struct CashierView: View {
     @Environment(CashierViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
     @Environment(PlayViewModel.self) var playViewModel
+    @Environment(CartViewModel.self) var cartVM
     
     var body: some View {
         
@@ -31,6 +32,14 @@ struct CashierView: View {
                             .frame(width: 245, height: 280)
                             .offset(y: 140)
                             .makeDropZone(type: .cashierRemoveItem)
+                        
+                        if (playViewModel.currentPageIndex ?? 0) == 3 {
+                            Rectangle()
+                                .foregroundColor(Color.clear)
+                                .floatingPriceFeedback(value: cartVM.totalPrice)
+                                .frame(width: 100, height: 100)
+                                .offset(x: 70, y: -30)
+                        }
                     }
                     .padding(.trailing, 30)
                     
