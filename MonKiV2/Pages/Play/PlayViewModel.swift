@@ -164,6 +164,10 @@ private extension PlayViewModel {
         //        withAnimation(.spring) {
         switch zone {
         case .cashierPaymentCounter:
+            if cashierVM.isPlayerStopScrollingWhileReceivedMoney {
+                print("Player is currently not allowed to drop money on payment counter.")
+                return
+            }
             print("Dropped money on payment counter")
             
             // Put money
@@ -437,10 +441,12 @@ private extension PlayViewModel {
     
     func handleMoneyDropOnWallet(currency: Currency, draggedItem: DraggedItem) {
         print("Dropped money (\(currency.value)) back on wallet")
-        DispatchQueue.main.async {
-            self.walletVM.addMoney(currency)
-            self.cashierVM.receivedMoney.removeAll(where: { $0.id == draggedItem.id })
-            self.dragManager.currentDraggedItem = nil
+        if draggedItem.source != .wallet {
+            DispatchQueue.main.async {
+                self.walletVM.addMoney(currency)
+                self.cashierVM.receivedMoney.removeAll(where: { $0.id == draggedItem.id })
+                self.dragManager.currentDraggedItem = nil
+            }
         }
     }
     

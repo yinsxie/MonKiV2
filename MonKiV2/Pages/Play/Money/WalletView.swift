@@ -35,7 +35,8 @@ struct WalletView: View {
                                     .makeDraggable(
                                         item: DraggedItem(
                                             id: moneyGroup.money.id,
-                                            payload: .money(moneyGroup.money.currency)
+                                            payload: .money(moneyGroup.money.currency),
+                                            source: .wallet
                                         )
                                     )
                                     .offset(x: -(4 * min(CGFloat(moneyGroup.count - 1), 2)))
