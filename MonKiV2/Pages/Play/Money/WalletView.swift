@@ -70,6 +70,15 @@ struct WalletView: View {
                         viewModel.isWalletOpen.toggle()
                     }
                 }
+            
+            //TODO: Change to index 4 after SecondShelf PR
+            if playVM.currentPageIndex == 3 {
+                Rectangle()
+                    .foregroundColor(Color.clear)
+                    .floatingPriceFeedback(value: playVM.cashierVM.cumulativeReturnTotal)
+                    .frame(width: 100, height: 100)
+                    .offset(x: -200, y: -200)
+            }
         }
         .frame(maxHeight: playVM.currentPageIndex == 4 ? 0 : .infinity, alignment: .bottom)
         .onChange(of: playVM.currentPageIndex) { _, _ in

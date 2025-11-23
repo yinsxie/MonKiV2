@@ -75,6 +75,8 @@ final class CashierViewModel {
     var isAnimatingReturnMoney: Bool = false
     var isReturnedMoneyPrompted: Bool = false
     var isPlayerStopScrollingWhileReceivedMoney: Bool = false
+    private var tempPendingReturn: Int = 0
+    var cumulativeReturnTotal: Int = 0
     
     func addReturnedMoney(_ currencies: [Currency]) {
         for currency in currencies {
@@ -159,6 +161,9 @@ final class CashierViewModel {
     }
     
     func onReturnedMoneyTapped() {
+        // floating feedback
+        let totalAmount = returnedMoney.reduce(0) { $0 + $1.currency.value }
+        self.tempPendingReturn = totalAmount
         
         DispatchQueue.main.async {
             self.parent?.walletVM.moneys.append(contentsOf: self.returnedMoney)
@@ -255,6 +260,14 @@ final class CashierViewModel {
         
         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
             self.parent?.walletVM.isWalletOpen = true
+        }
+        
+        // floating feedback
+        if self.tempPendingReturn > 0 {
+            withAnimation {
+                self.cumulativeReturnTotal += self.tempPendingReturn
+            }
+            self.tempPendingReturn = 0
         }
     }
 }
