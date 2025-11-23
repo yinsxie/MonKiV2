@@ -17,6 +17,10 @@ struct DishBookView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Dish.timestamp, ascending: false)]
     ) var dishes: FetchedResults<Dish>
     
+    // Constants for gesture detection sensitivity
+    let minSwipeDistance: CGFloat = 30
+    let maxVerticalOffset: CGFloat = 40
+    
     var body: some View {
         ZStack {
             // A. Background
@@ -64,6 +68,38 @@ struct DishBookView: View {
                 }
                 Spacer()
             }
+        }
+        .gesture(
+            DragGesture()
+                .onEnded { value in
+                    handleSwipe(value: value)
+                }
+        )
+        
+    }
+    
+    func handleSwipe(value: DragGesture.Value) {
+        // Calculate the difference in position from start to end
+        let horizontalDistance = value.translation.width
+        let verticalOffset = value.translation.height
+        
+        // 1. Check if the movement was primarily horizontal (not a vertical scroll)
+        guard abs(verticalOffset) < maxVerticalOffset else {
+            return
+        }
+        
+        // 2. Check for a significant horizontal distance
+        if abs(horizontalDistance) > minSwipeDistance {
+            if horizontalDistance < 0 {
+                // Horizontal distance is negative -> SWIPE LEFT
+                viewModel.nextPage(totalCount: dishes.count)
+                
+            } else {
+                // Horizontal distance is positive -> SWIPE RIGHT
+                viewModel.prevPage()
+            }
+        } else {
+            print("No Significant Swipe!")
         }
     }
     
@@ -382,11 +418,11 @@ struct IngredientItemView: View {
                     .offset(y: 15)
                 
                 //TODO: Remove when all shelf item assets are in
-//                Text(itemName)
-//                    .font(.fredokaOne(size: 14))
-//                    .foregroundColor(.black.opacity(0.8))
-//                    .lineLimit(1)
-//                    .fixedSize()
+                //                Text(itemName)
+                //                    .font(.fredokaOne(size: 14))
+                //                    .foregroundColor(.black.opacity(0.8))
+                //                    .lineLimit(1)
+                //                    .fixedSize()
             }
             .frame(width: 48, height: 70)
         }
