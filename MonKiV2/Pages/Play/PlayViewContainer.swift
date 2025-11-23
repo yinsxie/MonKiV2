@@ -132,8 +132,9 @@ extension PlayViewContainer {
         .contentMargins(0, for: .scrollContent)
         .scrollTargetBehavior(.paging)
         .scrollDisabled(playVM.dragManager.isDragging
-                        || playVM.atmVM.isZoomed
-                        || playVM.cashierVM.isReturnedMoneyPrompted
+            || playVM.atmVM.isZoomed
+            || playVM.cashierVM.isReturnedMoneyPrompted
+                        || playVM.cashierVM.isPlayerStopScrollingWhileReceivedMoney
         )
         .scrollIndicators(.hidden)
         .onChange(of: playVM.currentPageIndex) { _, newIndex in
@@ -248,8 +249,8 @@ extension PlayViewContainer {
             Spacer()
         }
         .padding(.top, 16)
-        .allowsHitTesting(!playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped)
-        .opacity((playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped) ? 0 : 1)
+        .allowsHitTesting(!playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped && !playVM.cashierVM.isReturnedMoneyPrompted)
+        .opacity((playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped || playVM.cashierVM.isReturnedMoneyPrompted) ? 0 : 1)
     }
     
     private func isCurrentPage(_ index: Int) -> Bool {

@@ -74,6 +74,7 @@ final class CashierViewModel {
     var returnedMoney: [Money] = []
     var isAnimatingReturnMoney: Bool = false
     var isReturnedMoneyPrompted: Bool = false
+    var isPlayerStopScrollingWhileReceivedMoney: Bool = false
     
     func addReturnedMoney(_ currencies: [Currency]) {
         for currency in currencies {
@@ -250,6 +251,10 @@ final class CashierViewModel {
             withTransaction(transaction) {
                 self.bagOffset = 0
             }
+        }
+        
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            self.parent?.walletVM.isWalletOpen = true
         }
     }
 }

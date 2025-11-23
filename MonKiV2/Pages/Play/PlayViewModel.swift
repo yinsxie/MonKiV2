@@ -164,9 +164,14 @@ private extension PlayViewModel {
         //        withAnimation(.spring) {
         switch zone {
         case .cashierPaymentCounter:
+            if cashierVM.isPlayerStopScrollingWhileReceivedMoney {
+                print("Player is currently not allowed to drop money on payment counter.")
+                return
+            }
             print("Dropped money on payment counter")
             
             // Put money
+            cashierVM.isPlayerStopScrollingWhileReceivedMoney = true
             dropMoneyToCounter(withCurrency: currency)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.handleOnPaymentCounter()
@@ -333,11 +338,13 @@ private extension PlayViewModel {
         // Guard checks
         guard requiredAmount > 0 else {
             DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
+            cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
             return
         }
         
         // KONDISI 2: Duitnya yang di kasih ga cukup
         guard self.cashierVM.totalReceivedMoney >= requiredAmount else {
+            cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
             return
         }
         
@@ -385,6 +392,7 @@ private extension PlayViewModel {
             // This means we had exact payment with unused bills
             print("exact")
             DispatchQueue.main.async {
+                self.cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
                 self.cashierVM.receivedMoney.removeAll()
                 self.cashierVM.checkOutSuccess()
             }
@@ -425,6 +433,7 @@ private extension PlayViewModel {
                  withAnimation {
                      self.cashierVM.isAnimatingReturnMoney = false
                      self.cashierVM.isReturnedMoneyPrompted = true
+                     self.cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
                  }
              }
         }
@@ -432,10 +441,12 @@ private extension PlayViewModel {
     
     func handleMoneyDropOnWallet(currency: Currency, draggedItem: DraggedItem) {
         print("Dropped money (\(currency.value)) back on wallet")
-        DispatchQueue.main.async {
-            self.walletVM.addMoney(currency)
-            self.cashierVM.receivedMoney.removeAll(where: { $0.id == draggedItem.id })
-            self.dragManager.currentDraggedItem = nil
+        if draggedItem.source != .wallet {
+            DispatchQueue.main.async {
+                self.walletVM.addMoney(currency)
+                self.cashierVM.receivedMoney.removeAll(where: { $0.id == draggedItem.id })
+                self.dragManager.currentDraggedItem = nil
+            }
         }
     }
     
