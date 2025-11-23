@@ -59,6 +59,16 @@ struct PlayViewContainer: View {
                 .onEnded { _ in inactivityManager.userDidInteract() },
             including: playVM.currentPageIndex == 1 ? .all : .subviews
         )
+        .onChange(of: inactivityManager.isIdle) { _, isIdle in
+            if isIdle {
+                // when idle, close wallet
+                if playVM.walletVM.isWalletOpen {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                        playVM.walletVM.isWalletOpen = false
+                    }
+                }
+            }
+        }
         .onChange(of: playVM.currentPageIndex, initial: true) { _, newIndex in
             let pagesWithIdleTutorial = [1]
             if let index = newIndex, pagesWithIdleTutorial.contains(index) {
