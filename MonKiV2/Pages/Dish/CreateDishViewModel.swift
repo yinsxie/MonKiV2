@@ -38,8 +38,6 @@ final class CreateDishViewModel {
         // Group items by their item.id
         let grouped = Dictionary(grouping: items, by: { $0.id })
         
-        print("Refreshing groceries list...")
-        
         // Convert grouped items into GroceryItem, then sort by quantity
         return grouped.map { (_, items) in
             GroceryItem(
