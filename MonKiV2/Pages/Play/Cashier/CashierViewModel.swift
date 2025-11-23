@@ -252,6 +252,10 @@ final class CashierViewModel {
                 self.bagOffset = 0
             }
         }
+        
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            self.parent?.walletVM.isWalletOpen = true
+        }
     }
 }
 
