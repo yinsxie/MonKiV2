@@ -19,7 +19,7 @@ struct PlayViewContainer: View {
             AnyView(ShelfView()),
             AnyView(CashierView()),
             AnyView(Color.clear),
-//            AnyView(IngredientInputView()),
+            //            AnyView(IngredientInputView()),
             AnyView(CreateDishView())
         ]
     }
@@ -132,8 +132,8 @@ extension PlayViewContainer {
         .contentMargins(0, for: .scrollContent)
         .scrollTargetBehavior(.paging)
         .scrollDisabled(playVM.dragManager.isDragging
-            || playVM.atmVM.isZoomed
-            || playVM.cashierVM.isReturnedMoneyPrompted
+                        || playVM.atmVM.isZoomed
+                        || playVM.cashierVM.isReturnedMoneyPrompted
         )
         .scrollIndicators(.hidden)
         .onChange(of: playVM.currentPageIndex) { _, newIndex in
@@ -168,6 +168,7 @@ extension PlayViewContainer {
         }
         .overlay(alignment: .bottomTrailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
+            
             WalletView()
                 .padding(.trailing, 30)
                 .offset(y: playVM.walletVM.isWalletOpen ? 0 : 125)
@@ -175,8 +176,7 @@ extension PlayViewContainer {
                 .background(GeometryReader { geo in
                     Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
                 })
-                .opacity((currentIndex < 4 && !playVM.atmVM.isZoomed) ? 1 : 0)
-            
+                .opacity(currentIndex < 4 && !playVM.atmVM.isZoomed ? 1 : 0)
         }
         .overlay(alignment: .trailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
