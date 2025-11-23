@@ -17,6 +17,8 @@ struct SecondShelfView: View {
     private let fishItem = Item.items.first { $0.name == "Fish" }
     private let poultryItem = Item.items.first { $0.name == "Chicken" }
     
+    let doorWidth: CGFloat = 217.83
+    
     var body: some View {
         GeometryReader { geo in
             let backgroundSplitHeight = geo.size.height * (753 / 1024.0)
@@ -41,7 +43,7 @@ struct SecondShelfView: View {
                                 if let breadItem = breadItem {
                                     Color.clear
                                         .frame(width: 377, height: 250)
-//                                        .background(Color.green.opacity(0.5))
+                                    //                                        .background(Color.green.opacity(0.5))
                                         .contentShape(Rectangle())
                                         .makeDraggable(
                                             item: DraggedItem(
@@ -52,7 +54,7 @@ struct SecondShelfView: View {
                                 if let milkItem = milkItem {
                                     Color.clear
                                         .frame(width: 377, height: 260)
-//                                        .background(Color.green.opacity(0.5))
+                                    //                                        .background(Color.green.opacity(0.5))
                                         .contentShape(Rectangle())
                                         .makeDraggable(
                                             item: DraggedItem(
@@ -87,7 +89,7 @@ struct SecondShelfView: View {
                                     if let riceItem = riceItem {
                                         Color.clear
                                             .frame(width: 200, height: 230)
-//                                            .background(Color.green.opacity(0.5))
+                                        //                                            .background(Color.green.opacity(0.5))
                                             .contentShape(Rectangle())
                                             .makeDraggable(
                                                 item: DraggedItem(
@@ -98,7 +100,7 @@ struct SecondShelfView: View {
                                     if let pastaItem = pastaItem {
                                         Color.clear
                                             .frame(width: 200, height: 230)
-//                                            .background(Color.green.opacity(0.5))
+                                        //                                            .background(Color.green.opacity(0.5))
                                             .contentShape(Rectangle())
                                             .makeDraggable(
                                                 item: DraggedItem(
@@ -110,7 +112,7 @@ struct SecondShelfView: View {
                                 if let beefItem = beefItem {
                                     Color.clear
                                         .frame(width: 400, height: 180)
-//                                        .background(Color.green.opacity(0.5))
+                                    //                                        .background(Color.green.opacity(0.5))
                                         .contentShape(Rectangle())
                                         .makeDraggable(
                                             item: DraggedItem(
@@ -120,7 +122,38 @@ struct SecondShelfView: View {
                                 }
                             }
                             .padding(.bottom, 20)
+                            
+                            HStack(spacing: 0) {
+                                
+                                Image("pintu_kiri")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .rotation3DEffect(
+                                        .degrees(viewModel.isSecondShelfLeftFridgeOpen ? -180 : 0),
+                                        axis: (x: 0.0, y: 1.0, z: 0.0),
+                                        anchor: .leading
+                                    )
+                                    .onTapGesture {
+                                        viewModel.animateLeftDoor()
+                                    }
+                                
+                                Image("pintu_kanan")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .rotation3DEffect(
+                                        .degrees(viewModel.isSecondShelfRightFridgeOpen ? 180 : 0),
+                                        axis: (x: 0.0, y: 1.0, z: 0.0),
+                                        anchor: .trailing
+                                    )
+                                    .onTapGesture {
+                                        viewModel.animateRightDoor()
+                                    }
+                            }
+                            .padding(.bottom, 20)
+                            .padding(.all, 50)
+                            
                         }
+                        .zIndex(1)
                         
                         ZStack(alignment: .top) {
                             Image("right_shelf")
@@ -131,7 +164,7 @@ struct SecondShelfView: View {
                                 if let fishItem = fishItem {
                                     Color.clear
                                         .frame(width: 400, height: 180)
-//                                        .background(Color.green.opacity(0.5))
+                                    //                                        .background(Color.green.opacity(0.5))
                                         .contentShape(Rectangle())
                                         .makeDraggable(
                                             item: DraggedItem(
@@ -142,7 +175,7 @@ struct SecondShelfView: View {
                                 if let poultryItem = poultryItem {
                                     Color.clear
                                         .frame(width: 400, height: 180)
-//                                        .background(Color.green.opacity(0.5))
+                                    //                                        .background(Color.green.opacity(0.5))
                                         .contentShape(Rectangle())
                                         .makeDraggable(
                                             item: DraggedItem(
@@ -162,14 +195,14 @@ struct SecondShelfView: View {
                 HStack(alignment: .top) {
                     Color.clear
                         .frame(width: 350, height: 600)
-//                        .background(Color.green.opacity(0.3))
+                    //                        .background(Color.green.opacity(0.3))
                         .contentShape(Rectangle())
                         .allowsHitTesting(false)
                         .makeDropZone(type: .shelfReturnItem)
                         .padding(.bottom, shelfBottomPadding)
                     Color.clear
                         .frame(width: 890, height: 420)
-//                        .background(Color.green.opacity(0.3))
+                    //                        .background(Color.green.opacity(0.3))
                         .contentShape(Rectangle())
                         .allowsHitTesting(false)
                         .makeDropZone(type: .shelfReturnItem)
