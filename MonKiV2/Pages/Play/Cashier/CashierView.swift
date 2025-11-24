@@ -130,7 +130,7 @@ struct CashierView: View {
                         
                         ZStack {
                             CashierMonkiView()
-                                .opacity(viewModel.isReturnedMoneyPrompted ? 0 : 1)
+                                .opacity(viewModel.isStartingReturnMoneyAnimation ? 0 : 1)
                                 .scrollTransition(.animated, axis: .horizontal) { content, phase in
                                     content
                                         .offset(x: phase.isIdentity ? 0 : 1000)
@@ -159,11 +159,11 @@ struct CashierView: View {
                         // Money DropZone
                         // Edge Case: Make sure the drop zone is only active on the payment page
                         Color.green.opacity(0)
-                            .frame(width: 465, height: 406)
+                            .frame(width: 680, height: 406)
                             .contentShape(Rectangle())
                             .makeDropZone(type: .cashierPaymentCounter)
-                        //                            .background(Color.green.opacity(0.5))
-                            .offset(x: 450)
+//                                                    .background(Color.green.opacity(0.5))
+                            .offset(x: 480)
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
                             }
