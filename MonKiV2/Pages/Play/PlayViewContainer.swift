@@ -143,8 +143,8 @@ extension PlayViewContainer {
         .contentMargins(0, for: .scrollContent)
         .scrollTargetBehavior(.paging)
         .scrollDisabled(playVM.dragManager.isDragging
-            || playVM.atmVM.isZoomed
-            || playVM.cashierVM.isReturnedMoneyPrompted
+                        || playVM.atmVM.isZoomed
+                        || playVM.cashierVM.isReturnedMoneyPrompted
                         || playVM.cashierVM.isPlayerStopScrollingWhileReceivedMoney
         )
         .scrollIndicators(.hidden)
@@ -215,11 +215,18 @@ extension PlayViewContainer {
                         .opacity(0.4)
                         .ignoresSafeArea()
                     
-                    CashierMonkiView()
-                        .offset(x: 225, y: -68)
-                        .onTapGesture {
-                            playVM.cashierVM.onReturnedMoneyTapped()
-                        }
+                    ZStack {
+                        
+                        RotatingShineView()
+                            .frame(width: 500)
+                            .offset(x: -350, y: -100)
+                        
+                        CashierMonkiView()
+                            .onTapGesture {
+                                playVM.cashierVM.onReturnedMoneyTapped()
+                            }
+                    }
+                    .offset(x: 225, y: -68)
                 }
             }
             

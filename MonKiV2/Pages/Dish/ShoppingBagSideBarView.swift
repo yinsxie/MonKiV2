@@ -125,6 +125,10 @@ struct ShoppingBagSideBarView: View {
                     }
                     .frame(minHeight: 350)
                     .padding(.top, 40)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(ColorPalette.neutral50))
+                    .padding(.vertical)
+                    .padding(.horizontal, 25)
+
                     
                 }
                 .background(ColorPalette.overlayBackground)
