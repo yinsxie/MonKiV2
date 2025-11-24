@@ -52,5 +52,5 @@ struct CashierPaymentView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

@@ -22,7 +22,7 @@ final class PlayerSessionData: ObservableObject {
     @Published var currentBudget: Int
     @Published var cart: PlayerCartItem
     
-    init(player: Player, withState state: GamePlayerState = .budgeting, budget: Int, cart: PlayerCartItem = PlayerCartItem(items: [])){
+    init(player: Player, withState state: GamePlayerState = .budgeting, budget: Int, cart: PlayerCartItem = PlayerCartItem(items: [])) {
         self.playerSessionId = UUID()
         self.player = player
         

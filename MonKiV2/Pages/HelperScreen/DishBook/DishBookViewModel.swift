@@ -9,7 +9,7 @@ import CoreData
 import Combine
 
 // MARK: - View Model
-class DishBookViewModel: ObservableObject {
+internal class DishBookViewModel: ObservableObject {
     @Published var currentPageIndex: Int = 0
     
     private let context = CoreDataManager.shared.viewContext

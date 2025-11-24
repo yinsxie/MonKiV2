@@ -423,7 +423,7 @@ struct IngredientItemView: View {
                     .scaleEffect(0.45)
                     .offset(y: 15)
                 
-                //TODO: Remove when all shelf item assets are in
+                // TODO: Remove when all shelf item assets are in
                 //                Text(itemName)
                 //                    .font(.fredokaOne(size: 14))
                 //                    .foregroundColor(.black.opacity(0.8))

@@ -216,6 +216,6 @@ struct SecondShelfView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
         .environmentObject(AppCoordinator())
 }

@@ -8,7 +8,7 @@ import Foundation
 import CoreData
 import Combine
 
-class CoreDataManager: ObservableObject {
+internal class CoreDataManager: ObservableObject {
     static let shared = CoreDataManager()
     let container: NSPersistentContainer
 
@@ -18,7 +18,7 @@ class CoreDataManager: ObservableObject {
 
     private init() {
         container = NSPersistentContainer(name: "Model")
-        container.loadPersistentStores { description, error in
+        container.loadPersistentStores { _, error in
             if let error = error {
                 print("Core Data failed to load: \(error.localizedDescription)")
             }

@@ -30,12 +30,12 @@ struct FloatingItemFeedbackView: View {
     @State private var isViewActive = true
     
     var body: some View {
-        let (offsetX, offsetY, rotation): (CGFloat, CGFloat, Double) = {
+        let (offsetX, offsetY, _): (CGFloat, CGFloat, Double) = {
             if let origin = originPoint {
                 // Animate back to source of drag
-                let x = origin.x - startPoint.x
-                let y = origin.y - startPoint.y
-                return (x, y, 0.0) // Return (No rotation)
+                let xPos = origin.x - startPoint.x
+                let yPos = origin.y - startPoint.y
+                return (xPos, yPos, 0.0) // Return (No rotation)
             } else {
                 // Fall to floor
                 return (150.0, 200.0, 180.0) // Fall/Spin

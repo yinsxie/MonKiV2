@@ -198,5 +198,5 @@ struct ShoppingBagSideBarView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

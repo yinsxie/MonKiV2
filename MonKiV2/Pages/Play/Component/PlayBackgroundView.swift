@@ -15,9 +15,13 @@ struct PlayBackgroundView: View {
         GeometryReader { geo in
             let backgroundSplitHeight = geo.size.height * (753 / 1024.0)
             var topColorHex: String {
-                if playVM.currentPageIndex == 5 { return "#FF7E1D" }
-                else if playVM.currentPageIndex == 2 { return "#FFC200" }
-                else { return "#27A8DF" }                                
+                if playVM.getCurrentPage() == .createDish {
+                    return "#FF7E1D"
+                } else if playVM.getCurrentPage() == .shelfB {
+                    return "#FFC200"
+                } else {
+                    return "#27A8DF"
+                }
             }
             
             // MARK: Change index if turning on Debug IngredientsListView
