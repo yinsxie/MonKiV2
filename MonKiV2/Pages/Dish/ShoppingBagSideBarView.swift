@@ -104,6 +104,9 @@ struct ShoppingBagSideBarView: View {
                     
                     // Grocery list
                     VStack(spacing: 40) {
+                        if dishVM.groceriesList.isEmpty {
+                            Color.clear
+                        }
                         ForEach(dishVM.groceriesList) { grocery in
                             GroceryDetailView(grocery: grocery)
                                 .makeDraggable(
@@ -128,8 +131,6 @@ struct ShoppingBagSideBarView: View {
                     .background(RoundedRectangle(cornerRadius: 12).fill(ColorPalette.neutral50))
                     .padding(.vertical)
                     .padding(.horizontal, 25)
-
-                    
                 }
                 .background(ColorPalette.overlayBackground)
                 // measure the receipt content height
