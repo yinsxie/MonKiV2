@@ -11,6 +11,7 @@ struct CashierView: View {
     @Environment(CashierViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
     @Environment(PlayViewModel.self) var playViewModel
+    @Environment(CartViewModel.self) var cartVM
     
     var body: some View {
         
@@ -31,6 +32,14 @@ struct CashierView: View {
                             .frame(width: 245, height: 280)
                             .offset(y: 140)
                             .makeDropZone(type: .cashierRemoveItem)
+                        
+                        if (playViewModel.currentPageIndex ?? 0) == 3 {
+                            Rectangle()
+                                .foregroundColor(Color.clear)
+                                .floatingPriceFeedback(value: viewModel.discardedAmountTracker)
+                                .frame(width: 100, height: 100)
+                                .offset(x: 70, y: -30)
+                        }
                     }
                     .padding(.trailing, 30)
                     
@@ -121,7 +130,7 @@ struct CashierView: View {
                         
                         ZStack {
                             CashierMonkiView()
-                                .opacity(viewModel.isReturnedMoneyPrompted ? 0 : 1)
+                                .opacity(viewModel.isStartingReturnMoneyAnimation ? 0 : 1)
                                 .scrollTransition(.animated, axis: .horizontal) { content, phase in
                                     content
                                         .offset(x: phase.isIdentity ? 0 : 1000)
@@ -150,11 +159,11 @@ struct CashierView: View {
                         // Money DropZone
                         // Edge Case: Make sure the drop zone is only active on the payment page
                         Color.green.opacity(0)
-                            .frame(width: 465, height: 406)
+                            .frame(width: 680, height: 406)
                             .contentShape(Rectangle())
                             .makeDropZone(type: .cashierPaymentCounter)
-                        //                            .background(Color.green.opacity(0.5))
-                            .offset(x: 450)
+//                                                    .background(Color.green.opacity(0.5))
+                            .offset(x: 480)
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
                             }

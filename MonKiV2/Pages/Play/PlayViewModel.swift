@@ -146,7 +146,7 @@ private extension PlayViewModel {
         case .cashierLoadingCounter:
             handleCashierOnLoadingCounter(groceryItem: groceryItem, draggedItem: draggedItem)
         case .cashierRemoveItem:
-            handleGroceryDropOnRemoveZone(draggedItem: draggedItem)
+            handleGroceryDropOnRemoveZone(draggedItem: draggedItem, groceryItem: groceryItem)
         case .shelfReturnItem:
             handleGroceryDropOnShelf(draggedItem: draggedItem)
         case .createDish:
@@ -266,9 +266,13 @@ private extension PlayViewModel {
         }
     }
     
-    func handleGroceryDropOnRemoveZone(draggedItem: DraggedItem) {
+    func handleGroceryDropOnRemoveZone(draggedItem: DraggedItem, groceryItem: Item) {
         print("Remove from cart")
         AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
+        
+        DispatchQueue.main.async {
+            self.cashierVM.discardedAmountTracker -= groceryItem.price
+        }
         
         if let source = draggedItem.source {
             switch source {
@@ -418,6 +422,12 @@ private extension PlayViewModel {
             }
             
             DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self.cashierVM.isStartingReturnMoneyAnimation = true
+                }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.cashierVM.receivedMoney.removeAll()
                 // New Version: Dont trigger checkOutSuccess from here, trigger it when user collects returned money
                 //            self.cashierVM.checkOutSuccess()

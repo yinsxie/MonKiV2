@@ -18,15 +18,15 @@ final class CashierViewModel {
     weak var parent: PlayViewModel?
     private var checkoutTask: Task<Void, Never>?
     private var currentCheckoutID: UUID = UUID()
+    var discardedAmountTracker: Int = 0
     
     init(parent: PlayViewModel?) {
         self.parent = parent
         
         // MARK: Get 1 rice by default (temporary implementation since we only have 1 type of chef for now)
-        // TODO: Change carrot with rice after asset and shelf is implemented
-        if let carrotItem = Item.items.first(where: { $0.name == "Carrot" }) {
-            let carrotCartItem = CartItem(item: carrotItem)
-            self.purchasedItems.append(carrotCartItem)
+        if let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
+            let riceCartItem = CartItem(item: riceItem)
+            self.purchasedItems.append(riceCartItem)
         }
     }
     
@@ -74,7 +74,10 @@ final class CashierViewModel {
     var returnedMoney: [Money] = []
     var isAnimatingReturnMoney: Bool = false
     var isReturnedMoneyPrompted: Bool = false
+    var isStartingReturnMoneyAnimation: Bool = false
     var isPlayerStopScrollingWhileReceivedMoney: Bool = false
+    private var tempPendingReturn: Int = 0
+    var cumulativeReturnTotal: Int = 0
     
     func addReturnedMoney(_ currencies: [Currency]) {
         for currency in currencies {
@@ -159,6 +162,9 @@ final class CashierViewModel {
     }
     
     func onReturnedMoneyTapped() {
+        // floating feedback
+        let totalAmount = returnedMoney.reduce(0) { $0 + $1.currency.value }
+        self.tempPendingReturn = totalAmount
         
         DispatchQueue.main.async {
             self.parent?.walletVM.moneys.append(contentsOf: self.returnedMoney)
@@ -169,6 +175,7 @@ final class CashierViewModel {
         
         withAnimation {
             isReturnedMoneyPrompted = false
+            isStartingReturnMoneyAnimation = false
         }
         
         checkOutSuccess()
@@ -255,6 +262,14 @@ final class CashierViewModel {
         
         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
             self.parent?.walletVM.isWalletOpen = true
+        }
+        
+        // floating feedback
+        if self.tempPendingReturn > 0 {
+            withAnimation {
+                self.cumulativeReturnTotal += self.tempPendingReturn
+            }
+            self.tempPendingReturn = 0
         }
     }
 }
