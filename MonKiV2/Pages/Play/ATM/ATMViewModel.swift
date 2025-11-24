@@ -62,7 +62,11 @@ struct ATMOption {
             return
         }
         
-        self.parent?.walletVM.isWalletOpen = true
+        DispatchQueue.main.async {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                self.parent?.walletVM.isWalletOpen = true
+            }
+        }
         self.isProcessing = true
         self.flyingMoneyValue = amount
         
