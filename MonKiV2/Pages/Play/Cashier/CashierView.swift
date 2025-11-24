@@ -150,11 +150,11 @@ struct CashierView: View {
                         // Money DropZone
                         // Edge Case: Make sure the drop zone is only active on the payment page
                         Color.green.opacity(0)
-                            .frame(width: 465, height: 406)
+                            .frame(width: 680, height: 406)
                             .contentShape(Rectangle())
                             .makeDropZone(type: .cashierPaymentCounter)
-                        //                            .background(Color.green.opacity(0.5))
-                            .offset(x: 450)
+                                                    .background(Color.green.opacity(0.5))
+                            .offset(x: 480)
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
                             }
