@@ -71,8 +71,7 @@ struct WalletView: View {
                     }
                 }
             
-            //TODO: Change to index 4 after SecondShelf PR
-            if playVM.currentPageIndex == 3 {
+            if playVM.currentPageIndex == 4 {
                 Rectangle()
                     .foregroundColor(Color.clear)
                     .floatingPriceFeedback(value: playVM.cashierVM.cumulativeReturnTotal)
