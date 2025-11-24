@@ -28,7 +28,7 @@ struct WalletView: View {
                     .offset(x: -200, y: -200)
             }
         }
-//        .frame(maxHeight: playVM.currentPageIndex == 5 ? 0 : .infinity, alignment: .bottom)
+        //        .frame(maxHeight: playVM.currentPageIndex == 5 ? 0 : .infinity, alignment: .bottom)
         .onChange(of: playVM.currentPageIndex) { _, _ in
             handlePageChange()
         }
@@ -53,41 +53,45 @@ extension WalletView {
                         .frame(maxWidth: .infinity)
                 }
                 
-                moneyGrid
-                    .padding(.top, viewModel.walletSorted.count == 0 ? 0 : 25)
-                    .padding(.bottom, viewModel.walletSorted.count == 0 ? 0 : 35)
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(ColorPalette.neutral50)
-                    )
-                    .padding(.horizontal, 15)
-                    .padding(.bottom, 35)
+                VStack(alignment: .center, spacing: 30) {
+                    ForEach(viewModel.walletSorted) { moneyGroup in
+                        let isBeingDragged = manager.currentDraggedItem?.id == moneyGroup.money.id
+                        let displayCount = isBeingDragged ? (moneyGroup.count - 1) : moneyGroup.count
+                        let shouldHide = displayCount <= 0
+                        
+                        MoneyView(
+                            money: moneyGroup.money,
+                            quantity: displayCount,
+                            width: 160
+                        )
+                        .opacity(shouldHide ? 0 : 1)
+                        .makeDraggable(
+                            item: DraggedItem(
+                                id: moneyGroup.money.id,
+                                payload: .money(moneyGroup.money.currency),
+                                source: .wallet
+                            )
+                        )
+                        .offset(x: -(4 * min(CGFloat(moneyGroup.count - 1), 2)))
+                        .fixedSize()
+                    }
+                }
+                .padding(.top, viewModel.walletSorted.count == 0 ? 0 : 25)
+                .padding(.bottom, viewModel.walletSorted.count == 0 ? 0 : 35)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(ColorPalette.neutral50)
+                )
+                .padding(.horizontal, 15)
+                .padding(.bottom, 35)
             }
             .background(ColorPalette.overlayBackground)
             .padding(.bottom, 240)
         }
         .frame(width: 250.76)
         .transition(.move(edge: .bottom))
-    }
-    
-    private var moneyGrid: some View {
-        VStack(alignment: .center, spacing: 30) {
-            ForEach(viewModel.walletSorted) { moneyGroup in
-                MoneyView(money: moneyGroup.money, quantity: moneyGroup.count, width: 160)
-                    .opacity(((manager.currentDraggedItem?.id == moneyGroup.money.id) && (moneyGroup.count == 1)) ? 0 : 1)
-                    .makeDraggable(
-                        item: DraggedItem(
-                            id: moneyGroup.money.id,
-                            payload: .money(moneyGroup.money.currency),
-                            source: .wallet
-                        )
-                    )
-                    .offset(x: -(4 * min(CGFloat(moneyGroup.count - 1), 2)))
-                    .fixedSize()
-            }
-        }
     }
     
     private var walletImageButton: some View {
