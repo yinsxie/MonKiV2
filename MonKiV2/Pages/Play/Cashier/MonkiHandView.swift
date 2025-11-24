@@ -22,7 +22,7 @@ struct MonkiHandView: View {
                 Spacer() // pushes the grid to the bottom
 
                 LazyVGrid(columns: columns, spacing: 15) {
-                    if cashierVM.receivedMoneyGrouped.count % 2 == 1 {
+                    if cashierVM.receivedMoneyGrouped.count % 2 == 1 || cashierVM.returnedMoney.count % 2 == 1 {
                         Spacer()
                     }
                     ForEach(cashierVM.receivedMoneyGrouped) { moneyGroup in

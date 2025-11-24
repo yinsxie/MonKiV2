@@ -14,12 +14,17 @@ struct PlayBackgroundView: View {
     var body: some View {
         GeometryReader { geo in
             let backgroundSplitHeight = geo.size.height * (753 / 1024.0)
+            var topColorHex: String {
+                if playVM.currentPageIndex == 5 { return "#FF7E1D" }
+                else if playVM.currentPageIndex == 2 { return "#FFC200" }
+                else { return "#27A8DF" }                                
+            }
             
             // MARK: Change index if turning on Debug IngredientsListView
             VStack(spacing: 0) {
-                Color(hex: playVM.currentPageIndex == 4 ? "#FF7E1D" : "#27A8DF").opacity(0.5)
+                Color(hex: topColorHex).opacity(0.5)
                     .frame(height: backgroundSplitHeight)
-                Color(hex: playVM.currentPageIndex == 4 ? "FFC200" : "#85DCFA").opacity(0.5)
+                Color(hex: playVM.currentPageIndex == 5 ? "FFC200" : "#85DCFA").opacity(0.5)
             }
             .ignoresSafeArea()
         }

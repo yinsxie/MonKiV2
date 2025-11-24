@@ -123,7 +123,9 @@ import SwiftUI
                 print("Breakdown currency kosong untuk amount \(amount)!")
             }
             withAnimation {
-                self.walletVM.addMoney(breakdown)
+                DispatchQueue.main.async {
+                    self.walletVM.addMoney(breakdown)
+                }
             }
         }
         

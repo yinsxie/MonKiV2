@@ -59,7 +59,7 @@ struct ShoppingBagSideBarView: View {
         .padding(.horizontal, 40)
         .onChange(of: playVM.currentPageIndex) { _, newValue in
             // MARK: Change if turning on Debug IngredientsListView
-            if newValue == 4 {
+            if newValue == 5 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     toggleBag(to: true)
                 }
@@ -125,7 +125,10 @@ struct ShoppingBagSideBarView: View {
                     }
                     .frame(minHeight: 350)
                     .padding(.top, 40)
-                    
+                    .background(RoundedRectangle(cornerRadius: 12).fill(ColorPalette.neutral50))
+                    .padding(.vertical)
+                    .padding(.horizontal, 25)
+
                     
                 }
                 .background(ColorPalette.overlayBackground)
