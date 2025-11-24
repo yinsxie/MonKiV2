@@ -121,7 +121,7 @@ struct CashierView: View {
                         
                         ZStack {
                             CashierMonkiView()
-                                .opacity(viewModel.isReturnedMoneyPrompted ? 0 : 1)
+                                .opacity(viewModel.isStartingReturnMoneyAnimation ? 0 : 1)
                                 .scrollTransition(.animated, axis: .horizontal) { content, phase in
                                     content
                                         .offset(x: phase.isIdentity ? 0 : 1000)

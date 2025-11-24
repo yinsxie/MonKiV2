@@ -424,6 +424,12 @@ private extension PlayViewModel {
             }
             
             DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self.cashierVM.isStartingReturnMoneyAnimation = true
+                }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.cashierVM.receivedMoney.removeAll()
                 // New Version: Dont trigger checkOutSuccess from here, trigger it when user collects returned money
     //            self.cashierVM.checkOutSuccess()

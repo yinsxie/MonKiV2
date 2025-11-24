@@ -74,6 +74,7 @@ final class CashierViewModel {
     var returnedMoney: [Money] = []
     var isAnimatingReturnMoney: Bool = false
     var isReturnedMoneyPrompted: Bool = false
+    var isStartingReturnMoneyAnimation: Bool = false
     var isPlayerStopScrollingWhileReceivedMoney: Bool = false
     private var tempPendingReturn: Int = 0
     var cumulativeReturnTotal: Int = 0
@@ -174,6 +175,7 @@ final class CashierViewModel {
         
         withAnimation {
             isReturnedMoneyPrompted = false
+            isStartingReturnMoneyAnimation = false
         }
         
         checkOutSuccess()
