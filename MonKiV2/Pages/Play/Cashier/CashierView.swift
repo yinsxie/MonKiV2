@@ -36,7 +36,7 @@ struct CashierView: View {
                         if (playViewModel.currentPageIndex ?? 0) == 3 {
                             Rectangle()
                                 .foregroundColor(Color.clear)
-                                .floatingPriceFeedback(value: cartVM.totalPrice)
+                                .floatingPriceFeedback(value: viewModel.discardedAmountTracker)
                                 .frame(width: 100, height: 100)
                                 .offset(x: 70, y: -30)
                         }
