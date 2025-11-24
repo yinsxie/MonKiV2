@@ -51,8 +51,8 @@ import SwiftUI
         
         setupGameLogic()
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
-//                        let currencyBreakdown = Currency.breakdown(from: budget)
-//                        walletVM.addMoney(currencyBreakdown)
+        //                        let currencyBreakdown = Currency.breakdown(from: budget)
+        //                        walletVM.addMoney(currencyBreakdown)
     }
     
     private func setupGameLogic() {
@@ -76,7 +76,7 @@ import SwiftUI
     
     func startTour() {
         withAnimation {
-             isIntroButtonVisible = false
+            isIntroButtonVisible = false
         }
         
         withAnimation(.easeInOut(duration: 2.5)) {
@@ -122,13 +122,9 @@ import SwiftUI
             if breakdown.isEmpty {
                 print("Breakdown currency kosong untuk amount \(amount)!")
             }
-            withAnimation {
-                DispatchQueue.main.async {
-                    self.walletVM.addMoney(breakdown)
-                }
-            }
+            
+            self.walletVM.addMoney(breakdown)
         }
-        
     }
 }
 
@@ -188,7 +184,7 @@ private extension PlayViewModel {
     
     func dropMoneyToCounter(withCurrency currency: Currency) {
         print("Dropped money (\(currency.value)) on payment counter")
-
+        
         if cashierVM.checkOutItems.isEmpty {
             return
         }
@@ -308,25 +304,21 @@ private extension PlayViewModel {
         if draggedItem.source == .createDishOverlay {
             DispatchQueue.main.async {
                 self.dishVM.createDishItem.append(CartItem(item: groceryItem))
-                if let index = self.cashierVM.purchasedItems.firstIndex(where: { $0.item.id == draggedItem.id }) {
-                    self.cashierVM.purchasedItems.remove(at: index)
-                }
+                guard let index = self.cashierVM.purchasedItems.firstIndex(where: { $0.item.id == draggedItem.id }) else { return }
+                self.cashierVM.purchasedItems.remove(at: index)
+                self.dragManager.currentDraggedItem = nil
             }
-            dragManager.currentDraggedItem = nil
         }
     }
     
     func handleGroceryDropOnCreateDishOverlay(groceryItem: Item, draggedItem: DraggedItem) {
         if draggedItem.source == .createDish {
             DispatchQueue.main.async {
-                withAnimation {
-                    self.cashierVM.purchasedItems.append(CartItem(item: groceryItem))
-                    if let index = self.dishVM.createDishItem.firstIndex(where: { $0.id == draggedItem.id }) {
-                        self.dishVM.createDishItem.remove(at: index)
-                    }
-                }
+                self.cashierVM.purchasedItems.append(CartItem(item: groceryItem))
+                guard let index = self.dishVM.createDishItem.firstIndex(where: { $0.id == draggedItem.id }) else { return }
+                self.dishVM.createDishItem.remove(at: index)
+                self.dragManager.currentDraggedItem = nil
             }
-            dragManager.currentDraggedItem = nil
         }
     }
     
@@ -428,16 +420,16 @@ private extension PlayViewModel {
             DispatchQueue.main.async {
                 self.cashierVM.receivedMoney.removeAll()
                 // New Version: Dont trigger checkOutSuccess from here, trigger it when user collects returned money
-    //            self.cashierVM.checkOutSuccess()
+                //            self.cashierVM.checkOutSuccess()
             }
             
-             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                 withAnimation {
-                     self.cashierVM.isAnimatingReturnMoney = false
-                     self.cashierVM.isReturnedMoneyPrompted = true
-                     self.cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
-                 }
-             }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation {
+                    self.cashierVM.isAnimatingReturnMoney = false
+                    self.cashierVM.isReturnedMoneyPrompted = true
+                    self.cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
+                }
+            }
         }
     }
     
