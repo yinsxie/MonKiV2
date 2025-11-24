@@ -18,6 +18,7 @@ final class CashierViewModel {
     weak var parent: PlayViewModel?
     private var checkoutTask: Task<Void, Never>?
     private var currentCheckoutID: UUID = UUID()
+    var discardedAmountTracker: Int = 0
     
     init(parent: PlayViewModel?) {
         self.parent = parent
