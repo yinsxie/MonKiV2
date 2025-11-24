@@ -188,7 +188,7 @@ private extension PlayViewModel {
         if cashierVM.checkOutItems.isEmpty {
             return
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.async {
             self.cashierVM.acceptMoney(Money(forCurrency: currency))
             self.walletVM.removeFirstMoney(withCurrency: currency)
         }
