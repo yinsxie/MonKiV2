@@ -14,5 +14,19 @@ import SwiftUI
     }
     
     var items: [Item] = Item.items
+   
+    var isSecondShelfLeftFridgeOpen: Bool = false
+    var isSecondShelfRightFridgeOpen: Bool = false
+
+    func animateLeftDoor() {
+        withAnimation(.easeOut(duration: 0.5)) {
+            isSecondShelfLeftFridgeOpen.toggle()
+        }
+    }
     
+    func animateRightDoor() {
+        withAnimation(.easeOut(duration: 0.5)) {
+            isSecondShelfRightFridgeOpen.toggle()
+        }
+    }
 }

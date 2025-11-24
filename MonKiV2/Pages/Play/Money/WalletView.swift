@@ -71,7 +71,7 @@ struct WalletView: View {
                     }
                 }
         }
-        .frame(maxHeight: playVM.currentPageIndex == 4 ? 0 : .infinity, alignment: .bottom)
+//        .frame(maxHeight: playVM.currentPageIndex == 5 ? 0 : .infinity, alignment: .bottom)
         .onChange(of: playVM.currentPageIndex) { _, _ in
             if playVM.cashierVM.currentPage == .payment {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {

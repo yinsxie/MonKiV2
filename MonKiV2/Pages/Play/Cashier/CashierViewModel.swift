@@ -31,9 +31,9 @@ final class CashierViewModel {
     }
     
     var currentPage: CashierPage {
-        if parent?.currentPageIndex == 2 {
+        if parent?.currentPageIndex == 3 {
             return .loading
-        } else if parent?.currentPageIndex == 3 {
+        } else if parent?.currentPageIndex == 4 {
             return .payment
         } else {
             return .none
