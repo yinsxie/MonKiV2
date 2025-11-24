@@ -31,6 +31,8 @@ struct PlayViewContainer: View {
             Color.clear // Your 'Color.clear' placeholder
         case .createDish:
             CreateDishView()
+        case .ingredientList:
+            IngredientInputView()
         }
     }
     
@@ -70,7 +72,7 @@ struct PlayViewContainer: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in inactivityManager.userDidInteract() }
                 .onEnded { _ in inactivityManager.userDidInteract() },
-            including: playVM.gamePages[safe: playVM.currentPageIndex ?? 0] == .shelfA ? .all : .subviews
+            including: playVM.getCurrentPage() == .shelfA ? .all : .subviews
         )
         .onChange(of: inactivityManager.isIdle) { _, isIdle in
             if isIdle {

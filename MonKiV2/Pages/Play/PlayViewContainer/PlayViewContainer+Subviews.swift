@@ -68,6 +68,8 @@ internal extension PlayViewContainer {
         // Wallet View
         .overlay(alignment: .bottomTrailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
+            let isNotOnCreateDish = playVM.getPage(at: currentIndex) != .createDish && playVM.getPage(at: currentIndex) != .ingredientList
+            let isATMNotZoomed = !playVM.atmVM.isZoomed
             
             WalletView()
                 .padding(.trailing, 30)
@@ -76,16 +78,17 @@ internal extension PlayViewContainer {
                 .background(GeometryReader { geo in
                     Color.clear.preference(key: ViewFrameKey.self, value: ["WALLET": geo.frame(in: .named("GameSpace"))])
                 })
-                .opacity(currentIndex < playVM.getPageIndex(for: .createDish) && !playVM.atmVM.isZoomed ? 1 : 0)
+                .opacity(isNotOnCreateDish && isATMNotZoomed ? 1 : 0)
         }
         
         // Shopping Bag Side Bar View
         .overlay(alignment: .trailing) {
             let currentIndex = playVM.currentPageIndex ?? 0
+            let isOnCreateDish = playVM.getPage(at: currentIndex) == .createDish
             
             ShoppingBagSideBarView()
-                .opacity(playVM.getPage(at: currentIndex) == .createDish ? 1 : 0)
-                .disabled(playVM.getPage(at: currentIndex) != .createDish)
+                .opacity(isOnCreateDish ? 1 : 0)
+                .disabled(!isOnCreateDish)
         }
         
         // Dish Image Overlay
@@ -132,10 +135,11 @@ internal extension PlayViewContainer {
         let currentIndex = playVM.currentPageIndex ?? 0
         let currentPage = playVM.getPage(at: currentIndex)
         let cartVisibleIndices: [PageIdentifier] = [.shelfA, .shelfB, .cashierLoading]
+        let shouldShowCart = cartVisibleIndices.contains(currentPage)
         
         CartView()
             .offset(y: 160)
-            .opacity(cartVisibleIndices.contains(currentPage) ? 1 : 0)
+            .opacity(shouldShowCart ? 1 : 0)
     }
     
     @ViewBuilder

@@ -50,6 +50,7 @@ extension PlayViewModel {
         pages.append(contentsOf: [
             .cashierLoading,
             .cashierPayment,
+//            .ingredientList,
             .createDish
         ])
         

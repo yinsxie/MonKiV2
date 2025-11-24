@@ -33,7 +33,7 @@ extension PlayViewModel {
         }
         
         withAnimation(.easeInOut(duration: 2.5)) {
-            currentPageIndex = 0
+            setCurrentIndex(to: .ATM)
         }
     }
     

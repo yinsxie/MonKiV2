@@ -134,7 +134,7 @@ struct ATMOption {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             withAnimation(.easeInOut(duration: 0.5)) {
-                self?.parent?.currentPageIndex = 1
+                self?.parent?.setCurrentIndex(to: .shelfA)
             }
         }
     }

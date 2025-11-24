@@ -20,7 +20,7 @@ struct WalletView: View {
             
             walletImageButton
             
-            if (playVM.currentPageIndex ?? 0) == 0 {
+            if playVM.getCurrentPage() == .ATM {
                 Rectangle()
                     .foregroundColor(Color.clear)
                     .floatingPriceFeedback(value: viewModel.parent?.currentBudget ?? 0)
@@ -29,7 +29,7 @@ struct WalletView: View {
             }
         }
 //        .frame(maxHeight: playVM.currentPageIndex == 5 ? 0 : .infinity, alignment: .bottom)
-        .onChange(of: playVM.currentPageIndex) { _, _ in
+        .onChange(of: playVM.currentPageIndex) {
             handlePageChange()
         }
         .makeDropZone(type: .wallet)

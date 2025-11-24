@@ -17,4 +17,5 @@ enum PageIdentifier {
     case cashierLoading
     case cashierPayment
     case createDish
+    case ingredientList
 }
