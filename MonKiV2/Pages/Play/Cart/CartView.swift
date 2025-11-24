@@ -40,6 +40,7 @@ struct CartView: View {
                 .contentShape(Rectangle())
                 .makeDropZone(type: .cart)
                 .frame(width: 581, height: 550)
+                .allowsHitTesting(manager.currentDraggedItem != nil)
             
             // LAYER 2: THE VISUALS (ANIMATED)
             cartVisuals
@@ -80,6 +81,7 @@ struct CartView: View {
                                     ? 0.0
                                     : 1.0
                                 )
+                                .allowsHitTesting(true)
                         }
                     }
                     .frame(height: rowHeight)
@@ -98,6 +100,7 @@ struct CartView: View {
                     .spotlight(id: "Cart")
                     .frame(width: 581)
                     .aspectRatio(contentMode: .fit)
+                    .allowsHitTesting(false)
                 
                 Text("\(cartVM.totalPrice)")
                     .font(.VT323(size: 42))
