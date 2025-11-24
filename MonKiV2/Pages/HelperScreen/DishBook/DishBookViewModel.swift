@@ -14,20 +14,24 @@ class DishBookViewModel: ObservableObject {
     
     private let context = CoreDataManager.shared.viewContext
     
-    func nextPage(totalCount: Int) {
-        withAnimation(.easeInOut) {
-            if currentPageIndex + 2 < totalCount {
+    func nextPage(totalCount: Int) -> Bool {
+        if currentPageIndex + 2 < totalCount {
+            withAnimation(.easeInOut) {
                 currentPageIndex += 2
             }
+            return true
         }
+        return false
     }
     
-    func prevPage() {
-        withAnimation(.easeInOut) {
-            if currentPageIndex - 2 >= 0 {
+    func prevPage() -> Bool {
+        if currentPageIndex - 2 >= 0 {
+            withAnimation(.easeInOut) {
                 currentPageIndex -= 2
             }
+            return true
         }
+        return false
     }
     
     func deleteDish(_ dish: Dish, currentTotalCount: Int) {

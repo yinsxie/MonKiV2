@@ -41,6 +41,7 @@ struct ATMOption {
     
     func handleOpenATM() {
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            AudioManager.shared.play(.zoomInATM, volume: 5.0)
             isZoomed = true
         }
     }
@@ -52,6 +53,7 @@ struct ATMOption {
     }
     
     func withdraw(amount: Int) {
+        AudioManager.shared.play(.beepATM, volume: 5.0)
         guard let option = options.first(where: { $0.amount == amount }) else { return }
         guard atmBalance >= amount else { return }
         guard (cooldownProgress[amount] ?? 0) == 0 else { return }
