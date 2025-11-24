@@ -153,7 +153,7 @@ struct CashierView: View {
                             .frame(width: 680, height: 406)
                             .contentShape(Rectangle())
                             .makeDropZone(type: .cashierPaymentCounter)
-                                                    .background(Color.green.opacity(0.5))
+//                                                    .background(Color.green.opacity(0.5))
                             .offset(x: 480)
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
