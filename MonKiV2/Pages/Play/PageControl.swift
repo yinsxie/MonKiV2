@@ -11,6 +11,7 @@ struct PageControl: View {
     @Binding var currentPageIndex: Int?
     let pageCount: Int
     @Namespace private var animationNamespace
+    @Environment(PlayViewModel.self) var playVM
     
     // MARK: - DEFINED CONSTANTS
     private let itemSize: CGFloat = 60
@@ -20,12 +21,12 @@ struct PageControl: View {
     
     // MARK: - CONFIGURATION
     private func getIconAssets(for index: Int) -> (active: String, inactive: String)? {
-        switch index {
-        case 0:
+        switch playVM.getPage(at: index) {
+        case .ATM:
             return ("Icon_atm_active", "Icon_atm_inactive")
-        case 1:
+        case .shelfA:
             return ("Icon_shelf_1_active", "Icon_shelf_1_inactive")
-        case 5:
+        case .createDish:
             return ("Icon_dish_active", "Icon_dish_inactive")
         default:
             return nil

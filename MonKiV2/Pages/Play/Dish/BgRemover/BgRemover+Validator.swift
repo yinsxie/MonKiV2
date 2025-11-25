@@ -30,10 +30,10 @@ struct BackgroundRemoverValidator {
         let rowBytes = CVPixelBufferGetBytesPerRow(pixelBuffer)
         var foreground = 0
 
-        for y in 0..<height {
-            let row = base.advanced(by: y * rowBytes)
+        for yPos in 0..<height {
+            let row = base.advanced(by: yPos * rowBytes)
             let pixels = row.assumingMemoryBound(to: UInt8.self)
-            for x in 0..<width where pixels[x] > 128 {
+            for xPos in 0..<width where pixels[xPos] > 128 {
                 foreground += 1
             }
         }

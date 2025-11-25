@@ -20,7 +20,7 @@ struct WalletView: View {
             
             walletImageButton
             
-            if (playVM.currentPageIndex ?? 0) == 0 {
+            if playVM.getCurrentPage() == .ATM {
                 Rectangle()
                     .foregroundColor(Color.clear)
                     .floatingPriceFeedback(value: viewModel.parent?.currentBudget ?? 0)
@@ -114,7 +114,7 @@ extension WalletView {
     }
     
     private func handlePageChange() {
-        if playVM.cashierVM.currentPage == .payment {
+        if playVM.getCurrentPage() == .cashierPayment {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                 viewModel.isWalletOpen = true
             }
@@ -127,5 +127,5 @@ extension WalletView {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

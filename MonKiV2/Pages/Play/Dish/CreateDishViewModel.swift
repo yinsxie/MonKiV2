@@ -91,6 +91,7 @@ final class CreateDishViewModel {
             
             do {
                 print(inputText)
+                AudioManager.shared.play(.loadCooking, volume: 5.0)
                 let rawCgImage = try await ImagePlaygroundManager.shared.generateDish(from: inputText)
                 let rawUiImage = UIImage(cgImage: rawCgImage)
                 let processedUiImage = try await bgProcessor.process(rawUiImage)
@@ -103,7 +104,7 @@ final class CreateDishViewModel {
                 
                 let time = CFAbsoluteTimeGetCurrent() - start
                 print("Generated in \(String(format: "%.2f", time))s")
-                
+                AudioManager.shared.stop(.loadCooking)
                 AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
                 
             } catch {

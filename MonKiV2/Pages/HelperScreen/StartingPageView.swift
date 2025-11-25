@@ -53,7 +53,7 @@ struct StartingPageView: View {
             }
             .padding(115)
         }
-        .onAppear{
+        .onAppear {
             BGMManager.shared.play(track: .supermarket)
         }
     }

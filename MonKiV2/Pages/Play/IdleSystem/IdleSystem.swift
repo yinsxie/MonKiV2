@@ -8,7 +8,7 @@ import SwiftUI
 
 // MARK: - 1. Logic Manager
 @Observable
-class InactivityManager {
+internal class InactivityManager {
     var isIdle: Bool = false
     private var timer: Timer?
     private let timeout: TimeInterval = 8.0

@@ -57,5 +57,5 @@ struct MonkiHandView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

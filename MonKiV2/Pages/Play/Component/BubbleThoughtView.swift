@@ -112,5 +112,5 @@ struct BubbleThoughtView: View {
 #Preview {
 //    BubbleThoughtView(type: .givenMoney)
 //        .environment(CashierViewModel(parent: PlayViewModel()))
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }
