@@ -13,6 +13,7 @@ struct GamePacket: Codable {
     let itemName: String
 }
 
+@MainActor
 protocol MatchManagerDelegate: AnyObject {
     func didRemotePlayerPurchase(itemName: String)
     func didRemotePlayerAddToDish(itemName: String)
