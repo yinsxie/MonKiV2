@@ -12,9 +12,9 @@ struct PlayViewContainer: View {
     @State var playVM: PlayViewModel
     @State var inactivityManager = InactivityManager()
     
-    init(forGameMode mode: GameMode) {
-        _playVM = State(initialValue: PlayViewModel(gameMode: mode))
-    }
+    init(forGameMode mode: GameMode, matchManager: MatchManager? = nil) {
+            _playVM = State(initialValue: PlayViewModel(gameMode: mode, matchManager: matchManager))
+        }
     
     @ViewBuilder
     private func view(for identifier: PageIdentifier) -> some View {
@@ -96,6 +96,9 @@ struct PlayViewContainer: View {
         // MARK: - Preference Changes
         .onPreferenceChange(ViewFrameKey.self) { frames in
             handleFrameUpdates(frames)
+        }
+        .onAppear {
+            playVM.connectToMatch()
         }
     }
 }

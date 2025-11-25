@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 @Observable
 final class CashierViewModel {
     weak var parent: PlayViewModel?
@@ -228,6 +229,14 @@ final class CashierViewModel {
         
         let freshItems = self.bagVisualItems.map { CartItem(item: $0.item) }
         self.purchasedItems.append(contentsOf: freshItems)
+        
+        // Network Update
+        if let matchManager = parent?.matchManager {
+            for cartItem in freshItems {
+                matchManager.sendPurchase(itemName: cartItem.item.name)
+            }
+        }
+        
         self.bagVisualItems.removeAll()
         
         if instantReset {

@@ -38,9 +38,7 @@ struct AppCoordinatorView: View {
     
     private func endSplashView() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//            appCoordinator.changeRootAnimate(root: .helperScreen(.startingPage))
-            appCoordinator.changeRootAnimate(root: .helperScreen(.multiplayerLobby))
-
+            appCoordinator.changeRootAnimate(root: .helperScreen(.startingPage))
         }
     }
     

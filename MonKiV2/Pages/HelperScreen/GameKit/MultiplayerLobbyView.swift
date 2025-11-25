@@ -10,6 +10,8 @@ import GameKit
 
 struct MultiplayerLobbyView: View {
     @StateObject var matchManager = MatchManager()
+    @ObservedObject var gcManager = GameCenterManager.shared
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     @State private var showingCodeOptions = false
     @State private var roomCode: [String] = [] // Stores Emojis ["🍎", "🍌"]
@@ -42,22 +44,26 @@ struct MultiplayerLobbyView: View {
                 connectedView
                 
             case .playing:
-                VStack(spacing: 20) {
-                    Image(systemName: "flag.checkered")
-                        .font(.system(size: 80))
-                        .foregroundColor(.green)
-                    Text("GAME STARTED!")
-                        .font(.largeTitle)
-                        .fontWeight(.heavy)
-                        .foregroundColor(.green)
-                    Text("Syncing Game State...")
-                        .foregroundColor(.gray)
+                VStack {
+                    ProgressView()
+                    Text("Entering Supermarket...")
+                        .foregroundColor(.white)
+                        .font(.headline)
                 }
             }
         }
         .onAppear {
-            matchManager.authenticateUser()
+            if !gcManager.isAuthenticated {
+                gcManager.authenticateUser()
+            }
         }
+        .onChange(of: matchManager.matchState) { _, newState in
+           if newState == .playing {
+               print("🚀 Game Started! Navigating to PlayView...")
+               
+               appCoordinator.changeRootAnimate(root: .play(.multiplayer(matchManager)))
+           }
+       }
     }
     
     // MARK: - SUBVIEWS

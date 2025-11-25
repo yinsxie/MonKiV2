@@ -36,12 +36,12 @@ struct StartingPageView: View {
                     
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
+                        appCoordinator.goTo(.helperScreen(.multiplayerLobby))
                     }, label: {
-                        Image("2P_button")
+                        Image("2P_button_active")
                             .resizable()
                             .scaledToFit()
                     })
-                    .disabled(true)
                     
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)

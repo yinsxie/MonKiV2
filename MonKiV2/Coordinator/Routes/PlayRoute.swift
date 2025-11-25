@@ -9,6 +9,7 @@ import SwiftUI
 
 enum PlayRoute {
     case play
+    case multiplayer(MatchManager)
 }
 
 extension PlayRoute: SubRouteProtocol {
@@ -17,6 +18,8 @@ extension PlayRoute: SubRouteProtocol {
         switch self {
         case .play:
             PlayViewContainer(forGameMode: .singleplayer)
+        case .multiplayer(let manager):
+            PlayViewContainer(forGameMode: .multiplayer, matchManager: manager)
         }
     }
 }

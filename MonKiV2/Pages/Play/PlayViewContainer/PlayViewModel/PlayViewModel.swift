@@ -7,9 +7,12 @@
 
 import SwiftUI
 
-@Observable class PlayViewModel {
+@MainActor
+@Observable class PlayViewModel: MatchManagerDelegate {
     
     var gameMode: GameMode
+    var matchManager: MatchManager?
+    
     var gamePages: [PageIdentifier]
     
     var floatingItems: [FloatingItemFeedback] = [] // track items that need animating floating item feedback
@@ -49,9 +52,11 @@ import SwiftUI
     var isFlyingMoney: Bool = false
     var flyingMoneyCurrency: Currency?
     
-    init(gameMode: GameMode) {
+    init(gameMode: GameMode, matchManager: MatchManager? = nil) {
         self.gameMode = gameMode
         self.gamePages = PlayViewModel.getPage(for: gameMode)
+        self.matchManager = matchManager
+        
         // On Game Start
         let budget = generateBudget(min: 30, max: 100, step: 10)
         self.initialBudget = budget
@@ -66,7 +71,57 @@ import SwiftUI
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
         //                        let currencyBreakdown = Currency.breakdown(from: budget)
         //                        walletVM.addMoney(currencyBreakdown)
+        
     }
+    
+    func connectToMatch() {
+        print("🔗 PlayViewModel connecting to MatchManager delegate")
+        self.matchManager?.delegate = self
+    }
+    
+    func didRemotePlayerPurchase(itemName: String) {
+            // Opponent bought something. Add it to MY purchased items.
+            print("📡 Opponent bought: \(itemName)")
+            if let item = findItemByName(itemName) {
+                // Add directly to purchased items (skip animation/payment for sync simplicity)
+                cashierVM.purchasedItems.append(CartItem(item: item))
+            }
+        }
+        
+        func didRemotePlayerAddToDish(itemName: String) {
+            // Opponent moved item to Dish.
+            // 1. Find it in purchased items
+            if let index = cashierVM.purchasedItems.firstIndex(where: { $0.item.name == itemName }) {
+                let cartItem = cashierVM.purchasedItems[index]
+                
+                // 2. Move to Dish
+                dishVM.createDishItem.append(cartItem)
+                cashierVM.purchasedItems.remove(at: index)
+                print("📡 Opponent added \(itemName) to dish")
+            } else {
+                // Fail-safe: If desync happened, force create it
+                if let item = findItemByName(itemName) {
+                    dishVM.createDishItem.append(CartItem(item: item))
+                }
+            }
+        }
+        
+        func didRemotePlayerRemoveFromDish(itemName: String) {
+            // Opponent put item back in bag
+            if let index = dishVM.createDishItem.firstIndex(where: { $0.item.name == itemName }) {
+                let cartItem = dishVM.createDishItem[index]
+                
+                cashierVM.purchasedItems.append(cartItem)
+                dishVM.createDishItem.remove(at: index)
+                print("📡 Opponent removed \(itemName) from dish")
+            }
+        }
+        
+        // Helper to find item object from string name
+        private func findItemByName(_ name: String) -> Item? {
+            // Assuming Item.items is your static catalog
+            return Item.items.first(where: { $0.name == name })
+        }
     
 }
 

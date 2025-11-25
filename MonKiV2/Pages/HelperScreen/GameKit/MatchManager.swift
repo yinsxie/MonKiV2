@@ -2,6 +2,23 @@ import GameKit
 import SwiftUI
 import Combine
 
+struct GamePacket: Codable {
+    enum PacketType: String, Codable {
+        case itemPurchased      // When someone buys at cashier
+        case itemAddedToDish    // When item moved from Bag -> Dish
+        case itemRemovedFromDish // When item moved from Dish -> Bag
+    }
+    
+    let type: PacketType
+    let itemName: String
+}
+
+protocol MatchManagerDelegate: AnyObject {
+    func didRemotePlayerPurchase(itemName: String)
+    func didRemotePlayerAddToDish(itemName: String)
+    func didRemotePlayerRemoveFromDish(itemName: String)
+}
+
 @MainActor
 class MatchManager: NSObject, ObservableObject {
     // MARK: - Game State
@@ -14,6 +31,34 @@ class MatchManager: NSObject, ObservableObject {
     
     @Published var matchState: MatchState = .idle
     @Published var myMatch: GKMatch?
+    weak var delegate: MatchManagerDelegate?
+    
+    func sendPurchase(itemName: String) {
+        sendPacket(GamePacket(type: .itemPurchased, itemName: itemName))
+    }
+    
+    func sendAddToDish(itemName: String) {
+        sendPacket(GamePacket(type: .itemAddedToDish, itemName: itemName))
+    }
+    
+    func sendRemoveFromDish(itemName: String) {
+        sendPacket(GamePacket(type: .itemRemovedFromDish, itemName: itemName))
+    }
+    
+    private func sendPacket(_ packet: GamePacket) {
+        guard let match = myMatch else {
+            print("⛔️ [MatchManager] Attempted to send packet, but 'myMatch' is NIL. Connection lost?")
+            return
+        }
+        
+        do {
+            let data = try JSONEncoder().encode(packet)
+            try match.sendData(toAllPlayers: data, with: .reliable)
+            print("🚀 [MatchManager] Sent packet: \(packet.type) - \(packet.itemName)")
+        } catch {
+            print("❌ [MatchManager] Failed to send: \(error.localizedDescription)")
+        }
+    }
     
     // MARK: - Player Info
     @Published var otherPlayerName: String = "Waiting..."
@@ -23,21 +68,6 @@ class MatchManager: NSObject, ObservableObject {
     @Published var isRemotePlayerReady = false
     @Published var isLocalPlayerReady = false
     
-    // MARK: - Authentication
-    func authenticateUser() {
-        GKLocalPlayer.local.authenticateHandler = { vc, error in
-            if let vc = vc {
-                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                      let window = windowScene.windows.first,
-                      let rootVC = window.rootViewController else { return }
-                rootVC.present(vc, animated: true)
-            } else if GKLocalPlayer.local.isAuthenticated {
-                print("User is authenticated")
-            } else {
-                print("Error: \(error?.localizedDescription ?? "Unknown Authentication Error")")
-            }
-        }
-    }
     
     // MARK: - Matchmaking Logic
     func startMatchmaking(withCode code: Int = 0) {
@@ -61,7 +91,7 @@ class MatchManager: NSObject, ObservableObject {
                 
             } else if let error = error {
                 print("Matchmaking failed: \(error.localizedDescription)")
-                self.matchState = .idle
+                self.resetMatch()
             }
         }
     }
@@ -129,39 +159,5 @@ class MatchManager: NSObject, ObservableObject {
         self.otherPlayerAvatar = nil
         self.isLocalPlayerReady = false
         self.isRemotePlayerReady = false
-    }
-}
-
-// MARK: - GKMatchDelegate
-extension MatchManager: GKMatchDelegate {
-    func match(_ match: GKMatch, player: GKPlayer, didChange state: GKPlayerConnectionState) {
-        switch state {
-        case .connected:
-            print("\(player.displayName) has connected!")
-            loadOpponentDetails(player: player)
-        case .disconnected:
-            print("\(player.displayName) disconnected")
-            DispatchQueue.main.async {
-                self.matchState = .idle
-            }
-        default:
-            break
-        }
-    }
-    
-    func match(_ match: GKMatch, didFailWithError error: Error?) {
-        print("Match failed: \(error?.localizedDescription ?? "Unknown")")
-    }
-    
-    func match(_ match: GKMatch, didReceive data: Data, fromRemotePlayer player: GKPlayer) {
-        if let message = String(data: data, encoding: .utf8) {
-            if message == "READY" {
-                print("Opponent is ready!")
-                DispatchQueue.main.async {
-                    self.isRemotePlayerReady = true
-                    self.checkIfGameCanStart()
-                }
-            }
-        }
     }
 }

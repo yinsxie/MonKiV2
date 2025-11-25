@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import CoreData
 
-@Observable
+@MainActor @Observable
 final class CreateDishViewModel {
     weak var parent: PlayViewModel?
     private let bgProcessor = BackgroundRemoverProcessor()

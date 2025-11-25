@@ -186,10 +186,14 @@ extension PlayViewModel {
     func handleGroceryDropOnCreateDish(groceryItem: Item, draggedItem: DraggedItem) {
         if draggedItem.source == .createDishOverlay {
             DispatchQueue.main.async {
+                // Local Update
                 self.dishVM.createDishItem.append(CartItem(item: groceryItem))
                 guard let index = self.cashierVM.purchasedItems.firstIndex(where: { $0.item.id == draggedItem.id }) else { return }
                 self.cashierVM.purchasedItems.remove(at: index)
                 self.dragManager.currentDraggedItem = nil
+                
+                // Network Update
+                self.matchManager?.sendAddToDish(itemName: groceryItem.name)
             }
         }
     }
@@ -197,10 +201,14 @@ extension PlayViewModel {
     func handleGroceryDropOnCreateDishOverlay(groceryItem: Item, draggedItem: DraggedItem) {
         if draggedItem.source == .createDish {
             DispatchQueue.main.async {
+                // Local Update
                 self.cashierVM.purchasedItems.append(CartItem(item: groceryItem))
                 guard let index = self.dishVM.createDishItem.firstIndex(where: { $0.id == draggedItem.id }) else { return }
                 self.dishVM.createDishItem.remove(at: index)
                 self.dragManager.currentDraggedItem = nil
+                
+                // Network Update
+                self.matchManager?.sendRemoveFromDish(itemName: groceryItem.name)
             }
         }
     }
