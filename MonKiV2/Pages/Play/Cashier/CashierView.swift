@@ -14,6 +14,9 @@ struct CashierView: View {
     @Environment(CartViewModel.self) var cartVM
     @Environment(PlayViewModel.self) var playVM
     
+    private let chocolateItem = Item.items.first { $0.name == "Chocolate" }
+    private let sausageItem = Item.items.first { $0.name == "Sausage" }
+
     var body: some View {
         
         HStack(alignment: .bottom) {
@@ -155,6 +158,44 @@ struct CashierView: View {
                                 .offset(x: 157.5, y: -212.5)
                                 .foregroundStyle(ColorPalette.cashierNominal)
                         }
+                        
+                        // Mini shelf
+                        ZStack(alignment: .bottomLeading) {
+                            Image("cashier_shelf")
+                                .resizable()
+                                .scaledToFit()
+                            
+                            HStack(spacing: 0) {
+                                // Chocolate
+                                if let chocolateItem = chocolateItem {
+                                    Color.green.opacity(0.001)
+                                        .makeDraggable(
+                                            item: DraggedItem(
+                                                payload: .grocery(chocolateItem),
+                                                source: .cashierShelf
+                                            )
+                                        )
+                                        .makeDropZone(type: .shelfReturnItem)
+                                }
+                                
+                                // Sausage
+                                if let sausageItem = sausageItem {
+                                    Color.green.opacity(0.001)
+                                        .makeDraggable(
+                                            item: DraggedItem(
+                                                payload: .grocery(sausageItem),
+                                                source: .cashierShelf
+                                            )
+                                        )
+                                        .makeDropZone(type: .shelfReturnItem)
+                                }
+                            }
+                            .frame(maxHeight: .infinity)
+                            .padding(.vertical, 20)
+                            .padding(.horizontal, 10)
+                        }
+                        .frame(width: 391, height: 265)
+                        .offset(x: -220, y: 220)
                         
                         // Money DropZone
                         // Edge Case: Make sure the drop zone is only active on the payment page
