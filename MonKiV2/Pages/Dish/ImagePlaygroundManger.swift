@@ -42,7 +42,10 @@ final class ImagePlaygroundManager {
         let parsed = parseIngredientDetails(from: ingredients)
         let nameSet = Set(parsed.map { $0.name })
         
-        let base = getBaseIngredient(from: nameSet)
+        let nonMilkIngredients = parsed.filter { $0.name != "milk" }
+        let isSoloIngredient = nonMilkIngredients.count == 1
+        
+        let base = getBaseIngredient(from: nameSet, isSolo: isSoloIngredient)
         let baseName = base?.name ?? ""
         
         let milkSide = getMilkString(from: parsed)
@@ -130,10 +133,16 @@ final class ImagePlaygroundManager {
         let display: String
     }
     
-    private func getBaseIngredient(from nameSet: Set<String>) -> BaseIngredient? {
+    private func getBaseIngredient(from nameSet: Set<String>, isSolo: Bool) -> BaseIngredient? {
         if nameSet.contains("rice") {
-            return BaseIngredient(name: "rice", display: ["fried rice", "sushi", "white rice"].randomElement() ?? "white rice")
+            if isSolo {
+                let display = ["steamed white rice", "rice porridge"].randomElement() ?? "steamed white rice"
+                return BaseIngredient(name: "rice", display: display)
+            } else {
+                return BaseIngredient(name: "rice", display: ["fried rice", "sushi", "white rice"].randomElement() ?? "white rice")
+            }
         }
+        
         if nameSet.contains("pasta") {
             return BaseIngredient(name: "pasta", display: "plain cooked pasta")
         }
