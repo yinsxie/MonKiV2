@@ -10,6 +10,8 @@ import SwiftUI
 struct CashierMonkiView: View {
     @Environment(DragManager.self) var dragManager
     @Environment(CashierViewModel.self) var viewModel
+    @Environment(PlayViewModel.self) var playVM
+    
     @State private var bubbleOpacity: Double = 0
     
     var body: some View {
@@ -22,7 +24,7 @@ struct CashierMonkiView: View {
                 
                 let isFirstTimePayment = viewModel.totalPrice > 0 && dragManager.currentDraggedItem != nil
                 let moneyExist = viewModel.totalReceivedMoney > 0 || viewModel.returnedMoney.count > 0
-                let condition = viewModel.currentPage == .payment && (isFirstTimePayment || moneyExist)
+                let condition = playVM.getCurrentPage() == .cashierPayment && (isFirstTimePayment || moneyExist)
                 
                 MonkiHandView()
                     .opacity(condition && !viewModel.isAnimatingReturnMoney ? 1 : 0)
@@ -35,8 +37,8 @@ struct CashierMonkiView: View {
                 .offset(x: -180 + (50 * CGFloat(min(viewModel.receivedMoneyGrouped.count, 3))), y: -280)
                 .opacity(bubbleOpacity)
         }
-        .onChange(of: viewModel.currentPage) { _, newPage in
-            if viewModel.totalPrice > 0 && newPage == .payment {
+        .onChange(of: playVM.currentPageIndex) {
+            if viewModel.totalPrice > 0 && playVM.getCurrentPage() == .cashierPayment {
                 // Fade IN — 1.5 seconds
                 withAnimation(.easeInOut(duration: 1.2)) {
                     bubbleOpacity = 1
@@ -59,5 +61,5 @@ struct CashierMonkiView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

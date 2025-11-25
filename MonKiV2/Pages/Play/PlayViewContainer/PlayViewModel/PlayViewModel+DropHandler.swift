@@ -1,135 +1,14 @@
 //
-//  PlayViewModel.swift
+//  PlayViewModel+DropHandler.swift
 //  MonKiV2
 //
-//  Created by Aretha Natalova Wahyudi on 13/11/25.
+//  Created by William on 24/11/25.
 //
 
 import SwiftUI
 
-@Observable class PlayViewModel {
-    var floatingItems: [FloatingItemFeedback] = [] // track items that need animating floating item feedback
-    var itemsCurrentlyAnimating: [UUID] = [] // tracks items that are animating but MUST become visible again (no fade)
-    
-    // Global Published Var for global state
-    var initialBudget: Int = 0
-    var currentBudget: Int {
-        walletVM.moneys.reduce(0) { $0 + $1.currency.value }
-    }
-    
-    // VM's
-    var shelfVM: ShelfViewModel!
-    var cartVM: CartViewModel!
-    var cashierVM: CashierViewModel!
-    var walletVM: WalletViewModel!
-    var dishVM: CreateDishViewModel!
-    var atmVM: ATMViewModel!
-    
-    // Start at CreateDishView
-    var currentPageIndex: Int? = 0
-    var isIntroButtonVisible: Bool = true
-    
-    var dragManager = DragManager()
-    
-    var atmFrame: CGRect = .zero
-    var walletFrame: CGRect = .zero
-    
-    var isFlyingMoney: Bool = false
-    var flyingMoneyCurrency: Currency?
-    
-    init() {
-        // On Game Start
-        let budget = generateBudget(min: 30, max: 100, step: 10)
-        self.initialBudget = budget
-        
-        self.shelfVM = ShelfViewModel(parent: self)
-        self.cartVM = CartViewModel(parent: self)
-        self.cashierVM = CashierViewModel(parent: self)
-        self.walletVM = WalletViewModel(parent: self)
-        self.dishVM = CreateDishViewModel(parent: self)
-        self.atmVM = ATMViewModel(parent: self, initialBalance: budget)
-        
-        setupGameLogic()
-        // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
-        //                        let currencyBreakdown = Currency.breakdown(from: budget)
-        //                        walletVM.addMoney(currencyBreakdown)
-    }
-    
-    private func setupGameLogic() {
-        dragManager.onDropSuccess = { [weak self] zone, draggedItem in
-            guard let self = self else { return }
-            
-            switch draggedItem.payload {
-            case .grocery(let groceryItem):
-                self.handleGroceryDrop(zone: zone, groceryItem: groceryItem, draggedItem: draggedItem)
-            case .money(let currency):
-                print("Dropped money with price: \(currency)")
-                self.handleMoneyDrop(zone: zone, currency: currency, draggedItem: draggedItem)
-            }
-        }
-        
-        dragManager.onDropFailed = { [weak self] draggedItem in
-            guard let self = self else { return }
-            self.handleDropFailed(draggedItem: draggedItem)
-        }
-    }
-    
-    func startTour() {
-        withAnimation {
-            isIntroButtonVisible = false
-        }
-        
-        withAnimation(.easeInOut(duration: 2.5)) {
-            currentPageIndex = 0
-        }
-    }
-    
-    func clearVisualAnimationState(id: UUID, trackedItemID: UUID, wasFadingOut: Bool) {
-        floatingItems.removeAll(where: { $0.id == id })
-        
-        if !wasFadingOut {
-            itemsCurrentlyAnimating.removeAll(where: { $0 == trackedItemID })
-        }
-    }
-    
-    func removeFallingItem(id: UUID) {
-        floatingItems.removeAll(where: { $0.id == id })
-    }
-    
-    func onCancelPayment() {
-        dropMoneyBackToWallet()
-    }
-    
-    func triggerMoneyFlyAnimation(amount: Int) {
-        print("PlayVM: start animasi uang masuk ke wallet untuk nominal \(amount)")
-        
-        let currency = Currency(value: amount)
-        self.flyingMoneyCurrency = currency
-        
-        withAnimation(.easeInOut(duration: 0.1)) {
-            self.isFlyingMoney = true
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
-            guard let self = self else { return }
-            
-            self.isFlyingMoney = false
-            self.flyingMoneyCurrency = nil
-            
-            print("PlayVM: Animasi selesai. Add money to Wallet.")
-            let breakdown = Currency.breakdown(from: amount)
-            
-            if breakdown.isEmpty {
-                print("Breakdown currency kosong untuk amount \(amount)!")
-            }
-            
-            self.walletVM.addMoney(breakdown)
-        }
-    }
-}
-
 // MARK: Drop Handlers
-private extension PlayViewModel {
+extension PlayViewModel {
     
     func handleDropFailed(draggedItem: DraggedItem) {
         print("Drop failed (Invalid Zone). Clearing item without animation.")
@@ -485,15 +364,5 @@ private extension PlayViewModel {
             self.itemsCurrentlyAnimating.append(draggedItem.id) // Hide original item
             self.dragManager.currentDraggedItem = nil
         }
-    }
-}
-
-private extension PlayViewModel {
-    func generateBudget(min: Int, max: Int, step: Int) -> Int {
-        let range = stride(from: min, through: max, by: step)
-            .map { $0 }
-            .filter { $0 != 50 }
-        
-        return range.randomElement() ?? min
     }
 }

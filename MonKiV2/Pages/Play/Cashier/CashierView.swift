@@ -12,6 +12,7 @@ struct CashierView: View {
     @Environment(DragManager.self) var dragManager
     @Environment(PlayViewModel.self) var playViewModel
     @Environment(CartViewModel.self) var cartVM
+    @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
         
@@ -32,8 +33,8 @@ struct CashierView: View {
                             .frame(width: 245, height: 280)
                             .offset(y: 140)
                             .makeDropZone(type: .cashierRemoveItem)
-                        
-                        if (playViewModel.currentPageIndex ?? 0) == 3 {
+                       
+                        if let index = playViewModel.currentPageIndex, playViewModel.getPage(at: index) == .cashierLoading {
                             Rectangle()
                                 .foregroundColor(Color.clear)
                                 .floatingPriceFeedback(value: viewModel.discardedAmountTracker)
@@ -42,7 +43,6 @@ struct CashierView: View {
                         }
                     }
                     .padding(.trailing, 30)
-                    
                 }
                 
                 // MAIN COUNTER AREA
@@ -138,8 +138,8 @@ struct CashierView: View {
                                 .onTapGesture {
                                     viewModel.onReturnedReceivedMoneyTapped()
                                 }
-                                .onChange(of: viewModel.currentPage) { _, newValue in
-                                    if newValue != .payment {
+                                .onChange(of: playVM.currentPageIndex) {
+                                    if playVM.getCurrentPage() != .cashierPayment {
                                         viewModel.onPageChangeWhileReceivedMoney()
                                     }
                                 }
@@ -187,5 +187,5 @@ struct CashierView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

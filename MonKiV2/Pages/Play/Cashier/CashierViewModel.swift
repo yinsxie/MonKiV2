@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-enum CashierPage {
-    case loading
-    case payment
-    case none
-}
-
 @Observable
 final class CashierViewModel {
     weak var parent: PlayViewModel?
@@ -27,16 +21,6 @@ final class CashierViewModel {
         if let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
             let riceCartItem = CartItem(item: riceItem)
             self.purchasedItems.append(riceCartItem)
-        }
-    }
-    
-    var currentPage: CashierPage {
-        if parent?.currentPageIndex == 3 {
-            return .loading
-        } else if parent?.currentPageIndex == 4 {
-            return .payment
-        } else {
-            return .none
         }
     }
     

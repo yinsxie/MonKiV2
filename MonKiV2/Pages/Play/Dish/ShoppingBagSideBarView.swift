@@ -57,9 +57,9 @@ struct ShoppingBagSideBarView: View {
         .frame(width: sideBarWidth)
         .frame(maxHeight: .infinity)
         .padding(.horizontal, 40)
-        .onChange(of: playVM.currentPageIndex) { _, newValue in
+        .onChange(of: playVM.currentPageIndex) {
             // MARK: Change if turning on Debug IngredientsListView
-            if newValue == 5 {
+            if playVM.getCurrentPage() == .createDish {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     toggleBag(to: true)
                 }
@@ -198,5 +198,5 @@ struct ShoppingBagSideBarView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

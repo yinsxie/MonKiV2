@@ -33,6 +33,6 @@ struct GroceryItemView: View { // this is created so that item on shelf and afte
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
         .environmentObject(AppCoordinator())
 }
