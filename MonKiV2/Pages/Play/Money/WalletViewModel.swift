@@ -37,7 +37,7 @@ import SwiftUI
     }
     
     func removeItem(withId id: UUID) {
-        moneys.removeAll{ $0.id == id }
+        moneys.removeAll { $0.id == id }
         print("Item removed from cart with instance id: \(id)")
     }
     

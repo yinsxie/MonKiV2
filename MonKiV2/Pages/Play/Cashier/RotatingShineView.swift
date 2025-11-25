@@ -26,6 +26,7 @@ struct RotatingShineView: View {
             
                 .onAppear {
                     // Animate the rotationAngle from 0 to 360 degrees indefinitely
+                    AudioManager.shared.play(.changeSound)
                     withAnimation(.linear(duration: 10.0).repeatForever(autoreverses: false)) {
                         rotationAngle = 360
                     }

@@ -5,7 +5,6 @@
 //  Created by Yonathan Handoyo on 28/10/25.
 //
 
-import CoreImage
 import CoreImage.CIFilterBuiltins
 import Vision
 import UIKit
@@ -98,9 +97,9 @@ struct BackgroundRemoverImageComposer {
     }
 
     private func render(_ image: CIImage, extent: CGRect) throws -> UIImage {
-        guard let cg = context.createCGImage(image, from: extent) else {
+        guard let cgImage = context.createCGImage(image, from: extent) else {
             throw ProcessingError.renderFailed
         }
-        return UIImage(cgImage: cg)
+        return UIImage(cgImage: cgImage)
     }
 }

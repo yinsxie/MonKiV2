@@ -37,11 +37,12 @@ struct DishBookView: View {
                 // 2. The Interactive Content
                 ZStack {
                     HStack {
-                        ArrowButton(direction: .left, action: viewModel.prevPage)
+                        ArrowButton(direction: .left, action: { _ = viewModel.prevPage() })
                             .opacity(viewModel.currentPageIndex > 0 ? 1 : 0)
+                        
                         Spacer()
                         
-                        ArrowButton(direction: .right, action: { viewModel.nextPage(totalCount: dishes.count) })
+                        ArrowButton(direction: .right, action: { _ = viewModel.nextPage(totalCount: dishes.count) })
                             .opacity(viewModel.currentPageIndex + 2 < dishes.count ? 1 : 0)
                     }
                     .padding(.horizontal, 44)
@@ -92,12 +93,17 @@ struct DishBookView: View {
         if abs(horizontalDistance) > minSwipeDistance {
             if horizontalDistance < 0 {
                 // Horizontal distance is negative -> SWIPE LEFT
-                viewModel.nextPage(totalCount: dishes.count)
+                if viewModel.nextPage(totalCount: dishes.count) {
+                    AudioManager.shared.play(.pageTurn, volume: 5.0)
+                }
                 
             } else {
                 // Horizontal distance is positive -> SWIPE RIGHT
-                viewModel.prevPage()
+                if viewModel.prevPage() {
+                    AudioManager.shared.play(.pageTurn, volume: 5.0)
+                }
             }
+            
         } else {
             print("No Significant Swipe!")
         }
@@ -417,7 +423,7 @@ struct IngredientItemView: View {
                     .scaleEffect(0.45)
                     .offset(y: 15)
                 
-                //TODO: Remove when all shelf item assets are in
+                // TODO: Remove when all shelf item assets are in
                 //                Text(itemName)
                 //                    .font(.fredokaOne(size: 14))
                 //                    .foregroundColor(.black.opacity(0.8))

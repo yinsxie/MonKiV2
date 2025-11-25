@@ -83,7 +83,7 @@ struct HoldButton: View {
             print("Home Selesai!")
         })
         
-        HoldButton(type: .remove, size: 122,strokeWidth: 10, onComplete: {
+        HoldButton(type: .remove, size: 122, strokeWidth: 10, onComplete: {
             print("Remove Selesai!")
         })
     }

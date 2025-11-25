@@ -16,7 +16,7 @@ extension PlayRoute: SubRouteProtocol {
     func delegateView() -> some View {
         switch self {
         case .play:
-            PlayViewContainer()
+            PlayViewContainer(forGameMode: .singleplayer)
         }
     }
 }

@@ -13,11 +13,11 @@ enum BGMTrack: String {
     case supermarket = "BGM_Supermarket"
 }
 
-final class BGMManager: ObservableObject{
+final class BGMManager: ObservableObject {
     static let shared = BGMManager()
     
     private var player: AVAudioPlayer?
-    private var isPlaying: Bool{
+    private var isPlaying: Bool {
         player?.isPlaying == true
     }
     @Published var isMuted = false
@@ -34,12 +34,12 @@ final class BGMManager: ObservableObject{
         guard let url = Bundle.main.url(forResource: track.rawValue, withExtension: "mp3") else { return }
         
         do {
-            let p = try AVAudioPlayer(contentsOf: url)
-            p.numberOfLoops = -1
-            p.volume = volume
-            p.prepareToPlay()
-            p.play()
-            self.player = p
+            let playerInstance = try AVAudioPlayer(contentsOf: url)
+            playerInstance.numberOfLoops = -1
+            playerInstance.volume = volume
+            playerInstance.prepareToPlay()
+            playerInstance.play()
+            self.player = playerInstance
         } catch {
             print("Failed to play BGM: \(error)")
         }
