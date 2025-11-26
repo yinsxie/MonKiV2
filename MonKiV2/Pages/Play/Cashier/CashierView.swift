@@ -125,18 +125,18 @@ struct CashierView: View {
                     
                     // CASHIER IMAGE
                     ZStack {
-                        Image("cashier_counter")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 1622.78, height: 706)
-                            .ignoresSafeArea()
-                        
                         ZStack {
+                            Image("trolley_sign")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 150, height: 517)
+                                .offset(x: -450, y: -70)
+                            
                             CashierMonkiView()
                                 .opacity(viewModel.isStartingReturnMoneyAnimation ? 0 : 1)
                                 .scrollTransition(.animated, axis: .horizontal) { content, phase in
                                     content
-                                        .offset(x: phase.isIdentity ? 0 : 1000)
+                                        .offset(x: phase.isIdentity ? 0 : 1000, y: 200)
                                 }
                                 .onTapGesture {
                                     viewModel.onReturnedReceivedMoneyTapped()
@@ -157,8 +157,20 @@ struct CashierView: View {
                                 .font(.VT323(size: 40))
                                 .offset(x: 157.5, y: -212.5)
                                 .foregroundStyle(ColorPalette.cashierNominal)
+                            
+                            Image("Icon_cashier_1_active")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 150)
+                                .offset(x: -160, y: -70)
                         }
                         
+                        Image("cashier_counter")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 1622.78, height: 706)
+                            .offset(y: 200)
+                            .ignoresSafeArea()
                         // Mini shelf
                         ZStack(alignment: .bottomLeading) {
                             Image("cashier_shelf")
@@ -208,6 +220,7 @@ struct CashierView: View {
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
                             }
+                            .allowsHitTesting(false)
                     }
                 }
                 

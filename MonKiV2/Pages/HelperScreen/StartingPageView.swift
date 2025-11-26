@@ -26,7 +26,7 @@ struct StartingPageView: View {
                 VStack(spacing: 16) {
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
-//                        appCoordinator.goTo(.play(.play))
+                        //                        appCoordinator.goTo(.play(.play))
                         appCoordinator.goTo(.helperScreen(.pickChef))
                     }, label: {
                         Image("1P_button")
@@ -43,15 +43,33 @@ struct StartingPageView: View {
                             .scaledToFit()
                     })
                     
-                    Button(action: {
-                        AudioManager.shared.play(.buttonClick)
-                        appCoordinator.goTo(.helperScreen(.dishBook))
-                    }, label: {
-                        Text("Book")
-                    })
+                    //                    Button(action: {
+                    //                        AudioManager.shared.play(.buttonClick)
+                    //                        appCoordinator.goTo(.helperScreen(.dishBook))
+                    //                    }, label: {
+                    //                        Text("Book")
+                    //                    })
                 }
+                
+                
             }
             .padding(115)
+            
+            Button(action: {
+                AudioManager.shared.play(.buttonClick)
+                appCoordinator.goTo(.helperScreen(.dishBook))
+            }, label: {
+                ZStack {
+                    RotatingShineView()
+                        .frame(width: 170)
+                    
+                    Image("dish_book")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 86, height: 110)
+                }
+            }).frame(width: 195, height: 195)
+                .offset(x: -450, y: 310)
         }
         .onAppear {
             BGMManager.shared.play(track: .supermarket)

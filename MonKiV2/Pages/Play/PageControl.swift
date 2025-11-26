@@ -26,6 +26,12 @@ struct PageControl: View {
             return ("Icon_atm_active", "Icon_atm_inactive")
         case .shelfA:
             return ("Icon_shelf_1_active", "Icon_shelf_1_inactive")
+        case .shelfB:
+            return ("Icon_shelf_2_active", "Icon_shelf_2_inactive")
+        case .cashierLoading:
+            return ("Icon_cashier_1_active", "Icon_cashier_1_inactive")
+        case .cashierPayment:
+            return ("Icon_cashier_2_active", "Icon_cashier_2_inactive")
         case .createDish:
             return ("Icon_dish_active", "Icon_dish_inactive")
         default:

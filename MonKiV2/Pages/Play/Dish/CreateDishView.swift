@@ -127,24 +127,22 @@ struct CreateDishView: View {
     private var startTourButton: some View {
         Button(action: {
             playVM.startTour()
-
+            
         }, label: {
-            HStack(spacing: 12) {
-                Text("Go to ATM")
-                    .font(.custom("WendyOne-Regular", size: 32))
-            }
-            .foregroundColor(.white)
-            .padding(.vertical, 80)
-            .padding(.horizontal, 50)
-            .background(
-                Ellipse()
-                    .fill(Color.orange)
-                    .shadow(radius: 5, y: 5)
-            )
+            Image(viewModel.tourButtonImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 273, height: 123)
         })
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-        .padding(.leading, 25)
-        .padding(.bottom, 70)
+        .padding(.leading, 48)
+        .padding(.bottom, 58)
+        .onAppear {
+            viewModel.startAutoLoopAnimation()
+        }
+        .onDisappear {
+            viewModel.stopAutoLoopAnimation()
+        }
     }
     
     private var monkiFace: some View {
@@ -176,9 +174,15 @@ struct CreateDishView: View {
     }
     
     private var dishBook: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .fill(Color(hex: "#85DCFA"))
-            .frame(width: 171, height: 205)
+//        RoundedRectangle(cornerRadius: 20)
+//            .fill(Color(hex: "#85DCFA"))
+//            .frame(width: 171, height: 205)
+        Image("dish_book")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 160, height: 204)
+            .rotationEffect(Angle(degrees: 5))
+            .offset(y: 25)
     }
     
     private var bottomButton: some View {

@@ -43,7 +43,11 @@ struct PlayViewContainer: View {
     // MARK: - Main Body
     var body: some View {
         ZStack(alignment: .bottom) {
-            PlayBackgroundView()
+//            PlayBackgroundView()
+            Image("background")
+                .resizable()
+                .scaledToFill()
+                .edgesIgnoringSafeArea(.all)
             
             // 1. Main Scroll View
             pagingScrollView
