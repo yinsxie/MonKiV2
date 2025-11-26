@@ -12,6 +12,10 @@ extension PlayViewModel: MatchManagerDelegate {
         print("🔗 PlayViewModel connecting to MatchManager delegate")
         self.matchManager?.delegate = self
     }
+    
+    func didReceiveBudgetEvent(_ event: BudgetEvent) {
+        budgetSharingVM?.handleEvent(event)
+    }
         
     func didRemotePlayerPurchase(itemName: String) {
         print("📡 Opponent bought: \(itemName)")

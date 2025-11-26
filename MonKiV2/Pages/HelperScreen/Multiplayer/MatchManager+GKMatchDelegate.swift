@@ -49,11 +49,25 @@ extension MatchManager: GKMatchDelegate {
             DispatchQueue.main.async {
                 switch packet.type {
                 case .itemPurchased:
-                    self.delegate?.didRemotePlayerPurchase(itemName: packet.itemName)
+                    if let name = packet.itemName {
+                        self.delegate?.didRemotePlayerPurchase(itemName: name)
+                    }
+                    
                 case .itemAddedToDish:
-                    self.delegate?.didRemotePlayerAddToDish(itemName: packet.itemName)
+                    if let name = packet.itemName {
+                        self.delegate?.didRemotePlayerAddToDish(itemName: name)
+                    }
+                    
                 case .itemRemovedFromDish:
-                    self.delegate?.didRemotePlayerRemoveFromDish(itemName: packet.itemName)
+                    if let name = packet.itemName {
+                        self.delegate?.didRemotePlayerRemoveFromDish(itemName: name)
+                    }
+                    
+                case .budgetEvent:
+                    // NEW: Handle the budget payload
+                    if let payload = packet.budgetPayload {
+                        self.delegate?.didReceiveBudgetEvent(payload)
+                    }
                 }
             }
         } catch {

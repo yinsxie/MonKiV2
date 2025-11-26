@@ -7,10 +7,12 @@ struct GamePacket: Codable {
         case itemPurchased      // When someone buys at cashier
         case itemAddedToDish    // When item moved from Bag -> Dish
         case itemRemovedFromDish // When item moved from Dish -> Bag
+        case budgetEvent        // All changes during BudgetSharing
     }
     
     let type: PacketType
-    let itemName: String
+    let itemName: String?
+    let budgetPayload: BudgetEvent?
 }
 
 @MainActor
@@ -18,6 +20,7 @@ protocol MatchManagerDelegate: AnyObject {
     func didRemotePlayerPurchase(itemName: String)
     func didRemotePlayerAddToDish(itemName: String)
     func didRemotePlayerRemoveFromDish(itemName: String)
+    func didReceiveBudgetEvent(_ event: BudgetEvent)
 }
 
 @MainActor
@@ -35,18 +38,29 @@ class MatchManager: NSObject, ObservableObject {
     weak var delegate: MatchManagerDelegate?
     
     func sendPurchase(itemName: String) {
-        sendPacket(GamePacket(type: .itemPurchased, itemName: itemName))
+        sendPacket(GamePacket(type: .itemPurchased, itemName: itemName, budgetPayload: nil))
     }
     
     func sendAddToDish(itemName: String) {
-        sendPacket(GamePacket(type: .itemAddedToDish, itemName: itemName))
+        sendPacket(GamePacket(type: .itemAddedToDish, itemName: itemName, budgetPayload: nil))
     }
     
     func sendRemoveFromDish(itemName: String) {
-        sendPacket(GamePacket(type: .itemRemovedFromDish, itemName: itemName))
+        sendPacket(GamePacket(type: .itemRemovedFromDish, itemName: itemName, budgetPayload: nil))
     }
     
-    private func sendPacket(_ packet: GamePacket) {
+    func sendBudgetEvent(_ event: BudgetEvent) {
+        let mode: GKMatch.SendDataMode = {
+            switch event {
+            case .move: return .unreliable // Fast updates for move
+            default: return .reliable      // Logic updates (Lock/Drop/Sync)
+            }
+        }()
+        
+        sendPacket(GamePacket(type: .budgetEvent, itemName: nil, budgetPayload: event), mode: mode)
+    }
+    
+    private func sendPacket(_ packet: GamePacket, mode: GKMatch.SendDataMode = .reliable) {
         guard let match = myMatch else {
             print("⛔️ [MatchManager] Attempted to send packet, but 'myMatch' is NIL. Connection lost?")
             return
@@ -68,7 +82,6 @@ class MatchManager: NSObject, ObservableObject {
     // MARK: - Handshake Status
     @Published var isRemotePlayerReady = false
     @Published var isLocalPlayerReady = false
-    
     
     // MARK: - Matchmaking Logic
     func startMatchmaking(withCode code: Int = 0) {
@@ -106,16 +119,13 @@ class MatchManager: NSObject, ObservableObject {
         self.isRemotePlayerReady = false
     }
     
-    // MARK: - Load Details (FIXED)
     func loadOpponentDetails(player: GKPlayer) {
         print("Loading details for: \(player.displayName)")
         
-        // 1. Update Name
         DispatchQueue.main.async {
             self.otherPlayerName = player.displayName
         }
         
-        // 2. Load Photo
         player.loadPhoto(for: .normal) { image, error in
             if let image = image {
                 DispatchQueue.main.async {
@@ -127,7 +137,6 @@ class MatchManager: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Handshake Logic
     func sendReadySignal() {
         guard let match = myMatch else { return }
         self.isLocalPlayerReady = true
@@ -151,7 +160,6 @@ class MatchManager: NSObject, ObservableObject {
     }
     
     func resetMatch() {
-        // Reset the game data.
         myMatch?.disconnect()
         myMatch?.delegate = nil
         myMatch = nil

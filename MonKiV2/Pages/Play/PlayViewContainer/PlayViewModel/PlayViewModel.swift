@@ -31,6 +31,7 @@ import SwiftUI
     var walletVM: WalletViewModel!
     var dishVM: CreateDishViewModel!
     var atmVM: ATMViewModel!
+    var budgetSharingVM: BudgetSharingViewModel!
     
     // View State
     var isScrollDisabled: Bool {
@@ -45,6 +46,8 @@ import SwiftUI
     var isIntroButtonVisible: Bool = true
     
     var dragManager = DragManager()
+    
+    var isBudgetSharingActive: Bool = false
     
     var atmFrame: CGRect = .zero
     var walletFrame: CGRect = .zero
@@ -66,6 +69,11 @@ import SwiftUI
         self.walletVM = WalletViewModel(parent: self)
         self.dishVM = CreateDishViewModel(parent: self)
         self.atmVM = ATMViewModel(parent: self, initialBalance: budget)
+        
+        if gameMode == .multiplayer {
+            self.isBudgetSharingActive = true
+            self.budgetSharingVM = BudgetSharingViewModel(parent: self)
+        }
         
         setupGameLogic()
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet

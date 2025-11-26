@@ -104,6 +104,22 @@ internal extension PlayViewContainer {
             .zIndex(5)
         }
         
+        // Split Budget Overlay
+        .overlay {
+            ZStack {
+                if playVM.isBudgetSharingActive, let viewModel = playVM.budgetSharingVM {
+                    BudgetSharingView(viewModel: viewModel)
+                        .transition(.move(edge: .top))
+                        .onAppear {
+                            viewModel.checkForHostStatus()
+                        }
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .zIndex(5)
+        
         // MonKi Cashier Overlay (Money Returned)
         .overlay {
             ZStack {
