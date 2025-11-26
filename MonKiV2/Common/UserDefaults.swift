@@ -11,12 +11,12 @@ import Foundation
 ///
 /// > Important: Conform to other teammates when adding new keys to avoid duplication. Be sure to double-check existing keys first.
 enum UserDefaultsIdentifier {
-    case placeHolder
+    case isNewDishSaved
     
     var value: String {
         switch self {
-        case .placeHolder:
-            return ""
+        case .isNewDishSaved:
+            return "is_new_dish_saved"
         }
     }
 }
@@ -33,14 +33,18 @@ enum UserDefaultsError: Error {
 /// - Getter: Will retrieve the value for the specified key with an optional value
 /// > Important: Getters return optional values, so make sure to unwrap them safely
 ///
-/// >Warning:
-/// For setting `maxFieldCount`, it will throw an error if the new value is less than currentFilledField
-
 final class UserDefaultsManager {
     static let shared = UserDefaultsManager()
     
     private init() {}
     
+    func setIsNewDishSaved(_ isSaved: Bool) {
+        set(value: isSaved, for: .isNewDishSaved)
+    }
+    
+    func getIsNewDishSaved() -> Bool? {
+        return get(for: .isNewDishSaved)
+    }
 }
 
 private extension UserDefaultsManager {

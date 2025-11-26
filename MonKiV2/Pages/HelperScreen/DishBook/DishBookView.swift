@@ -70,6 +70,9 @@ struct DishBookView: View {
                 Spacer()
             }
         }
+        .onAppear {
+            viewModel.resetNewDishFlag()
+        }
         .gesture(
             DragGesture()
                 .onEnded { value in
