@@ -184,6 +184,9 @@ final class CreateDishViewModel {
         }
         
         CoreDataManager.shared.save()
+        
+        UserDefaultsManager.shared.setIsNewDishSaved(true)
+
         print("Dish saved successfully!")
     }
     

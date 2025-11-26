@@ -60,8 +60,10 @@ struct StartingPageView: View {
                 appCoordinator.goTo(.helperScreen(.dishBook))
             }, label: {
                 ZStack {
-                    RotatingShineView()
-                        .frame(width: 170)
+                    if let isNewDishEntry = UserDefaultsManager.shared.getIsNewDishSaved(), isNewDishEntry {
+                        RotatingShineView()
+                            .frame(width: 170)
+                    }
                     
                     Image("dish_book")
                         .resizable()
