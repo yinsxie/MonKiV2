@@ -82,7 +82,7 @@ extension PlayViewModel {
     
     func handleGroceryDropOnCart(groceryItem: Item, draggedItem: DraggedItem) {
         
-        if let source = draggedItem.source {
+        if let source = draggedItem.source, source != .cashierShelf {
             switch source {
             case .cashierCounter:
                 // from counter
@@ -118,7 +118,7 @@ extension PlayViewModel {
                 break
             }
         } else {
-            // from shelf
+            // from shelf & cashierShelf
             if self.cartVM.isFull {
                 self.cartVM.triggerShake()
                 print("Cart full, item not added.")
@@ -149,10 +149,12 @@ extension PlayViewModel {
         print("Remove from cart")
         AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
         
-        DispatchQueue.main.async {
-            self.cashierVM.discardedAmountTracker -= groceryItem.price
+        if draggedItem.source != .cashierShelf {
+            DispatchQueue.main.async {
+                self.cashierVM.discardedAmountTracker -= groceryItem.price
+            }
         }
-        
+
         if let source = draggedItem.source {
             switch source {
             case .cart:
@@ -165,6 +167,21 @@ extension PlayViewModel {
                     self.cashierVM.removeFromCounter(withId: draggedItem.id)
                     self.dragManager.currentDraggedItem = nil
                 }
+            case .cashierShelf:
+                // MARK: Uncomment if you want to make drop remove animate back to shelf
+//                AudioManager.shared.play(.dropFail)
+//                
+//                let fall = FloatingItemFeedback(
+//                    id: UUID(),
+//                    item: groceryItem,
+//                    startPoint: self.dragManager.currentDragLocation,
+//                    originPoint: self.dragManager.dragStartLocation,
+//                    shouldFadeOut: false, // NO FADE
+//                    trackedItemID: draggedItem.id
+//                )
+//                self.floatingItems.append(fall)
+//                self.itemsCurrentlyAnimating.append(draggedItem.id) // Hide original item
+                self.dragManager.currentDraggedItem = nil
             default:
                 break
             }
@@ -176,6 +193,13 @@ extension PlayViewModel {
             AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
             DispatchQueue.main.async {
                 self.cartVM.removeItem(withId: draggedItem.id)
+                self.dragManager.currentDraggedItem = nil
+            }
+        } else if draggedItem.source == .cashierCounter {
+            // From Counter to mini shelf
+            AudioManager.shared.play(.dropItemTrash, pitchVariation: 0.03)
+            DispatchQueue.main.async {
+                self.cashierVM.removeFromCounter(withId: draggedItem.id)
                 self.dragManager.currentDraggedItem = nil
             }
         } else {
@@ -342,7 +366,7 @@ extension PlayViewModel {
     }
     
     func handleCashierOnLoadingCounter(groceryItem: Item, draggedItem: DraggedItem) {
-        guard let source = draggedItem.source, source == .cart else {
+        guard let source = draggedItem.source, source == .cart || source == .cashierShelf else {
             DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
             return
         }
@@ -350,10 +374,14 @@ extension PlayViewModel {
         // If counter is not full
         if !self.cashierVM.isLimitCounterReached() {
             AudioManager.shared.play(.scanItem, pitchVariation: 0.02)
-            if let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
+            if source == .cart, let cartItem = self.cartVM.popItem(withId: draggedItem.id) {
                 DispatchQueue.main.async {
                     self.cashierVM.addToCounter(cartItem)
                     self.dragManager.currentDraggedItem = nil
+                }
+            } else if source == .cashierShelf {
+                DispatchQueue.main.async {
+                    self.cashierVM.addToCounter(CartItem(item: groceryItem))
                 }
             }
             return

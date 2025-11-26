@@ -25,6 +25,7 @@ enum PayloadSourceType {
     case createDish
     case monkiHand
     case wallet
+    case cashierShelf
 }
 
 struct DraggedItem: Equatable {

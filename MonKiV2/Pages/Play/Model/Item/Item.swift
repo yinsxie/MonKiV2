@@ -41,8 +41,8 @@ struct Item: Identifiable, Equatable {
         Item(id: UUID(), name: "Beef", price: 25, aisle: "Protein Premium", imageAssetPath: "beef"),
         
         // Barang di Cashier
-        Item(id: UUID(), name: "Sausage", price: 12, aisle: "Kasir", imageAssetPath: ""),
-        Item(id: UUID(), name: "Chocolate", price: 15, aisle: "Kasir", imageAssetPath: "")
+        Item(id: UUID(), name: "Sausage", price: 2, aisle: "Kasir", imageAssetPath: "sosis"),
+        Item(id: UUID(), name: "Chocolate", price: 1, aisle: "Kasir", imageAssetPath: "coklat")
 
     ]
 }
