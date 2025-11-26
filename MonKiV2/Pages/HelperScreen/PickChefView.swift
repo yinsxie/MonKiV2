@@ -38,12 +38,12 @@ struct PickChefView: View {
             
             HStack(spacing: 45) {
                 chefButton
-                chefButton
+                disableChefButton
                     .disabled(true)
-                chefButton
+                disableChefButton
                     .disabled(true)
             }
-            .padding(.top, 130)
+            .padding(.top, 170)
         }
         .ignoresSafeArea(edges: .all)
     }
@@ -57,13 +57,27 @@ extension PickChefView {
                 appCoordinator.goTo(.play(.play))
         }, label: {
             VStack(alignment: .leading) {
-                Image("cashier_monki")
+                Image("chef_monki_full")
                     .resizable()
                     .scaledToFit()
                 Spacer()
             }
-            .frame(width: 314.24017, height: 450)
-            .background(Color(red: 0.85, green: 0.85, blue: 0.85))
+            .frame(width: 314, height: 508)
+        })
+    }
+    
+    @ViewBuilder
+    private var disableChefButton: some View {
+        Button(action: {
+            AudioManager.shared.play(.buttonClick)
+        }, label: {
+            VStack(alignment: .leading) {
+                Image("chef_monki_disable")
+                    .resizable()
+                    .scaledToFit()
+                Spacer()
+            }
+            .frame(width: 314, height: 508)
         })
     }
 }

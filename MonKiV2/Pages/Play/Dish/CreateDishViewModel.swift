@@ -14,6 +14,9 @@ final class CreateDishViewModel {
     weak var parent: PlayViewModel?
     private let bgProcessor = BackgroundRemoverProcessor()
     
+    var tourButtonImage: String = "button_tour_default"
+    private var tourTimer: Timer?
+    
     init(parent: PlayViewModel?) {
         self.parent = parent
     }
@@ -182,5 +185,28 @@ final class CreateDishViewModel {
         
         CoreDataManager.shared.save()
         print("Dish saved successfully!")
+    }
+    
+    func startAutoLoopAnimation() {
+        stopAutoLoopAnimation()
+        
+        tourTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            
+            if self.tourButtonImage == "button_tour_default" {
+                self.tourButtonImage = "button_tour_delay"
+            } else {
+                self.tourButtonImage = "button_tour_default"
+            }
+        }
+    }
+    
+    func stopAutoLoopAnimation() {
+        tourTimer?.invalidate()
+        tourTimer = nil
+    }
+    
+    deinit {
+        stopAutoLoopAnimation()
     }
 }
