@@ -41,7 +41,7 @@ extension PlayViewModel {
         //        withAnimation(.spring) {
         switch zone {
         case .cashierPaymentCounter:
-            if cashierVM.isPlayerStopScrollingWhileReceivedMoney {
+            if cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney {
                 print("Player is currently not allowed to drop money on payment counter.")
                 return
             }
@@ -51,7 +51,7 @@ extension PlayViewModel {
             
             print("Dropped money on payment counter")
             // Put money
-            cashierVM.isPlayerStopScrollingWhileReceivedMoney = true
+            cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney = true
             dropMoneyToCounter(withCurrency: currency)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.handleOnPaymentCounter()
@@ -242,13 +242,13 @@ extension PlayViewModel {
         // Guard checks
         guard requiredAmount > 0 else {
             DispatchQueue.main.async { self.dragManager.currentDraggedItem = nil }
-            cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
+            cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney = false
             return
         }
         
         // KONDISI 2: Duitnya yang di kasih ga cukup
         guard self.cashierVM.totalReceivedMoney >= requiredAmount else {
-            cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
+            cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney = false
             return
         }
         
@@ -296,7 +296,7 @@ extension PlayViewModel {
             // This means we had exact payment with unused bills
             print("exact")
             DispatchQueue.main.async {
-                self.cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
+                self.cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney = false
                 self.cashierVM.receivedMoney.removeAll()
                 self.cashierVM.checkOutSuccess()
             }
@@ -343,7 +343,7 @@ extension PlayViewModel {
                 withAnimation {
                     self.cashierVM.isAnimatingReturnMoney = false
                     self.cashierVM.isReturnedMoneyPrompted = true
-                    self.cashierVM.isPlayerStopScrollingWhileReceivedMoney = false
+                    self.cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney = false
                 }
             }
         }

@@ -34,7 +34,7 @@ import SwiftUI
         dragManager.isDragging
                         || atmVM.isZoomed
                         || cashierVM.isReturnedMoneyPrompted
-                        || cashierVM.isPlayerStopScrollingWhileReceivedMoney
+                        || cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
     }
     
     // Start at CreateDishView
