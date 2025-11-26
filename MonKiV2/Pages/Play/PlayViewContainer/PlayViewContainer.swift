@@ -46,9 +46,8 @@ struct PlayViewContainer: View {
 //            PlayBackgroundView()
             Image("background")
                 .resizable()
-                .scaledToFit()
+                .scaledToFill()
                 .edgesIgnoringSafeArea(.all)
-                .offset(x: -5)
             
             // 1. Main Scroll View
             pagingScrollView
