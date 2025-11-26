@@ -486,7 +486,7 @@ struct ArrowButton: View {
     
     var body: some View {
         Button(action: {
-            AudioManager.shared.play(.buttonClick)
+            AudioManager.shared.play(.pageTurn, volume: 5.0)
             action()
         }, label: {
             Image("arrowButton")
