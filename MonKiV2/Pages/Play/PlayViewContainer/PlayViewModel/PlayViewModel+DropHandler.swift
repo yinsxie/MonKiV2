@@ -45,8 +45,11 @@ extension PlayViewModel {
                 print("Player is currently not allowed to drop money on payment counter.")
                 return
             }
-            print("Dropped money on payment counter")
+            if draggedItem.source == .monkiHand {
+                return;
+            }
             
+            print("Dropped money on payment counter")
             // Put money
             cashierVM.isPlayerStopScrollingWhileReceivedMoney = true
             dropMoneyToCounter(withCurrency: currency)
@@ -154,7 +157,7 @@ extension PlayViewModel {
                 self.cashierVM.discardedAmountTracker -= groceryItem.price
             }
         }
-
+        
         if let source = draggedItem.source {
             switch source {
             case .cart:
@@ -169,18 +172,18 @@ extension PlayViewModel {
                 }
             case .cashierShelf:
                 // MARK: Uncomment if you want to make drop remove animate back to shelf
-//                AudioManager.shared.play(.dropFail)
-//                
-//                let fall = FloatingItemFeedback(
-//                    id: UUID(),
-//                    item: groceryItem,
-//                    startPoint: self.dragManager.currentDragLocation,
-//                    originPoint: self.dragManager.dragStartLocation,
-//                    shouldFadeOut: false, // NO FADE
-//                    trackedItemID: draggedItem.id
-//                )
-//                self.floatingItems.append(fall)
-//                self.itemsCurrentlyAnimating.append(draggedItem.id) // Hide original item
+                //                AudioManager.shared.play(.dropFail)
+                //
+                //                let fall = FloatingItemFeedback(
+                //                    id: UUID(),
+                //                    item: groceryItem,
+                //                    startPoint: self.dragManager.currentDragLocation,
+                //                    originPoint: self.dragManager.dragStartLocation,
+                //                    shouldFadeOut: false, // NO FADE
+                //                    trackedItemID: draggedItem.id
+                //                )
+                //                self.floatingItems.append(fall)
+                //                self.itemsCurrentlyAnimating.append(draggedItem.id) // Hide original item
                 self.dragManager.currentDraggedItem = nil
             default:
                 break
