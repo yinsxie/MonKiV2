@@ -33,6 +33,7 @@ struct StartingPageView: View {
                             .resizable()
                             .scaledToFit()
                     })
+                    .accessibilityLabel("Single Player")
                     
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
@@ -41,6 +42,7 @@ struct StartingPageView: View {
                             .resizable()
                             .scaledToFit()
                     })
+                    .accessibilityLabel("Multiplayer")
                     .disabled(true)
                     
                     //                    Button(action: {

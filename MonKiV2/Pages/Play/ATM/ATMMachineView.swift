@@ -48,8 +48,11 @@ struct ATMMachineView: View {
                                 
                                 VStack(spacing: 6) {
                                     WithdrawNominalText(amount: 10, isSelected: atmVM.flyingMoneyValue == 10, isDisabled: atmVM.isButtonDisabled(amount: 10) || atmVM.isProcessing)
+                                        .accessibilityLabel("Tombol tarik uang 10")
                                     WithdrawNominalText(amount: 20, isSelected: atmVM.flyingMoneyValue == 20, isDisabled: atmVM.isButtonDisabled(amount: 20) || atmVM.isProcessing)
+                                        .accessibilityLabel("Tombol tarik uang 20")
                                     WithdrawNominalText(amount: 50, isSelected: atmVM.flyingMoneyValue == 50, isDisabled: atmVM.isButtonDisabled(amount: 50) || atmVM.isProcessing)
+                                        .accessibilityLabel("Tombol tarik uang 50")
                                 }.padding(.trailing, 8)
                                     .opacity(atmVM.activeCooldownProgress > 0 ? 0 : 1)
                             }
