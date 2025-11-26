@@ -60,7 +60,6 @@ struct StartingPageView: View {
                 appCoordinator.goTo(.helperScreen(.dishBook))
             }, label: {
                 ZStack {
-                    Color.red
                     RotatingShineView()
                         .frame(width: 170)
                     
