@@ -16,25 +16,28 @@ struct CashierMonkiView: View {
     
     var body: some View {
         ZStack {
+            let isFirstTimePayment = viewModel.totalPrice > 0 && dragManager.currentDraggedItem != nil
+            let moneyExist = viewModel.totalReceivedMoney > 0 || viewModel.returnedMoney.count > 0
+            let condition = playVM.getCurrentPage() == .cashierPayment && (isFirstTimePayment || moneyExist)
+            
+            let showHands = condition && !viewModel.isAnimatingReturnMoney
+            let isClipped = !viewModel.returnedMoney.isEmpty
+            
             ZStack {
-                Image("cashier_monki")
+                Image(isClipped ? "monki_half body_cashier" : showHands ? "monki_body_cashier_2" : "monki_body_cashier_1")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 402)
-                
-                let isFirstTimePayment = viewModel.totalPrice > 0 && dragManager.currentDraggedItem != nil
-                let moneyExist = viewModel.totalReceivedMoney > 0 || viewModel.returnedMoney.count > 0
-                let condition = playVM.getCurrentPage() == .cashierPayment && (isFirstTimePayment || moneyExist)
+                    .frame(width: 403, height: 576)
                 
                 MonkiHandView()
-                    .opacity(condition && !viewModel.isAnimatingReturnMoney ? 1 : 0)
+                    .opacity(showHands ? 1 : 0)
                     .animation(.easeInOut(duration: 0.5), value: viewModel.isAnimatingReturnMoney)
-                    .offset(y: 100)
+                    .offset(y: isClipped ? 0 : -100)
             }
-            .offset(x: -350, y: -150)
-
+            .offset(x: -350, y: isClipped ? -60 : -150)
+            
             BubbleThoughtView(type: viewModel.totalReceivedMoney > 0 ? .givenMoney : .initialPrice)
-                .offset(x: -180 + (50 * CGFloat(min(viewModel.receivedMoneyGrouped.count, 3))), y: -280)
+                .offset(x: -200 + (50 * CGFloat(min(viewModel.receivedMoneyGrouped.count, 3))), y: -450)
                 .opacity(bubbleOpacity)
         }
         .onChange(of: playVM.currentPageIndex) {

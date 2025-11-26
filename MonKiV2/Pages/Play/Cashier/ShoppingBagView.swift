@@ -18,26 +18,27 @@ struct ShoppingBagView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            VStack(spacing: -25) {
+            VStack(spacing: -50) {
                 Spacer()
                 
                 ForEach(Array(itemRows.enumerated().reversed()), id: \.offset) { index, rowItems in
-                    HStack(spacing: -30) {
+                    HStack(spacing: -50) {
                         ForEach(rowItems) { cartItem in
-                            Image(cartItem.item.imageAssetPath)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 85)
+                            GroceryItemView(item: cartItem.item)
+//                            Image(cartItem.item.imageAssetPath)
+                                .scaleEffect(0.85)
+                                .shadow(radius: 2)
+                                .transition(.scale.combined(with: .opacity))
                                 .rotationEffect(.degrees(Double.random(in: -10...10)))
                                 .zIndex(Double(rowItems.count) - Double(rowItems.firstIndex(of: cartItem) ?? 0))
                         }
                     }
                     .environment(\.layoutDirection, .rightToLeft)
-                    .frame(maxWidth: 200, alignment: .leading)
+                    .frame(width: 231, alignment: .leading)
                     .zIndex(Double(itemRows.count) - Double(index))
                 }
             }
-            .padding(.bottom, 35)
+//            .padding(.bottom, 35)
             .frame(width: 251, height: 240)
             .allowsHitTesting(false)
             
