@@ -121,6 +121,9 @@ struct CreateDishView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onDisappear {
+            viewModel.stopAutoLoopAnimation()
+        }
         
     }
     

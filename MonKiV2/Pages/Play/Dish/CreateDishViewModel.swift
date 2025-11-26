@@ -205,8 +205,4 @@ final class CreateDishViewModel {
         tourTimer?.invalidate()
         tourTimer = nil
     }
-    
-    deinit {
-        stopAutoLoopAnimation()
-    }
 }

@@ -318,16 +318,6 @@ struct DishHeaderView: View {
                     }
                 }
                 
-                //                Button(action: {
-                //                    AudioManager.shared.play(.buttonClick)
-                //                    onDelete(dish)
-                //                }, label: {
-                //                    Image("removeButton")
-                //                        .resizable()
-                //                        .scaledToFit()
-                //                        .frame(width: 72, height: 72)
-                //                })
-                
                 HoldButton(type: .remove, size: 72, strokeWidth: 6, onComplete: {
                     onDelete(dish)
                 })
@@ -422,13 +412,6 @@ struct IngredientItemView: View {
                 CircleNumberView(number: Int(ingredient.quantity))
                     .scaleEffect(0.45)
                     .offset(y: 15)
-                
-                // TODO: Remove when all shelf item assets are in
-                //                Text(itemName)
-                //                    .font(.fredokaOne(size: 14))
-                //                    .foregroundColor(.black.opacity(0.8))
-                //                    .lineLimit(1)
-                //                    .fixedSize()
             }
             .frame(width: 48, height: 70)
         }
