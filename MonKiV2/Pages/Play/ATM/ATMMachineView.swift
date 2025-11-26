@@ -36,6 +36,8 @@ struct ATMMachineView: View {
                                 .font(.VT323(size: 28))
                                 .foregroundStyle(ColorPalette.cashierNominal)
                                 .padding(.leading, 40)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
                             
                             HStack {
                                 Spacer()
