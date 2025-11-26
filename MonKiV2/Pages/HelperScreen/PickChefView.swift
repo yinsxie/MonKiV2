@@ -29,6 +29,7 @@ struct PickChefView: View {
                     ReturnButton(action: {
                         appCoordinator.popLast()
                     })
+                    .accessibilityLabel("Kembali ke halaman sebelumnya")
                     .padding(.leading, 82)
                     .padding(.top, 82)
                     Spacer()
