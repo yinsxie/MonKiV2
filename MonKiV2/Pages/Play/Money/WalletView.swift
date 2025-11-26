@@ -56,8 +56,11 @@ extension WalletView {
             VStack(spacing: 15) {
                 if let budget = viewModel.parent?.currentBudget {
                     Text("\(budget.formatted())")
-                        .font(.fredokaOne(size: 42))
+                        .font(.fredokaOne(size: 42, relativeTo: .title))
                         .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+//                        .dynamicTypeSize(.large...)
                 }
                 
                 VStack(alignment: .center, spacing: 30) {

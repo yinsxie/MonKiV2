@@ -16,7 +16,7 @@ struct CashierView: View {
     
     private let chocolateItem = Item.items.first { $0.name == "Chocolate" }
     private let sausageItem = Item.items.first { $0.name == "Sausage" }
-
+    
     var body: some View {
         
         HStack(alignment: .bottom) {
@@ -36,7 +36,7 @@ struct CashierView: View {
                             .frame(width: 245, height: 280)
                             .offset(y: 140)
                             .makeDropZone(type: .cashierRemoveItem)
-                       
+                        
                         if let index = playViewModel.currentPageIndex, playViewModel.getPage(at: index) == .cashierLoading {
                             Rectangle()
                                 .foregroundColor(Color.clear)
@@ -157,6 +157,8 @@ struct CashierView: View {
                                 .font(.VT323(size: 40))
                                 .offset(x: 157.5, y: -212.5)
                                 .foregroundStyle(ColorPalette.cashierNominal)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
                             
                             Image("Icon_cashier_1_active")
                                 .resizable()
@@ -215,7 +217,7 @@ struct CashierView: View {
                             .frame(width: 680, height: 406)
                             .contentShape(Rectangle())
                             .makeDropZone(type: .cashierPaymentCounter)
-//                                                    .background(Color.green.opacity(0.5))
+                        //                                                    .background(Color.green.opacity(0.5))
                             .offset(x: 480)
                             .scrollTransition { content, phase in
                                 content.offset(x: phase.isIdentity ? 140 : 0)
