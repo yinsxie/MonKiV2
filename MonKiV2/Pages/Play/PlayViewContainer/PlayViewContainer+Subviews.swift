@@ -118,10 +118,10 @@ internal extension PlayViewContainer {
                         }
                 }
             }
+            .ignoresSafeArea()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .zIndex(5)
         }
-        .ignoresSafeArea()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .zIndex(5)
         
         // MonKi Cashier Overlay (Money Returned)
         .overlay {
