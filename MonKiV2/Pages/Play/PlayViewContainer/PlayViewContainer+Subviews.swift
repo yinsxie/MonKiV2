@@ -118,7 +118,7 @@ internal extension PlayViewContainer {
                             .frame(width: 500)
                             .offset(x: -350, y: -100)
                         
-                        CashierMonkiView()
+                        CashierChangeMonkiView()
                             .onTapGesture {
                                 playVM.cashierVM.onReturnedMoneyTapped()
                             }

@@ -21,10 +21,9 @@ struct CashierMonkiView: View {
             let condition = playVM.getCurrentPage() == .cashierPayment && (isFirstTimePayment || moneyExist)
             
             let showHands = condition && !viewModel.isAnimatingReturnMoney
-            let isClipped = !viewModel.returnedMoney.isEmpty
             
             ZStack {
-                Image(isClipped ? "monki_half body_cashier" : showHands ? "monki_body_cashier_2" : "monki_body_cashier_1")
+                Image(showHands ? "monki_body_cashier_2" : "monki_body_cashier_1")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 403, height: 576)
@@ -32,9 +31,9 @@ struct CashierMonkiView: View {
                 MonkiHandView()
                     .opacity(showHands ? 1 : 0)
                     .animation(.easeInOut(duration: 0.5), value: viewModel.isAnimatingReturnMoney)
-                    .offset(y: isClipped ? 0 : -100)
+                    .offset(y: -100)
             }
-            .offset(x: -350, y: isClipped ? -60 : -150)
+            .offset(x: -350, y: -150)
             
             BubbleThoughtView(type: viewModel.totalReceivedMoney > 0 ? .givenMoney : .initialPrice)
                 .offset(x: -200 + (50 * CGFloat(min(viewModel.receivedMoneyGrouped.count, 3))), y: -450)
