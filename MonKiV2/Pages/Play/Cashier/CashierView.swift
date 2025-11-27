@@ -171,7 +171,7 @@ struct CashierView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 1622.78, height: 706)
-                            .offset(y: 200)
+                            .offset(y: 195)
                             .ignoresSafeArea()
                         // Mini shelf
                         ZStack(alignment: .bottomLeading) {
