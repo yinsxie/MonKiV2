@@ -25,6 +25,8 @@ struct FloatingPriceTextView: View {
             .foregroundStyle(Color(hex: "3D3D3D"))
             .offset(y: offset)
             .opacity(opacity)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
             .onAppear {
                 withAnimation(.easeOut(duration: 1.0)) {
                     offset = -50

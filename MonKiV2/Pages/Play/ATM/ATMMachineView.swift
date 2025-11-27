@@ -111,6 +111,7 @@ struct WithdrawNominalText: View {
                 .font(.VT323(size: 24))
                 .foregroundStyle(ColorPalette.cashierNominal)
                 .lineLimit(1)
+                .minimumScaleFactor(0.5)
             
             Rectangle()
                 .fill(ColorPalette.cashierNominal)
