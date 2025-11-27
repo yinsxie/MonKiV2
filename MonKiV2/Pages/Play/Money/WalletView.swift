@@ -20,6 +20,12 @@ struct WalletView: View {
             
             walletImageButton
             
+            Text("test")
+            if !viewModel.isWalletOpen {
+                TotalPiceView()
+                    .offset(y: -200)
+            }
+            
             if playVM.getCurrentPage() == .ATM {
                 Rectangle()
                     .foregroundColor(Color.clear)
@@ -27,7 +33,7 @@ struct WalletView: View {
                     .frame(width: 100, height: 100)
                     .offset(x: -200, y: -200)
             }
-            if playVM.currentPageIndex == 4 {
+            if playVM.getCurrentPage() == .cashierPayment {
                 Rectangle()
                     .foregroundColor(Color.clear)
                     .floatingPriceFeedback(value: playVM.cashierVM.cumulativeReturnTotal)
@@ -35,11 +41,18 @@ struct WalletView: View {
                     .offset(x: -200, y: -200)
             }
         }
-//        .frame(maxHeight: playVM.currentPageIndex == 5 ? 0 : .infinity, alignment: .bottom)
+        //        .frame(maxHeight: playVM.currentPageIndex == 5 ? 0 : .infinity, alignment: .bottom)
         .onChange(of: playVM.currentPageIndex) {
             handlePageChange()
         }
         .makeDropZone(type: .wallet)
+    }
+    
+    func toggleWallet(open: Bool) {
+        guard viewModel.isWalletOpen != open else { return }
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            viewModel.isWalletOpen = open
+        }
     }
     
 }
@@ -52,16 +65,16 @@ extension WalletView {
                 .resizable()
                 .scaledToFit()
                 .offset(y: 1)
+                .onHeaderCloseSwipe {
+                    toggleWallet(open: false)
+                }
             
             VStack(spacing: 15) {
-                if let budget = viewModel.parent?.currentBudget {
-                    Text("\(budget.formatted())")
-                        .font(.fredokaOne(size: 42, relativeTo: .title))
-                        .frame(maxWidth: .infinity)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-//                        .dynamicTypeSize(.large...)
-                }
+                TotalPiceView()
+                    .frame(maxWidth: .infinity)
+                    .onHeaderCloseSwipe {
+                        toggleWallet(open: false)
+                    }
                 
                 VStack(alignment: .center, spacing: 30) {
                     ForEach(viewModel.walletSorted) { moneyGroup in
@@ -98,7 +111,7 @@ extension WalletView {
                 .padding(.bottom, 35)
             }
             .background(ColorPalette.overlayBackground)
-            .padding(.bottom, 240)
+            .padding(.bottom, 210)
         }
         .frame(width: 250.76)
         .transition(.move(edge: .bottom))
@@ -108,7 +121,11 @@ extension WalletView {
         Image("Wallet")
             .resizable()
             .scaledToFit()
-            .frame(height: 250)
+            .frame(height: 228)
+            .onComponentSwipe(
+                open: { toggleWallet(open: true) },
+                close: { toggleWallet(open: false) }
+            )
             .onTapGesture {
                 withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                     viewModel.isWalletOpen.toggle()

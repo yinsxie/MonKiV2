@@ -115,11 +115,12 @@ struct CashierView: View {
                         }
                         .padding(.bottom, -10)
                         .padding(.horizontal, 30)
+                        .offset(x: -80)
                     }
-                    .frame(maxWidth: 620, alignment: .leading)
+                    .frame(maxWidth: 700, alignment: .leading)
                     .padding(.top, 82)
                     .makeDropZone(type: .cashierLoadingCounter)
-                    //                    .background(Color.green.opacity(0.5))
+                    //                                        .background(Color.green.opacity(0.5))
                     .offset(y: -95)
                     .zIndex(1)
                     
@@ -165,13 +166,21 @@ struct CashierView: View {
                                 .scaledToFit()
                                 .frame(height: 150)
                                 .offset(x: -160, y: -70)
+                            
+                            Image("scan_light")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 190)
+                                .offset(x: -270, y: -40)
+                                .opacity(viewModel.isScanning ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.1), value: viewModel.isScanning)
                         }
                         
                         Image("cashier_counter")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 1622.78, height: 706)
-                            .offset(y: 200)
+                            .offset(y: 195)
                             .ignoresSafeArea()
                         // Mini shelf
                         ZStack(alignment: .bottomLeading) {
