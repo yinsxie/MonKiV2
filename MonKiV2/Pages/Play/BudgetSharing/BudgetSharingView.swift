@@ -36,7 +36,7 @@ struct BudgetSharingView: View {
                     readyButton
                 }
             }
-            .coordinateSpace(name: "BudgetSpace") // Critical for frame matching
+            .coordinateSpace(name: "BudgetSpace")
             .onAppear {
                 viewModel.totalContainerSize = geo.size
             }
@@ -146,7 +146,8 @@ struct BudgetSharingView: View {
                     .padding(.bottom, 5)
             }
             
-            Button(action: { viewModel.toggleReady() }) {
+            Button(action: { viewModel.toggleReady()
+            }, label: {
                 Text(viewModel.isLocalReady ? "WAITING..." : "READY")
                     .font(.title2.bold())
                     .foregroundColor(.white)
@@ -158,7 +159,7 @@ struct BudgetSharingView: View {
                                 (viewModel.isDistributionComplete ? Color.blue : Color.gray.opacity(0.5))
                         )
                     )
-            }
+            })
             .disabled(!viewModel.isDistributionComplete)
             .padding(.bottom, 40)
         }
@@ -216,7 +217,9 @@ struct BudgetSharingView: View {
         }
         
         // Zone Restriction (Host can't drag Guest's items)
-        if viewModel.amIHost { return money.owner != .guest }
-        else { return money.owner != .host }
+        if viewModel.amIHost {
+            return money.owner != .guest
+        } else {
+            return money.owner != .host }
     }
 }
