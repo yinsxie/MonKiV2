@@ -37,36 +37,48 @@ struct ShoppingBagSideBarView: View {
     let sideBarWidth: CGFloat = 291
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // RECEIPT (behind)
-            if dishVM.isBagTapped {
-                receiptView
-                    .padding(.horizontal, 20)
-                    .transition(.move(edge: .bottom))
-                    .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dishVM.isBagTapped)
+        ScrollViewReader { proxy in
+            ZStack(alignment: .bottom) {
+                // RECEIPT (behind)
+                if dishVM.isBagTapped {
+                    receiptView
+                        .padding(.horizontal, 20)
+                        .transition(.move(edge: .bottom))
+                        .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dishVM.isBagTapped)
+                }
+                
+                // BAG (fixed in front)
+                VStack {
+                    Spacer()
+                    shoppingBagView
+                }
+                .zIndex(10)
             }
-            
-            // BAG (fixed in front)
-            VStack {
-                Spacer()
-                shoppingBagView
+            .onChange(of: playVM.currentPageIndex) {
+                // MARK: Change if turning on Debug IngredientsListView
+                if playVM.getCurrentPage() == .createDish {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        toggleBag(to: true)
+                    }
+                } else {
+                    toggleBag(to: false)
+                }
             }
-            .zIndex(10)
+            .onChange(of: dishVM.isBagTapped) { _,newValue in
+                if newValue {
+                    // CRITICAL DELAY: Wait for the 0.25s transition to finish
+                    DispatchQueue.main.asyncAfter(deadline: .now()) {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                            proxy.scrollTo("bottomID", anchor: .bottom)
+                        }
+                    }
+                }
+            }
         }
         .ignoresSafeArea()
         .frame(width: sideBarWidth)
         .frame(maxHeight: .infinity)
         .padding(.horizontal, 40)
-        .onChange(of: playVM.currentPageIndex) {
-            // MARK: Change if turning on Debug IngredientsListView
-            if playVM.getCurrentPage() == .createDish {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    toggleBag(to: true)
-                }
-            } else {
-                toggleBag(to: false)
-            }
-        }
     }
     
     // MARK: - Receipt View
@@ -154,6 +166,10 @@ struct ShoppingBagSideBarView: View {
                     .scaledToFit()
                     .offset(y: 4)
                     .rotationEffect(.degrees(180))
+                
+                Color.clear
+                    .frame(height: 100)
+                    .id("bottomID")
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 30)
