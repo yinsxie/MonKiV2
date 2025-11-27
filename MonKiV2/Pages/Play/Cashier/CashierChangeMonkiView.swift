@@ -21,7 +21,7 @@ struct CashierChangeMonkiView: View {
                     .animation(.easeInOut(duration: 0.5), value: viewModel.isAnimatingReturnMoney)
                     .offset(y: 0)
             }
-            .offset(x: -337, y: -66)
+            .offset(x: -350, y: -62)
     }
 }
 
