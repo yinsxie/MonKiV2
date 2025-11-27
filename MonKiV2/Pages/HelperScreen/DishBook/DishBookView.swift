@@ -314,11 +314,13 @@ struct DishHeaderView: View {
                             .scaledToFit()
                             .frame(width: 280, height: 280)
                             .clipped()
+                            .accessibilityLabel("Dish photo")
                     } else {
                         RoundedRectangle(cornerRadius: 0)
                             .fill(Color.white)
                             .frame(width: 280, height: 280)
                             .overlay(Image(systemName: "photo").foregroundColor(.gray))
+                            .accessibilityLabel("No photo available for this dish")
                     }
                 }
                 
@@ -336,6 +338,7 @@ struct DishHeaderView: View {
                     onDelete(dish)
                 })
                 .offset(x: 20, y: -20)
+                .accessibilityLabel("Delete dish")
                 
                 PriceTag(price: dish.totalPrice)
                     .offset(x: 60, y: 250)
