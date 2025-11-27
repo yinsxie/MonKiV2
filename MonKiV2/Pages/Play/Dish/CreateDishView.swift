@@ -219,6 +219,8 @@ struct CreateDishView: View {
                         Text("Masak Sekarang")
                             .font(.fredokaOne(size: 40))
                             .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.3)
                         
                         Image("Spatula")
                             .resizable()

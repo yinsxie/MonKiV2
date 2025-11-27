@@ -63,12 +63,16 @@ struct DishBookView: View {
                     ReturnButton(action: {
                         appCoordinator.popLast()
                     })
+                    .accessibilityLabel("Kembali ke halaman sebelumnya")
                     .padding(.leading, 82)
                     .padding(.top, 82)
                     Spacer()
                 }
                 Spacer()
             }
+        }
+        .onAppear {
+            viewModel.resetNewDishFlag()
         }
         .gesture(
             DragGesture()
@@ -310,11 +314,13 @@ struct DishHeaderView: View {
                             .scaledToFit()
                             .frame(width: 280, height: 280)
                             .clipped()
+                            .accessibilityLabel("Dish photo")
                     } else {
                         RoundedRectangle(cornerRadius: 0)
                             .fill(Color.white)
                             .frame(width: 280, height: 280)
                             .overlay(Image(systemName: "photo").foregroundColor(.gray))
+                            .accessibilityLabel("No photo available for this dish")
                     }
                 }
                 
@@ -322,6 +328,7 @@ struct DishHeaderView: View {
                     onDelete(dish)
                 })
                 .offset(x: 20, y: -20)
+                .accessibilityLabel("Delete dish")
                 
                 PriceTag(price: dish.totalPrice)
                     .offset(x: 60, y: 250)
@@ -458,7 +465,7 @@ struct PageNumberView: View {
     var body: some View {
         Text("- \(number) -")
             .font(.fredokaOne(size: 16))
-            .foregroundColor(Color(red: 0.67, green: 0.54, blue: 0.02))
+            .foregroundColor(ColorPalette.dishBookPageNumber)
     }
 }
 
@@ -469,7 +476,7 @@ struct ArrowButton: View {
     
     var body: some View {
         Button(action: {
-            AudioManager.shared.play(.buttonClick)
+            AudioManager.shared.play(.pageTurn, volume: 5.0)
             action()
         }, label: {
             Image("arrowButton")

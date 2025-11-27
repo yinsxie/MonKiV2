@@ -33,6 +33,7 @@ struct StartingPageView: View {
                             .resizable()
                             .scaledToFit()
                     })
+                    .accessibilityLabel("Single Player")
                     
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
@@ -42,6 +43,8 @@ struct StartingPageView: View {
                             .resizable()
                             .scaledToFit()
                     })
+                    .accessibilityLabel("Multiplayer")
+                    .disabled(true)
                     
                     //                    Button(action: {
                     //                        AudioManager.shared.play(.buttonClick)
@@ -60,8 +63,10 @@ struct StartingPageView: View {
                 appCoordinator.goTo(.helperScreen(.dishBook))
             }, label: {
                 ZStack {
-                    RotatingShineView()
-                        .frame(width: 170)
+                    if let isNewDishEntry = UserDefaultsManager.shared.getIsNewDishSaved(), isNewDishEntry {
+                        RotatingShineView()
+                            .frame(width: 170)
+                    }
                     
                     Image("dish_book")
                         .resizable()

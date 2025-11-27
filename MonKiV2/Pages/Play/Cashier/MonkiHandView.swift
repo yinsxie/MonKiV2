@@ -10,6 +10,7 @@ import SwiftUI
 struct MonkiHandView: View {
     
     @Environment(CashierViewModel.self) var cashierVM
+    @Environment(DragManager.self) var dragManager
     
     let columns = [
         GridItem(.fixed(120)),
@@ -26,7 +27,9 @@ struct MonkiHandView: View {
                         Spacer()
                     }
                     ForEach(cashierVM.receivedMoneyGrouped) { moneyGroup in
+                        let isBeingDragged = dragManager.currentDraggedItem?.id == moneyGroup.money.id && dragManager.isDragging
                         imageViewForMoney(moneyGroup.money)
+                            .opacity((isBeingDragged) && moneyGroup.count == 1 ? 0 : 1)
                             .makeDraggable(item: DraggedItem(id: moneyGroup.money.id, payload: .money(moneyGroup.money.currency), source: .monkiHand))
                     }
                     if cashierVM.returnedMoney.count > 0 {

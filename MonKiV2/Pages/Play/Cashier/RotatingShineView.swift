@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct RotatingShineView: View {
-    
-    @State private var rotationAngle: Double = 0
-    
+    @State private var rotationAngle = 0.0
+    @State private var hasPlayedSound = false
+
     var body: some View {
         ZStack {
             Image("bg_shine")
@@ -18,19 +18,22 @@ struct RotatingShineView: View {
                 .scaledToFit()
                 .scaleEffect(1.2)
                 .rotationEffect(.degrees(rotationAngle))
-            
+
             Image("bg_star")
                 .resizable()
                 .scaledToFit()
                 .scaleEffect(0.8)
-            
-                .onAppear {
-                    // Animate the rotationAngle from 0 to 360 degrees indefinitely
-                    AudioManager.shared.play(.changeSound)
-                    withAnimation(.linear(duration: 10.0).repeatForever(autoreverses: false)) {
-                        rotationAngle = 360
-                    }
-                }
+        }
+        .onAppear {
+            rotationAngle = 0
+            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
+                rotationAngle = 360
+            }
+        }
+        .task {
+            guard !hasPlayedSound else { return }
+            hasPlayedSound = true
+            AudioManager.shared.play(.changeSound)
         }
     }
 }

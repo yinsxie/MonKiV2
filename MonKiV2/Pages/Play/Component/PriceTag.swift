@@ -23,6 +23,8 @@ struct PriceTag: View {
                 Text("\(price)")
                     .font(.fredokaOne(size: 28))
                     .foregroundColor(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
             }
             .padding(.leading, 50)
         }

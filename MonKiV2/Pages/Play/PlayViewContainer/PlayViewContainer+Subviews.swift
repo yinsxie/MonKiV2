@@ -173,7 +173,7 @@ internal extension PlayViewContainer {
     
     @ViewBuilder
     var topPageControl: some View {
-        let isPageControlAllowHitTesting = !playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped && !playVM.cashierVM.isReturnedMoneyPrompted
+        let isPageControlAllowHitTesting = !playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped && !playVM.cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
         let isPageControlVisible = playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped || playVM.cashierVM.isReturnedMoneyPrompted
         
         VStack {

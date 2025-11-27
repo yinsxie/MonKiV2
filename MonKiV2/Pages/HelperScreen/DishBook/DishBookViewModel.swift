@@ -46,4 +46,9 @@ internal class DishBookViewModel: ObservableObject {
             }
         }
     }
+    
+    func resetNewDishFlag() {
+        let userDefaults = UserDefaultsManager.shared
+        userDefaults.setIsNewDishSaved(false)
+    }
 }
