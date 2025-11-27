@@ -79,30 +79,40 @@ struct ShoppingBagSideBarView: View {
                     .frame(height: max(max(containerHeight - contentHeight, 0), 150))
                     .clipped()
                     .opacity(0)
+                    .onHeaderCloseSwipe {
+                        toggleBag(to: false)
+                    }
                 
                 // receipt content container (measured by HeightKey)
                 VStack(spacing: 0) {
                     
-                    // Top Paper Edge
-                    Image("receipt_top")
-                        .resizable()
-                        .scaledToFill()
-                        .offset(y: -22)
-                    
-                    // Logo + Barrier
-                    VStack(spacing: 35) {
-                        Image("receipt_logo")
+                    // --- HEADER AREA (Scrollable + Swipeable) ---
+                    VStack(spacing: 0) {
+                        // Top Paper Edge
+                        Image("receipt_top")
                             .resizable()
-                            .scaledToFit()
-                            .frame(width: 114.66)
+                            .scaledToFill()
+                            .offset(y: -22)
                         
-                        Image("receipt_barrier")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 209.25)
+                        // Logo + Barrier
+                        VStack(spacing: 35) {
+                            Image("receipt_logo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 114.66)
+                            
+                            Image("receipt_barrier")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 209.25)
+                        }
+                    }
+                    .background(ColorPalette.overlayBackground)
+                    .onHeaderCloseSwipe {
+                        toggleBag(to: false)
                     }
                     
-                    // Grocery list
+                    // --- LIST AREA (Normal Scroll) ---
                     VStack(spacing: 40) {
                         if dishVM.groceriesList.isEmpty {
                             Color.clear
@@ -180,12 +190,16 @@ struct ShoppingBagSideBarView: View {
             .resizable()
             .scaledToFit()
             .frame(width: sideBarWidth)
+            .onComponentSwipe(
+                open: { toggleBag(to: true) },
+                close: { toggleBag(to: false) }
+            )
             .onTapGesture {
                 withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                     dishVM.isBagTapped.toggle()
                 }
             }
-            // keep bag visually overlapping the receipt: adjust if needed
+        // keep bag visually overlapping the receipt: adjust if needed
             .padding(.bottom, -200)
             .frame(maxWidth: .infinity, alignment: .bottomTrailing)
     }
