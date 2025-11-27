@@ -20,6 +20,12 @@ struct WalletView: View {
             
             walletImageButton
             
+            Text("test")
+            if !viewModel.isWalletOpen {
+                TotalPiceView()
+                    .offset(y: -200)
+            }
+            
             if playVM.getCurrentPage() == .ATM {
                 Rectangle()
                     .foregroundColor(Color.clear)
@@ -27,7 +33,7 @@ struct WalletView: View {
                     .frame(width: 100, height: 100)
                     .offset(x: -200, y: -200)
             }
-            if playVM.currentPageIndex == 4 {
+            if playVM.getCurrentPage() == .cashierPayment {
                 Rectangle()
                     .foregroundColor(Color.clear)
                     .floatingPriceFeedback(value: playVM.cashierVM.cumulativeReturnTotal)
@@ -54,14 +60,8 @@ extension WalletView {
                 .offset(y: 1)
             
             VStack(spacing: 15) {
-                if let budget = viewModel.parent?.currentBudget {
-                    Text("\(budget.formatted())")
-                        .font(.fredokaOne(size: 42, relativeTo: .title))
-                        .frame(maxWidth: .infinity)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-//                        .dynamicTypeSize(.large...)
-                }
+                TotalPiceView()
+                    .frame(maxWidth: .infinity)
                 
                 VStack(alignment: .center, spacing: 30) {
                     ForEach(viewModel.walletSorted) { moneyGroup in
