@@ -11,12 +11,13 @@ import SwiftUI
 struct CashierPaymentView: View {
     
     @Environment(CashierViewModel.self) var viewModel
+    @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
                 .fill(Color.green.opacity(0.3))
-                .frame(width: 250, height: 100)
+                .frame(width: 250, height: 600)
                 .overlay(
                     RoundedRectangle(cornerRadius: 15)
                         .strokeBorder(Color.green, lineWidth: 2)
@@ -31,18 +32,25 @@ struct CashierPaymentView: View {
                     .font(.title2.bold())
                     .foregroundColor(.green)
                 
-                 HStack {
-                     ForEach(viewModel.receivedMoney.reversed()) { money in
-                         MoneyView(money: money)
-                             .scaleEffect(0.6)
-                     }
-                 }
+                VStack(spacing: 5) {
+                    ForEach(viewModel.receivedMoney.reversed()) { money in
+                        MoneyView(money: money)
+                            .scaleEffect(0.6)
+                    }
+                }
+                
+                HStack {
+                    Button {
+                        playVM.onCancelPayment()
+                    } label: {
+                        Text("Cancel")
+                    }
+                }
             }
         }
-        .makeDropZone(type: .cashierPaymentCounter)
     }
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
 }

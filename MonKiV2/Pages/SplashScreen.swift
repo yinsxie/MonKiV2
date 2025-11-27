@@ -12,7 +12,7 @@ struct SplashScreenView: View {
         ZStack {
             ColorPalette.orange500.ignoresSafeArea()
             
-            Image("MonkiSplash")
+            Image("MonkiSplashLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(height: 144)

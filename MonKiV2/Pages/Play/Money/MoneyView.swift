@@ -9,17 +9,32 @@ import SwiftUI
 
 struct MoneyView: View {
     let money: Money
+    var quantity: Int = 1
     var isBeingDragged: Bool = false
+    var width: CGFloat = 250
     
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(money.color)
-                .frame(width: 250, height: isBeingDragged ? 128 : 64)
+            if quantity > 1 {
+                ForEach(1..<min(quantity, 3), id: \.self) { index in
+                    Image(money.currency.imageAssetPath)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(minWidth: width)
+                        .frame(width: width)
+                        .frame(maxWidth: width)
+                        .brightness(-0.15 * Double(index))
+                        .offset(x: CGFloat(index * 8), y: CGFloat(index * 8))
+                        .zIndex(-Double(index))
+                }
+            }
             
-            Text("\(money.price)")
-                .font(.custom("WendyOne-Regular", size: 40))
-                .foregroundStyle(.white)
+            Image(money.currency.imageAssetPath)
+                .resizable()
+                .scaledToFit()
+                .frame(minWidth: width)
+                .frame(width: width)
+                .frame(maxWidth: width)
         }
     }
 }

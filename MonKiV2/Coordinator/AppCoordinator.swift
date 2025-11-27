@@ -52,9 +52,9 @@ final class AppCoordinator: ObservableObject {
         _ = navigationPath.popLast()
     }
     
-    func pop(times n: Int) {
-        guard n > 0 else { return }
-        let countToRemove = min(n, navigationPath.count)
+    func pop(times nTime: Int) {
+        guard nTime > 0 else { return }
+        let countToRemove = min(nTime, navigationPath.count)
         navigationPath.removeLast(countToRemove)
     }
 

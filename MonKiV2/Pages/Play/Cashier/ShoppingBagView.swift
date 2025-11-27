@@ -8,48 +8,44 @@
 import SwiftUI
 
 struct ShoppingBagView: View {
-    @Environment(CashierViewModel.self) var viewModel
+    let items: [CartItem]
+    
+    private let itemsPerRow = 3
+    
+    private var itemRows: [[CartItem]] {
+        return items.chunked(into: itemsPerRow)
+    }
     
     var body: some View {
-        ZStack {
-            Image("shopping_bag")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 210)
-            
-            ZStack {
-                // 1st item (middle)
-                if let item = viewModel.purchasedItemVisualized[safe: 0] {
-                    Image(item.item.imageAssetPath)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 110, height: 110)
-                }
+        ZStack(alignment: .bottom) {
+            VStack(spacing: -50) {
+                Spacer()
                 
-                // 2nd item (most left)
-                if let item = viewModel.purchasedItemVisualized[safe: 1] {
-                    Image(item.item.imageAssetPath)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 110, height: 110)
-                        .offset(x: -60, y: 10)
-                }
-
-                // 3rd item (most right)
-                if let item = viewModel.purchasedItemVisualized[safe: 2] {
-                    Image(item.item.imageAssetPath)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 110, height: 110)
-                        .offset(x: 60, y: 10)
+                ForEach(Array(itemRows.enumerated().reversed()), id: \.offset) { index, rowItems in
+                    HStack(spacing: -50) {
+                        ForEach(rowItems) { cartItem in
+                            GroceryItemView(item: cartItem.item)
+//                            Image(cartItem.item.imageAssetPath)
+                                .scaleEffect(0.85)
+                                .shadow(radius: 2)
+                                .transition(.scale.combined(with: .opacity))
+                                .rotationEffect(.degrees(Double.random(in: -10...10)))
+                                .zIndex(Double(rowItems.count) - Double(rowItems.firstIndex(of: cartItem) ?? 0))
+                        }
+                    }
+                    .environment(\.layoutDirection, .rightToLeft)
+                    .frame(width: 231, alignment: .leading)
+                    .zIndex(Double(itemRows.count) - Double(index))
                 }
             }
-            .offset(y: -90)
+//            .padding(.bottom, 35)
+            .frame(width: 251, height: 240)
+            .allowsHitTesting(false)
             
+            Image("plasticBag")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 251)
         }
     }
-}
-
-#Preview {
-    PlayViewContainer()
 }

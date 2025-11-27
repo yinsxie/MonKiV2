@@ -21,6 +21,9 @@ struct AppCoordinatorView: View {
                     case .play(let playRoute):
                         playRoute.delegateView()
                             .navigationBarBackButtonHidden(true)
+                    case .helperScreen(let helperRoute):
+                        helperRoute.delegateView()
+                            .navigationBarBackButtonHidden(true)
                     default:
                         Text("Unhandled Route")
                             .navigationBarBackButtonHidden(true)

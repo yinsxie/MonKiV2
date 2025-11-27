@@ -81,4 +81,40 @@ struct ColorPalette {
     static let green800 = Color(hex: "#003D1B")
     static let green900 = Color(hex: "#00210E")
     static let greenMoney = Color(hex: "#49A35B")
+    
+    static let dishBookPageNumber = Color(hex: "#896C00")
+    
+    // Money Colors
+    static let money100Foreground = Color(hex: "#DC4C44")
+    static let money100Background = Color(hex: "#EC8388")
+    
+    static let money50Foreground = Color(hex: "#65A6FD")
+    static let money50Background = blue300
+    
+    static let money20Foreground = Color(hex: "#49A35B")
+    static let money20Background = Color(hex: "#65C466")
+    
+    static let money10Foreground = Color(hex: "#865EAD")
+    static let money10Background = Color(hex: "#AD81CE")
+    
+    static let money5Foreground = Color(hex: "#BC9C37")
+    static let money5Background = yellow600
+    
+    static let money2Foreground = Color(hex: "#9F9FA0")
+    static let money2Background = Color(hex: "#BFB58A")
+    
+    static let money1Foreground = Color(hex: "#B7AA5E")
+    static let money1Background = neutral300
+    
+    static let cashierNominal = Color(hex: "#89E219")
+    static let disableATM = Color(hex: "#CFD1D2").opacity(0.2)
+    static let defaultATMButton = Color(hex: "#BABCBE")
+    static let delayATMButton = Color(hex: "#A5A7AA")
+    static let buttonOnHold = Color(hex: "#9B1109")
+    
+    static let cartTotalUnder = Color(hex: "89E219")
+    static let cartTotalOver = Color(hex: "EC6560")
+    
+    // Cashier related
+    static let overlayBackground = Color(hex: "#EFF0F0")
 }

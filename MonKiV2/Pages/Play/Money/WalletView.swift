@@ -10,22 +10,125 @@ import SwiftUI
 struct WalletView: View {
     @Environment(WalletViewModel.self) var viewModel
     @Environment(DragManager.self) var manager
+    @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(spacing: 0) {
-                ForEach(viewModel.moneys.reversed().indices, id: \.self) { index in
-                    let money = viewModel.moneys.reversed()[index]
-                    
-                    MoneyView(money: money)
-                        .opacity(manager.currentDraggedItem?.id == money.id ? 0 : 1)
-                        .makeDraggable(item: DraggedItem(id: money.id, payload: .money(money.price)))
-                }
+        ZStack(alignment: .bottom) {
+            if viewModel.isWalletOpen {
+                openWalletContent
             }
-            Image("Wallet")
+            
+            walletImageButton
+            
+            if playVM.getCurrentPage() == .ATM {
+                Rectangle()
+                    .foregroundColor(Color.clear)
+                    .floatingPriceFeedback(value: viewModel.parent?.currentBudget ?? 0)
+                    .frame(width: 100, height: 100)
+                    .offset(x: -200, y: -200)
+            }
+            if playVM.currentPageIndex == 4 {
+                Rectangle()
+                    .foregroundColor(Color.clear)
+                    .floatingPriceFeedback(value: playVM.cashierVM.cumulativeReturnTotal)
+                    .frame(width: 100, height: 100)
+                    .offset(x: -200, y: -200)
+            }
+        }
+//        .frame(maxHeight: playVM.currentPageIndex == 5 ? 0 : .infinity, alignment: .bottom)
+        .onChange(of: playVM.currentPageIndex) {
+            handlePageChange()
+        }
+        .makeDropZone(type: .wallet)
+    }
+    
+}
+
+extension WalletView {
+    
+    private var openWalletContent: some View {
+        VStack(spacing: 0) {
+            Image("wallet_overlay_header")
                 .resizable()
                 .scaledToFit()
-                .frame(height: 250)
+                .offset(y: 1)
+            
+            VStack(spacing: 15) {
+                if let budget = viewModel.parent?.currentBudget {
+                    Text("\(budget.formatted())")
+                        .font(.fredokaOne(size: 42, relativeTo: .title))
+                        .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+//                        .dynamicTypeSize(.large...)
+                }
+                
+                VStack(alignment: .center, spacing: 30) {
+                    ForEach(viewModel.walletSorted) { moneyGroup in
+                        let isBeingDragged = manager.currentDraggedItem?.id == moneyGroup.money.id
+                        let displayCount = isBeingDragged ? (moneyGroup.count - 1) : moneyGroup.count
+                        let shouldHide = displayCount <= 0
+                        
+                        MoneyView(
+                            money: moneyGroup.money,
+                            quantity: displayCount,
+                            width: 160
+                        )
+                        .opacity(shouldHide ? 0 : 1)
+                        .makeDraggable(
+                            item: DraggedItem(
+                                id: moneyGroup.money.id,
+                                payload: .money(moneyGroup.money.currency),
+                                source: .wallet
+                            )
+                        )
+                        .offset(x: -(4 * min(CGFloat(moneyGroup.count - 1), 2)))
+                        .fixedSize()
+                    }
+                }
+                .padding(.top, viewModel.walletSorted.count == 0 ? 0 : 25)
+                .padding(.bottom, viewModel.walletSorted.count == 0 ? 0 : 35)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(ColorPalette.neutral50)
+                )
+                .padding(.horizontal, 15)
+                .padding(.bottom, 35)
+            }
+            .background(ColorPalette.overlayBackground)
+            .padding(.bottom, 240)
+        }
+        .frame(width: 250.76)
+        .transition(.move(edge: .bottom))
+    }
+    
+    private var walletImageButton: some View {
+        Image("Wallet")
+            .resizable()
+            .scaledToFit()
+            .frame(height: 250)
+            .onTapGesture {
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                    viewModel.isWalletOpen.toggle()
+                }
+            }
+    }
+    
+    private func handlePageChange() {
+        if playVM.getCurrentPage() == .cashierPayment {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                viewModel.isWalletOpen = true
+            }
+        } else {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                viewModel.isWalletOpen = false
+            }
         }
     }
+}
+
+#Preview {
+    PlayViewContainer(forGameMode: .singleplayer)
 }

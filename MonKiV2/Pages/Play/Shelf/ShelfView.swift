@@ -21,7 +21,6 @@ struct ShelfView: View {
             let shelfBottomPadding = geo.size.height - (backgroundSplitHeight + 40)
             
             ZStack(alignment: .bottom) {
-                
                 VStack {
                     Spacer()
                     HStack {
@@ -37,28 +36,19 @@ struct ShelfView: View {
                 }
                 
                 // shelves
-                VStack(alignment: .leading, spacing: -45) {
-                    HStack {
+                VStack(alignment: .leading, spacing: -85) {
+                    HStack(alignment: .bottom) {
                         ZStack(alignment: .top) {
                             Image("shelf_jagung")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 377)
+                                .spotlight(id: "CornItem")
                             
                             if let cornItem = cornItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(cornItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                        )
-                                    .offset(x: -150, y: 150)
-                                
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 180)
+//                                  .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
@@ -73,20 +63,13 @@ struct ShelfView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 377)
+                                .spotlight(id: "CarrotItem")
+                            
                             if let carrotItem = carrotItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(carrotItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                        )
-                                    .offset(x: -150, y: 150)
                                 
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 155)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
@@ -97,81 +80,83 @@ struct ShelfView: View {
                         }
                     }
                     
-                    HStack {
+                    HStack(alignment: .bottom) {
                         ZStack(alignment: .top) {
-                            Image("shelf_tomat")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 377)
+                            VStack {
+                                Image("shelf_tomat")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                                    .spotlight(id: "TomatoItem")
+                                
+                                Image("shelf_tomat_2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                            }
+                            
                             if let tomatoItem = tomatoItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(tomatoItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                        )
-                                    .offset(x: -150, y: 120)
                                 
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 200)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
                                             payload: .grocery(tomatoItem)
                                         )
-                                    )}
+                                    )
+                                    .padding(.top, 25)
+                            }
                         }
                         
                         ZStack(alignment: .top) {
-                            Image("shelf_brokoli")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 377)
+                            VStack {
+                                Image("shelf_brokoli")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                                    .spotlight(id: "BroccoliItem")
+                                
+                                Image("shelf_brokoli_2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 377)
+                            }
+                            
                             if let broccoliItem = broccoliItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(broccoliItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                        )
-                                    .offset(x: -150, y: 135)
                                 
                                 Color.clear
-                                    .frame(width: 377, height: 150)
-                                //                                .background(Color.green.opacity(0.2))
+                                    .frame(width: 377, height: 220)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
                                             payload: .grocery(broccoliItem)
                                         )
                                     )
+                                    .padding(.top, 30)
                             }
                         }
                         
                         ZStack(alignment: .top) {
-                            Image("shelf_telur")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 251)
-                            if let eggItem = eggItem {
-                                Rectangle()
-                                    .foregroundColor(Color(hex: "FFE4B1"))
-                                    .frame(width: 60, height: 60)
-                                    .overlay(
-                                        Text(eggItem.price.description)
-                                            .font(.wendyOne(size: 40))
-                                            .foregroundColor(Color.black)
-                                        )
-                                    .offset(x: -80, y: 110)
+                            VStack {
+                                Image("shelf_telur")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 251)
+                                    .spotlight(id: "EggItem")
                                 
+                                Image("shelf_telur_2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 251)
+                            }
+                            
+                            if let eggItem = eggItem {
                                 Color.clear
-                                    .frame(width: 251, height: 100)
-                                //  .background(Color.green.opacity(0.2))
+                                    .frame(width: 251, height: 180)
+//                                    .background(Color.green.opacity(0.5))
                                     .contentShape(Rectangle())
                                     .makeDraggable(
                                         item: DraggedItem(
@@ -182,8 +167,15 @@ struct ShelfView: View {
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
                 .padding(.bottom, shelfBottomPadding)
+                
+                Color.clear
+                    .frame(width: 1050, height: 400)
+                //                    .background(Color.green.opacity(0.3))
+                    .contentShape(Rectangle())
+                    .allowsHitTesting(false)
+                    .makeDropZone(type: .shelfReturnItem)
+                    .padding(.bottom, shelfBottomPadding+190)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -191,6 +183,6 @@ struct ShelfView: View {
 }
 
 #Preview {
-    PlayViewContainer()
+    PlayViewContainer(forGameMode: .singleplayer)
         .environmentObject(AppCoordinator())
 }

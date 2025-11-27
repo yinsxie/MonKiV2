@@ -9,6 +9,8 @@ import SwiftUI
 @Observable class CartViewModel {
     
     weak var parent: PlayViewModel?
+    
+    var shakeTrigger: Int = 0
 
     init(parent: PlayViewModel?) {
         self.parent = parent
@@ -17,25 +19,21 @@ import SwiftUI
     var items: [CartItem] = []
     var totalPrice: Int { items.reduce(0) { $0 + $1.item.price } }
     private let maxCapacity = 12
+    var isFull: Bool {
+        items.count >= maxCapacity
+    }
     
-    private func enforceMaxCapacity() {
-        if items.count >= maxCapacity {
-            let removedItem = items.removeFirst()
-            print("Cart full. Removing oldest item: \(removedItem.item.name)")
-        }
+    func triggerShake() {
+        shakeTrigger += 1
     }
   
-    func addNewItem(_ item: Item) {
-        enforceMaxCapacity()
-      
+    func addNewItem(_ item: Item) {      
         let newCartItem = CartItem(item: item)
         items.append(newCartItem)
         print("Item added to cart: \(item.name) (Instance ID: \(newCartItem.id))")
     }
     
     func addExistingItem(_ cartItem: CartItem) {
-        enforceMaxCapacity()
-      
         items.append(cartItem)
         print("EXISTING Item added to cart: \(cartItem.item.name) (Instance ID: \(cartItem.id))")
     }
