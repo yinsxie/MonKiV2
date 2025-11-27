@@ -155,6 +155,7 @@ struct DishImageView: View {
                     .frame(height: 132)
             }
         })
+        .accessibilityLabel("Coba lagi untuk menghasilkan gambar resep")
     }
     
     // MARK: - Save Button
