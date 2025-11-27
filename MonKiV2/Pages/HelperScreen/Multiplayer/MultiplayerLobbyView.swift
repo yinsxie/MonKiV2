@@ -61,7 +61,7 @@ struct MultiplayerLobbyView: View {
            if newState == .playing {
                print("🚀 Game Started! Navigating to PlayView...")
                
-               appCoordinator.changeRootAnimate(root: .play(.multiplayer(matchManager)))
+               appCoordinator.replaceTop(with: .play(.multiplayer(matchManager)))
            }
        }
     }

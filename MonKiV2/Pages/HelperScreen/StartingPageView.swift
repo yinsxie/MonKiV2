@@ -44,7 +44,6 @@ struct StartingPageView: View {
                             .scaledToFit()
                     })
                     .accessibilityLabel("Multiplayer")
-                    .disabled(true)
                     
                     //                    Button(action: {
                     //                        AudioManager.shared.play(.buttonClick)
@@ -53,8 +52,6 @@ struct StartingPageView: View {
                     //                        Text("Book")
                     //                    })
                 }
-                
-                
             }
             .padding(115)
             

@@ -47,6 +47,9 @@ internal extension PlayViewContainer {
             VStack {
                 HStack {
                     HoldButton(type: .home, size: 122, strokeWidth: 10, onComplete: {
+                        if playVM.gameMode == .multiplayer {
+                            playVM.disconnectFromMatch()
+                        }
                         appCoordinator.popToRoot()
                     })
                     .padding(.leading, 48)

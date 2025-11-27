@@ -5,12 +5,19 @@
 //  Created by Aretha Natalova Wahyudi on 26/11/25.
 //
 import SwiftUI
+import GameKit
 
 extension PlayViewModel: MatchManagerDelegate {
     
     func connectToMatch() {
         print("🔗 PlayViewModel connecting to MatchManager delegate")
         self.matchManager?.delegate = self
+    }
+    
+    func disconnectFromMatch() {
+        print("🔌 Disconnecting from match...")
+        matchManager?.resetMatch()
+        matchManager = nil
     }
     
     func didReceiveBudgetEvent(_ event: BudgetEvent) {
