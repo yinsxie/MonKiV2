@@ -82,6 +82,8 @@ struct ColorPalette {
     static let green900 = Color(hex: "#00210E")
     static let greenMoney = Color(hex: "#49A35B")
     
+    static let dishBookPageNumber = Color(hex: "#896C00")
+    
     // Money Colors
     static let money100Foreground = Color(hex: "#DC4C44")
     static let money100Background = Color(hex: "#EC8388")
