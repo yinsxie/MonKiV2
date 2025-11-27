@@ -38,7 +38,7 @@ struct StartingPageView: View {
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
                     }, label: {
-                        Image("2P_button")
+                        Image("2P_button_disable")
                             .resizable()
                             .scaledToFit()
                     })
