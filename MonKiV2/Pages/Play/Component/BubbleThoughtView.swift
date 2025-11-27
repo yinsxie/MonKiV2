@@ -54,14 +54,10 @@ struct BubbleThoughtView: View {
     @ViewBuilder
     func initialPriceView() -> some View {
         HStack(spacing: 10) {
-            Image("plastic_bag")
+            Image("coin")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 30)
-            
-            Text("=")
-                .font(.fredokaOne(size: 28))
-                .font(.title1Semibold)
             
             Text("\(cashierVM.totalPrice.formatted())")
                 .font(.fredokaOne(size: 28))
