@@ -25,6 +25,8 @@ struct CircleNumberView: View {
             Text("\(number)")
                 .font(.fredokaOne(size: fontSize))
                 .foregroundColor(Color(.darkGray))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
         }
         .frame(width: size, height: size)
     }
