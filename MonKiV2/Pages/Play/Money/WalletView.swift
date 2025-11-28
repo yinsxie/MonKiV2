@@ -16,6 +16,21 @@ struct WalletView: View {
         ZStack(alignment: .bottom) {
             if viewModel.isWalletOpen {
                 openWalletContent
+            } else {
+                let currentBudget = playVM.currentBudget
+                let breakdown = Currency.breakdown(from: currentBudget)
+                
+                if let largestCurrency = breakdown.max(by: { $0.value < $1.value }) {
+                    Image(largestCurrency.imageAssetPath)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 270)
+                        .rotationEffect(.degrees(55))
+                        .offset(x: 15, y: -125)
+                        .zIndex(0)
+                        .transition(.opacity)
+                }
+                
             }
             
             walletImageButton
