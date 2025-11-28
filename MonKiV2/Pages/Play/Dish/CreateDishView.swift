@@ -143,6 +143,7 @@ struct CreateDishView: View {
         .onDisappear {
             viewModel.stopAutoLoopAnimation()
         }
+        .disabled(dragManager.isDragging)
     }
     
     private var monkiFace: some View {
@@ -186,7 +187,7 @@ struct CreateDishView: View {
     }
     
     private var bottomButton: some View {
-        let isDisabled = viewModel.createDishItem.count == 0
+        let isDisabled = viewModel.createDishItem.count == 0 || !dragManager.isDragging
         
         return Button(action: {
             // MODIFIED ACTION:
