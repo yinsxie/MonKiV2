@@ -37,6 +37,35 @@ import GameKit
     var myTotal: Int { amIHost ? hostTotal : guestTotal }
     var theirTotal: Int { amIHost ? guestTotal : hostTotal }
     
+    var myReadyStatusText: String {
+        if (isLocalReady && isRemoteReady) {
+            return "Game Starting..."
+        }
+        else if (isLocalReady) {
+            return "UNREADY"
+        }
+        else {
+            return "READY"
+        }
+    }
+    
+    var myReadyStatusColor: Color {
+        if (isLocalReady && isRemoteReady) {
+            return Color.green
+        }
+        
+        if (isLocalReady) {
+            return Color.yellow
+        }
+        
+        if (isDistributionComplete) {
+            return Color.blue
+        }
+        
+        return Color.gray.opacity(0.5)
+        
+    }
+    
     var isDistributionComplete: Bool {
         sharedMoneys.allSatisfy { $0.owner != nil }
     }

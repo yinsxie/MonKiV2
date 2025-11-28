@@ -447,10 +447,10 @@ struct MultiplayerLobbyView: View {
             .padding(.vertical, 10)
             
             // ACTION AREA
-            if !matchManager.isLocalPlayerReady {
-                Button(action: {
+            if !matchManager.isLocalPlayerReady && matchManager.isOtherPlayerConnected {
+                Button {
                     matchManager.sendReadySignal()
-                }) {
+                } label : {
                     Text("I'M READY!")
                         .font(.title2.bold())
                         .foregroundColor(.white)

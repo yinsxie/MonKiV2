@@ -176,8 +176,6 @@ internal extension PlayViewContainer {
     
     @ViewBuilder
     var topPageControl: some View {
-        let isPageControlAllowHitTesting = !playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped && !playVM.cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
-        let isPageControlVisible = playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped || playVM.cashierVM.isReturnedMoneyPrompted
         
         VStack {
             PageControl(
@@ -188,7 +186,7 @@ internal extension PlayViewContainer {
             Spacer()
         }
         .padding(.top, 16)
-        .allowsHitTesting(isPageControlAllowHitTesting)
-        .opacity(isPageControlVisible ? 0 : 1)
+        .allowsHitTesting(playVM.isPageControlAllowHitTesting)
+        .opacity(playVM.isPageControlVisible ? 0 : 1)
     }
 }
