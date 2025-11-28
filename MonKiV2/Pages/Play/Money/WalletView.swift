@@ -17,11 +17,8 @@ struct WalletView: View {
             if viewModel.isWalletOpen {
                 openWalletContent
             } else {
-                let currentBudget = playVM.currentBudget
-                let breakdown = Currency.breakdown(from: currentBudget)
-                
-                if let largestCurrency = breakdown.max(by: { $0.value < $1.value }) {
-                    Image(largestCurrency.imageAssetPath)
+                if let largestGroup = viewModel.walletSorted.first {
+                    Image(largestGroup.money.currency.imageAssetPath)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 270)
@@ -30,7 +27,6 @@ struct WalletView: View {
                         .zIndex(0)
                         .transition(.opacity)
                 }
-                
             }
             
             walletImageButton
