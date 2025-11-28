@@ -19,9 +19,25 @@ final class CashierViewModel {
         self.parent = parent
         
         // MARK: Get 1 rice by default (temporary implementation since we only have 1 type of chef for now)
-        if let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
-            let riceCartItem = CartItem(item: riceItem)
-            self.purchasedItems.append(riceCartItem)
+        //        if let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
+        //            let riceCartItem = CartItem(item: riceItem)
+        //            self.purchasedItems.append(riceCartItem)
+        //        }
+    }
+    
+    func addBaseIngredient(name: String) {
+        guard let parent = parent, parent.gameMode == .singleplayer else {
+            print("Skipping base ingredient: Not singleplayer or parent nil")
+            return
+        }
+        
+        if let item = Item.items.first(where: { $0.name == name }) {
+            let cartItem = CartItem(item: item)
+            
+            self.purchasedItems.append(cartItem)
+            print("Base ingredient added: \(name)")
+        } else {
+            print("Error: Base ingredient '\(name)' not found in Item.items")
         }
     }
     

@@ -39,7 +39,7 @@ struct TotalPiceView: View {
     
 }
 
-#Preview {
-    TotalPiceView()
-        .environment(PlayViewModel(gameMode: .multiplayer))
-}
+//#Preview {
+//    TotalPiceView()
+//        .environment(PlayViewModel(gameMode: .multiplayer))
+//}
