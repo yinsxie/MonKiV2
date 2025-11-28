@@ -23,7 +23,7 @@ extension PlayRoute: SubRouteProtocol {
             PlayViewContainer(forGameMode: .singleplayer, chef: chef)
             
         case .multiplayer:
-            PlayViewContainer(forGameMode: .multiplayer, chef: nil)
+            PlayViewContainer(forGameMode: .multiplayer)
         }
     }
 }
