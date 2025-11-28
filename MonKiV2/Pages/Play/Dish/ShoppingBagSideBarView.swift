@@ -136,7 +136,10 @@ struct ShoppingBagSideBarView: View {
                                         id: grocery.item.id,
                                         payload: .grocery(grocery.item),
                                         source: .createDishOverlay
-                                    )
+                                    ),
+                                    onDragStarted: {
+                                        playVM.didLocalUserStartDragReceiptItem(itemName: grocery.item.name)
+                                    }
                                 )
                                 .opacity(
                                     dragManager.currentDraggedItem?.id == grocery.item.id &&

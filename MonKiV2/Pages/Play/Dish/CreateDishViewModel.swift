@@ -208,4 +208,12 @@ final class CreateDishViewModel {
         tourTimer?.invalidate()
         tourTimer = nil
     }
+    
+    func handleOnItemDraggedFromReceipt(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        print("Handling item dragged from receipt: \(itemName)")
+    }
 }

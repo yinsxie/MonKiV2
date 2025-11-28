@@ -17,6 +17,8 @@ import SwiftUI
 /// For views that act as drag source
 struct DraggableModifier: ViewModifier {
     let item: DraggedItem
+    var onDragStarted: (() -> Void)?
+    
     @Environment(DragManager.self) var manager
     
     func body(content: Content) -> some View {
@@ -25,7 +27,7 @@ struct DraggableModifier: ViewModifier {
                 DragGesture(coordinateSpace: .named("GameSpace"))
                     .onChanged { value in
                         if !manager.isDragging {
-                            manager.startDrag(item, at: value.startLocation)
+                            manager.startDrag(item, at: value.startLocation, onDragStart: onDragStarted)
                         }
                         manager.currentDragLocation = value.location
                     }
@@ -59,8 +61,8 @@ struct DropZoneModifier: ViewModifier {
 }
 
 extension View {
-    func makeDraggable(item: DraggedItem) -> some View {
-        self.modifier(DraggableModifier(item: item))
+    func makeDraggable(item: DraggedItem, onDragStarted: (() -> Void)? = nil) -> some View {
+        self.modifier(DraggableModifier(item: item, onDragStarted: onDragStarted))
     }
     
     func makeDropZone(type: DropZoneType) -> some View {

@@ -42,8 +42,7 @@ struct PageControl: View {
     var body: some View {
         HStack(spacing: 0) {
             ForEach(0..<pageCount, id: \.self) { index in
-                let isActive = (currentPageIndex ?? 0) == index
-                
+                let isActive = playVM.getCurrentPage() == playVM.getPage(at: index)
                 iconView(for: index, isActive: isActive)
                     .frame(width: itemSize, height: itemSize)
                     .contentShape(Rectangle())

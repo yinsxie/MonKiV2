@@ -75,12 +75,13 @@ enum DragPayload: Equatable {
         onDropFailed?(item)
     }
     
-    func startDrag(_ item: DraggedItem, at startLocation: CGPoint) {
+    func startDrag(_ item: DraggedItem, at startLocation: CGPoint, onDragStart: (() -> Void)? = nil) {
         if isDragging { return }
         
         self.dragStartLocation = startLocation
         self.isDragging = true
         self.currentDraggedItem = item
         AudioManager.shared.play(.pickShelf, pitchVariation: 0.04)
+        onDragStart?()
     }
 }

@@ -58,4 +58,8 @@ extension PlayViewModel: MatchManagerDelegate {
     func findItemByName(_ name: String) -> Item? {
         return Item.items.first(where: { $0.name == name })
     }
+    
+    func didLocalUserStartDragReceiptItem(itemName: String) {
+        dishVM.handleOnItemDraggedFromReceipt(itemName: itemName)
+    }
 }
