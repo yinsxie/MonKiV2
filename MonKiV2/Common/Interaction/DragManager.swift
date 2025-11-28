@@ -64,13 +64,16 @@ enum DragPayload: Equatable {
         
         guard let item = currentDraggedItem else { return }
         
+        var isDroppedInZone = false
         for (_, zone) in dropZones where zone.frame.contains(currentDragLocation) {
             print("Hit zone: \(zone.type)")
                         
             onDropSuccess?(zone.type, item)
+            isDroppedInZone = true
             break
         }
         
+        if isDroppedInZone { return }
         print("Hit no valid zone. Failing drop.")
         onDropFailed?(item)
     }

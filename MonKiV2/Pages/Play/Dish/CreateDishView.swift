@@ -43,7 +43,12 @@ struct CreateDishView: View {
                                             GroceryItemView(item: cartItem.item)
                                                 .scaleEffect(0.86)
                                                 .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
-                                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                                .makeDraggable(
+                                                    item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish),
+                                                    onDragStarted: {
+                                                        viewModel.handleOnItemDraggedFromCreateDish(itemName: cartItem.item.name)
+                                                    }
+                                                )
                                         }
                                     }
                                 }
@@ -55,7 +60,12 @@ struct CreateDishView: View {
                                             GroceryItemView(item: cartItem.item)
                                                 .scaleEffect(0.86)
                                                 .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
-                                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                                .makeDraggable(
+                                                    item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish),
+                                                    onDragStarted: {
+                                                        viewModel.handleOnItemDraggedFromCreateDish(itemName: cartItem.item.name)
+                                                    }
+                                                )
                                         }
                                     }
                                 }
@@ -67,7 +77,12 @@ struct CreateDishView: View {
                                             GroceryItemView(item: cartItem.item)
                                                 .scaleEffect(0.86)
                                                 .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
-                                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                                .makeDraggable(
+                                                    item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish),
+                                                    onDragStarted: {
+                                                        viewModel.handleOnItemDraggedFromCreateDish(itemName: cartItem.item.name)
+                                                    }
+                                                )
                                         }
                                     }
                                 }

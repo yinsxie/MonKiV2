@@ -94,6 +94,7 @@ struct ShoppingBagSideBarView: View {
                     .onHeaderCloseSwipe {
                         toggleBag(to: false)
                     }
+                    .allowsHitTesting(false)
                 
                 // receipt content container (measured by HeightKey)
                 VStack(spacing: 0) {
@@ -164,6 +165,8 @@ struct ShoppingBagSideBarView: View {
                         Color.clear.preference(key: HeightKey.self, value: geo.size.height)
                     }
                 )
+                
+
                 Image("receipt_top")
                     .resizable()
                     .scaledToFit()
@@ -173,6 +176,7 @@ struct ShoppingBagSideBarView: View {
                 Color.clear
                     .frame(height: 100)
                     .id("bottomID")
+                    .allowsHitTesting(false)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 30)

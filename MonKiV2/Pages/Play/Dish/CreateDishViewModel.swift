@@ -213,7 +213,55 @@ final class CreateDishViewModel {
         if parent?.gameMode != .multiplayer {
             return
         }
+        parent?.matchManager?.sendReceiptItemDragged(itemName: itemName)
+    }
+    
+    func handleRemotePlayerDraggedReceiptItem(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
         
-        print("Handling item dragged from receipt: \(itemName)")
+        if let index = parent?.cashierVM.purchasedItems.firstIndex(where: { $0.item.name == itemName }) {
+            parent?.cashierVM.purchasedItems.remove(at: index)
+        }
+    }
+    
+    func handleRemotePlayerCancelledDragReceiptItem(itemName: String) {
+        // add back the item to the cart
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        if let item = parent?.findItemByName(itemName) {
+            parent?.cashierVM.purchasedItems.append(CartItem(item: item))
+        }
+    }
+    
+    func handleOnItemDraggedFromCreateDish(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        parent?.matchManager?.sendCreateDishItemDragged(itemName: itemName)
+    }
+    
+    func handleRemotePlayerDraggedCreateDishItem(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        //remove the item from createDishItem
+        if let index = createDishItem.firstIndex(where: { $0.item.name == itemName }) {
+            createDishItem.remove(at: index)
+        }
+    }
+    
+    func handleRemotePlayerCancelledDragCreateDishItem(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        if let item = parent?.findItemByName(itemName) {
+            createDishItem.append(CartItem(item: item))
+        }
     }
 }

@@ -8,6 +8,10 @@ struct GamePacket: Codable {
         case itemAddedToDish    // When item moved from Bag -> Dish
         case itemRemovedFromDish // When item moved from Dish -> Bag
         case budgetEvent        // All changes during BudgetSharing
+        case receiptItemDragged  // When item is dragged on receipt
+        case receiptItemCancelled // When item is returned to remote player
+        case createDishItemDragged // When item is dragged to create dish area
+        case createDishItemCancelled // When item is returned from create dish area
     }
     
     let type: PacketType
@@ -21,6 +25,10 @@ protocol MatchManagerDelegate: AnyObject {
     func didRemotePlayerAddToDish(itemName: String)
     func didRemotePlayerRemoveFromDish(itemName: String)
     func didReceiveBudgetEvent(_ event: BudgetEvent)
+    func didRemotePlayerDragReceiptItem(itemName: String)
+    func didRemotePlayerCancelReceiptItem(itemName: String)
+    func didRemotePlayerDragCreateDishItem(itemName: String)
+    func didRemotePlayerCancelCreateDishItem(itemName: String)
 }
 
 @MainActor
@@ -47,6 +55,22 @@ class MatchManager: NSObject, ObservableObject {
     
     func sendRemoveFromDish(itemName: String) {
         sendPacket(GamePacket(type: .itemRemovedFromDish, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func sendReceiptItemDragged(itemName: String) {
+        sendPacket(GamePacket(type: .receiptItemDragged, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func returnDishToReceiptRemotePlayer(itemName: String) {
+        sendPacket(GamePacket(type: .receiptItemCancelled, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func sendCreateDishItemDragged(itemName: String) {
+        sendPacket(GamePacket(type: .createDishItemDragged, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func returnDishToCreateDishRemotePlayer(itemName: String) {
+        sendPacket(GamePacket(type: .createDishItemCancelled, itemName: itemName, budgetPayload: nil))
     }
     
     func sendBudgetEvent(_ event: BudgetEvent) {

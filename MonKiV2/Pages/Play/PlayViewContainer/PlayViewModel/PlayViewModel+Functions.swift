@@ -23,7 +23,13 @@ extension PlayViewModel {
         
         dragManager.onDropFailed = { [weak self] draggedItem in
             guard let self = self else { return }
-            self.handleDropFailed(draggedItem: draggedItem)
+            
+            switch draggedItem.payload {
+            case .grocery(let groceryItem):
+                self.handleGroceryDropFailed(groceryItem: groceryItem, draggedItem: draggedItem)
+            case .money(let currency):
+                self.handleMoneyDropFailed(currency: currency, draggedItem: draggedItem)
+            }
         }
     }
     

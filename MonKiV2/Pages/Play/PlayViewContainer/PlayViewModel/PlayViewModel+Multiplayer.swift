@@ -44,14 +44,13 @@ extension PlayViewModel: MatchManagerDelegate {
             dishVM.createDishItem.append(CartItem(item: item))
             print("📡 Opponent added \(itemName) to dish (Created fresh)")
         }
+        
+        print("Current : dishVM.createDishItem: \(dishVM.createDishItem.map { $0.item.name })")
     }
     
     func didRemotePlayerRemoveFromDish(itemName: String) {
-        if let index = dishVM.createDishItem.firstIndex(where: { $0.item.name == itemName }) {
-            let cartItem = dishVM.createDishItem[index]
-            cashierVM.purchasedItems.append(cartItem)
-            dishVM.createDishItem.remove(at: index)
-            print("📡 Opponent removed \(itemName) from dish")
+        if let item = findItemByName(itemName) {
+            cashierVM.purchasedItems.append(CartItem(item: item))
         }
     }
     
@@ -61,5 +60,25 @@ extension PlayViewModel: MatchManagerDelegate {
     
     func didLocalUserStartDragReceiptItem(itemName: String) {
         dishVM.handleOnItemDraggedFromReceipt(itemName: itemName)
+    }
+    
+    func didLocalUserStartedDragCreateDishItem(itemName: String) {
+        dishVM.handleOnItemDraggedFromCreateDish(itemName: itemName)
+    }
+    
+    func didRemotePlayerDragReceiptItem(itemName: String) {
+        dishVM.handleRemotePlayerDraggedReceiptItem(itemName: itemName)
+    }
+    
+    func didRemotePlayerCancelReceiptItem(itemName: String) {
+        dishVM.handleRemotePlayerCancelledDragReceiptItem(itemName: itemName)
+    }
+    
+    func didRemotePlayerDragCreateDishItem(itemName: String) {
+        dishVM.handleRemotePlayerDraggedCreateDishItem(itemName: itemName)
+    }
+    
+    func didRemotePlayerCancelCreateDishItem(itemName: String) {
+        dishVM.handleRemotePlayerCancelledDragCreateDishItem(itemName: itemName)
     }
 }

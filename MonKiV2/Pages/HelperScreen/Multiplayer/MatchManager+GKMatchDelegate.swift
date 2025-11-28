@@ -68,6 +68,23 @@ extension MatchManager: GKMatchDelegate {
                     if let payload = packet.budgetPayload {
                         self.delegate?.didReceiveBudgetEvent(payload)
                     }
+                case .receiptItemDragged:
+                    if let name = packet.itemName {
+                        self.delegate?.didRemotePlayerDragReceiptItem(itemName: name)
+                    }
+                case .receiptItemCancelled:
+                    if let name = packet.itemName {
+                        self.delegate?.didRemotePlayerCancelReceiptItem(itemName: name)
+                    }
+                case .createDishItemDragged:
+                    if let name = packet.itemName {
+                        self.delegate?.didRemotePlayerDragCreateDishItem(itemName: name)
+                    }
+                    
+                case .createDishItemCancelled:
+                    if let name = packet.itemName {
+                        self.delegate?.didRemotePlayerCancelCreateDishItem(itemName: name)
+                    }
                 }
             }
         } catch {
