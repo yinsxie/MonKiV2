@@ -12,8 +12,8 @@ struct PlayViewContainer: View {
     @State var playVM: PlayViewModel
     @State var inactivityManager = InactivityManager()
     
-    init(forGameMode mode: GameMode) {
-        _playVM = State(initialValue: PlayViewModel(gameMode: mode))
+    init(forGameMode mode: GameMode, chef: ChefType? = nil) {
+        _playVM = State(initialValue: PlayViewModel(gameMode: mode, chef: chef))
     }
     
     @ViewBuilder
@@ -43,7 +43,7 @@ struct PlayViewContainer: View {
     // MARK: - Main Body
     var body: some View {
         ZStack(alignment: .bottom) {
-//            PlayBackgroundView()
+            //            PlayBackgroundView()
             Image("background")
                 .resizable()
                 .scaledToFill()

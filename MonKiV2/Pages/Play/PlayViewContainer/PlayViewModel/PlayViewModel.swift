@@ -32,9 +32,9 @@ import SwiftUI
     // View State
     var isScrollDisabled: Bool {
         dragManager.isDragging
-                        || atmVM.isZoomed
-                        || cashierVM.isReturnedMoneyPrompted
-                        || cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
+        || atmVM.isZoomed
+        || cashierVM.isReturnedMoneyPrompted
+        || cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
     }
     
     // Start at CreateDishView
@@ -49,7 +49,7 @@ import SwiftUI
     var isFlyingMoney: Bool = false
     var flyingMoneyCurrency: Currency?
     
-    init(gameMode: GameMode) {
+    init(gameMode: GameMode, chef: ChefType? = nil) {
         self.gameMode = gameMode
         self.gamePages = PlayViewModel.getPage(for: gameMode)
         // On Game Start
@@ -63,6 +63,10 @@ import SwiftUI
         self.atmVM = ATMViewModel(parent: self, initialBalance: budget)
         
         setupGameLogic()
+        // for single player inject base ingredient based on picked chef
+        if let selectedChef = chef {
+            cashierVM.addBaseIngredient(name: selectedChef.baseIngredientName)
+        }
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
         //                        let currencyBreakdown = Currency.breakdown(from: budget)
         //                        walletVM.addMoney(currencyBreakdown)
