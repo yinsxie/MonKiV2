@@ -60,8 +60,7 @@ struct BubbleThoughtView: View {
                 .frame(width: 30)
             
             Text("\(cashierVM.totalPrice.formatted())")
-                .font(.fredokaOne(size: 28))
-                .font(.title1Semibold)
+                .font(.fredokaSemiBold(size: 28))
         }
     }
         
@@ -78,8 +77,7 @@ struct BubbleThoughtView: View {
                     ForEach(cashierVM.receivedMoneyGrouped) { moneyGroup in
                         HStack(spacing: 10) {
                             Text("\(moneyGroup.count)")
-                                .font(.fredokaOne(size: 24))
-                                .font(.title2Semibold)
+                                .font(.fredokaMedium(size: 24))
                                 .foregroundStyle(moneyGroup.money.currency.foregroundColor)
                             
                             Image(moneyGroup.money.currency.imageAssetPath)
@@ -94,13 +92,16 @@ struct BubbleThoughtView: View {
             .frame(maxWidth: CGFloat(columnCount) * perColumnSize, alignment: .leading)
             
             Text("=")
-                .font(.fredokaOne(size: 28))
-                .font(.title1Semibold)
+                .font(.fredokaSemiBold(size: 28))
             
             Text("\(cashierVM.totalReceivedMoney.formatted())")
-                .font(.fredokaOne(size: 28))
-                .font(.title1Semibold)
+                .font(.fredokaSemiBold(size: 28))
         }
+    }
+    
+    @ViewBuilder
+    func createDish() -> some View {
+        
     }
 
 }

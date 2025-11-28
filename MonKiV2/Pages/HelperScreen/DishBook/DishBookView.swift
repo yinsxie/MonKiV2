@@ -366,7 +366,7 @@ struct PageNumberView: View {
     
     var body: some View {
         Text("- \(number) -")
-            .font(.fredokaOne(size: 16))
+            .font(.fredokaSemiBold(size: 18))
             .foregroundColor(ColorPalette.dishBookPageNumber)
     }
 }

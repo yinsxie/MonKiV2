@@ -214,7 +214,7 @@ struct CreateDishView: View {
                     HStack(spacing: 10) {
                         // MODIFIED: Text changes based on hasImage
                         Text("Masak Sekarang")
-                            .font(.fredokaOne(size: 40))
+                            .font(.fredokaSemiBold(size: 40))
                             .foregroundColor(.white)
                             .lineLimit(1)
                             .minimumScaleFactor(0.3)
@@ -222,7 +222,7 @@ struct CreateDishView: View {
                         Image("Spatula")
                             .resizable()
                             .scaledToFit()
-                            .frame(height: 30)
+                            .frame(height: 38)
                     }
                     .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
                 }
