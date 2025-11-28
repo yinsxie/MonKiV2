@@ -34,7 +34,7 @@ struct WalletView: View {
             Text("test")
             if !viewModel.isWalletOpen {
                 TotalPiceView()
-                    .offset(y: -200)
+                    .offset(y: -185)
             }
             
             if playVM.getCurrentPage() == .ATM {
