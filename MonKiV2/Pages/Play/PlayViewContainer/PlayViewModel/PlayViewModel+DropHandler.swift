@@ -41,7 +41,7 @@ extension PlayViewModel {
         //        withAnimation(.spring) {
         switch zone {
         case .cashierPaymentCounter:
-            if cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney {
+            if cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney || cashierVM.isReturnedMoneyPrompted {
                 print("Player is currently not allowed to drop money on payment counter.")
                 return
             }

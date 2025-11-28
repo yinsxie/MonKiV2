@@ -14,6 +14,7 @@ final class CashierViewModel {
     private var checkoutTask: Task<Void, Never>?
     private var currentCheckoutID: UUID = UUID()
     var discardedAmountTracker: Int = 0
+    var isScanning: Bool = false
     
     init(parent: PlayViewModel?) {
         self.parent = parent
@@ -37,7 +38,7 @@ final class CashierViewModel {
     }
     
     var receivedMoney: [Money] = []
-   
+    
     var receivedMoneyGrouped: [MoneyGroup] {
         var temp: [Currency: (money: Money, count: Int)] = [:]
         
@@ -55,7 +56,7 @@ final class CashierViewModel {
         
         return res
     }
-
+    
     var returnedMoney: [Money] = []
     var isAnimatingReturnMoney: Bool = false
     var isReturnedMoneyPrompted: Bool = false
@@ -110,6 +111,19 @@ final class CashierViewModel {
         
         checkOutItems.append(item)
         bagVisualItems.append(item)
+        triggerScanEffect()
+    }
+    
+    private func triggerScanEffect() {
+        isScanning = false
+        
+        Task { @MainActor in
+            isScanning = true
+            
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            
+            isScanning = false
+        }
     }
     
     func removeFromCounter(withId id: UUID) {

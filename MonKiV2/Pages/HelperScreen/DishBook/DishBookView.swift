@@ -29,33 +29,26 @@ struct DishBookView: View {
                 .scaledToFill()
                 .ignoresSafeArea(edges: .all)
             
-            // B. The Book Content (Centered)
-            ZStack(alignment: .bottom) {
-                // 1. The Static Cover Art
-                BookCoverView()
+            // B. The Arrow page turn
+            HStack {
+                ArrowButton(direction: .left, action: { _ = viewModel.prevPage() })
+                    .opacity(viewModel.currentPageIndex > 0 ? 1 : 0)
+                    .padding(.horizontal, 26)
                 
-                // 2. The Interactive Content
-                ZStack {
-                    HStack {
-                        ArrowButton(direction: .left, action: { _ = viewModel.prevPage() })
-                            .opacity(viewModel.currentPageIndex > 0 ? 1 : 0)
-                        
-                        Spacer()
-                        
-                        ArrowButton(direction: .right, action: { _ = viewModel.nextPage(totalCount: dishes.count) })
-                            .opacity(viewModel.currentPageIndex + 2 < dishes.count ? 1 : 0)
-                    }
-                    .padding(.horizontal, 44)
-                    
-                    // The Open Book (Pages + Spine + Rings)
-                    BookSpreadView(
-                        currentPageIndex: viewModel.currentPageIndex,
-                        totalCount: dishes.count,
-                        getDish: getDish,
-                        onDelete: deleteDish
-                    )
-                }
+                Spacer()
+                
+                ArrowButton(direction: .right, action: { _ = viewModel.nextPage(totalCount: dishes.count) })
+                    .opacity(viewModel.currentPageIndex + 2 < dishes.count ? 1 : 0)
+                    .padding(.horizontal, 25)
             }
+            
+            // C. The Book Content (Centered)
+            BookSpreadView(
+                currentPageIndex: viewModel.currentPageIndex,
+                totalCount: dishes.count,
+                getDish: getDish,
+                onDelete: deleteDish
+            )
             
             // C. Navigation Overlay (Topmost Z-Index)
             VStack {
@@ -126,29 +119,6 @@ struct DishBookView: View {
     }
 }
 
-// MARK: - Book Structure Subviews
-struct BookCoverView: View {
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            // Outer Book Cover
-            Rectangle()
-                .foregroundColor(.clear)
-                .frame(width: 1212, height: 776)
-                .background(Color(red: 1, green: 0.79, blue: 0.01))
-                .cornerRadius(8)
-                .offset(x: 0, y: 22)
-            
-            // Inner Book Cover / Shadow
-            Rectangle()
-                .foregroundColor(.clear)
-                .frame(width: 1158, height: 741)
-                .background(Color(red: 0.35, green: 0.28, blue: 0.03))
-                .cornerRadius(8)
-                .opacity(0.5)
-        }
-    }
-}
-
 struct BookSpreadView: View {
     let currentPageIndex: Int
     let totalCount: Int
@@ -159,91 +129,22 @@ struct BookSpreadView: View {
         ZStack {
             HStack(spacing: 0) {
                 // LEFT PAGE CONTAINER
-                PageContainerView(isLeft: true) {
-                    RecipePageView(
-                        dish: getDish(currentPageIndex),
-                        pageNumber: currentPageIndex + 1,
-                        onDelete: onDelete
-                    )
-                }
-                
-                // SPINE
-                Rectangle()
-                    .fill(Color(red: 0.53, green: 0.41, blue: 0))
-                    .frame(width: 2)
-                    .zIndex(1)
+                RecipePageView(
+                    dish: getDish(currentPageIndex),
+                    pageNumber: currentPageIndex + 1,
+                    onDelete: onDelete
+                )
                 
                 // RIGHT PAGE CONTAINER
-                PageContainerView(isLeft: false) {
-                    RecipePageView(
-                        dish: getDish(currentPageIndex + 1),
-                        pageNumber: currentPageIndex + 2,
-                        onDelete: onDelete
-                    )
-                }
+                RecipePageView(
+                    dish: getDish(currentPageIndex + 1),
+                    pageNumber: currentPageIndex + 2,
+                    onDelete: onDelete
+                )
             }
             .frame(height: 776)
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            
-            // BINDER RINGS OVERLAY
-            BinderRingsView()
         }
-    }
-}
-
-struct PageContainerView<Content: View>: View {
-    let isLeft: Bool
-    let content: Content
-    
-    init(isLeft: Bool, @ViewBuilder content: () -> Content) {
-        self.isLeft = isLeft
-        self.content = content()
-    }
-    
-    var body: some View {
-        ZStack {
-            // Paper Background
-            Rectangle()
-                .foregroundColor(.clear)
-                .background(Color(red: 1, green: 0.96, blue: 0.81))
-            
-            // Shadow Effect
-            if isLeft {
-                Image("bookPageShadow")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-            } else {
-                // Right page has dual shadows mirrored
-                Image("bookPageShadow")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .scaleEffect(x: -1, y: 1)
-                Image("bookPageShadow")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .scaleEffect(x: 1, y: -1)
-            }
-            
-            content
-        }
-        .frame(width: 540, height: 776)
-    }
-}
-
-struct BinderRingsView: View {
-    var body: some View {
-        VStack(spacing: 208) {
-            Image("binderRing")
-                .resizable()
-                .scaledToFit()
-            Image("binderRing")
-                .resizable()
-                .scaledToFit()
-        }
-        .frame(width: 57)
     }
 }
 
@@ -255,14 +156,6 @@ struct RecipePageView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            Image("MonkiLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 30)
-                .opacity(0.3)
-                .padding(.top, 26)
-                .padding(.trailing, 26)
-                .frame(maxWidth: .infinity, alignment: .trailing)
             
             if let dish = dish {
                 VStack(spacing: 0) {
@@ -287,7 +180,7 @@ struct RecipePageView: View {
                 VStack {
                     Spacer()
                     PageNumberView(number: pageNumber)
-                        .padding(.bottom, 30)
+                        .padding(.bottom, 50)
                 }
                 
             } else {
@@ -430,27 +323,19 @@ struct EmptyStateView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            Image("MonkiLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 30)
-                .opacity(0.3)
-                .padding(.top, 26)
-                .padding(.trailing, 26)
-                .frame(maxWidth: .infinity, alignment: .trailing)
             
             Image("emptyState")
                 .resizable()
                 .scaledToFit()
                 .frame(height: 615)
-                .padding(.top, 90)
+                .padding(.top, 50)
                 .padding(.horizontal, 20)
             
             // 3. Page Number
             VStack {
                 Spacer()
                 PageNumberView(number: pageNumber)
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 50)
             }
             
         }
@@ -483,7 +368,7 @@ struct ArrowButton: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 122, height: 122)
-                .scaleEffect(x: direction == .left ? 1 : -1, y: 1)
+                .scaleEffect(x: direction == .left ? -1 : 1, y: 1)
         })
     }
 }
