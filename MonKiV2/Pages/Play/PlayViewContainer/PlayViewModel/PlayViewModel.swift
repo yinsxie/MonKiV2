@@ -41,6 +41,14 @@ import SwiftUI
                         || cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
     }
     
+    var isPageControlAllowHitTesting: Bool {
+        !atmVM.isZoomed && !dishVM.isStartCookingTapped && !cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney && !isBudgetSharingActive
+    }
+    
+    var isPageControlVisible: Bool {
+        atmVM.isZoomed || dishVM.isStartCookingTapped || cashierVM.isReturnedMoneyPrompted || isBudgetSharingActive
+    }
+    
     // Start at CreateDishView
     var currentPageIndex: Int? = 0
     var isIntroButtonVisible: Bool = true

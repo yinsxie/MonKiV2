@@ -54,7 +54,7 @@ struct BudgetSharingView: View {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.green, style: StrokeStyle(lineWidth: 4, dash: [10]))
                 .background(Color.green.opacity(0.1))
-                // CAPTURE FRAME
+            // CAPTURE FRAME
                 .background(GeometryReader { geo in
                     Color.clear.onAppear {
                         viewModel.hostZoneFrame = geo.frame(in: .named("BudgetSpace"))
@@ -79,7 +79,7 @@ struct BudgetSharingView: View {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.red, style: StrokeStyle(lineWidth: 4, dash: [10]))
                 .background(Color.red.opacity(0.1))
-                // CAPTURE FRAME
+            // CAPTURE FRAME
                 .background(GeometryReader { geo in
                     Color.clear.onAppear {
                         viewModel.guestZoneFrame = geo.frame(in: .named("BudgetSpace"))
@@ -139,27 +139,34 @@ struct BudgetSharingView: View {
     
     private var readyButton: some View {
         VStack {
-            if viewModel.isRemoteReady {
-                Text("Friend is Ready!")
-                    .font(.headline)
-                    .foregroundColor(.green)
-                    .padding(.bottom, 5)
+            VStack {
+                if viewModel.isRemoteReady && !viewModel.isDistributionComplete {
+                    Text("Friend is Ready!")
+                        .font(.headline)
+                        .foregroundColor(.green)
+                        .padding(.bottom, 5)
+                }
+                
+                if viewModel.isLocalReady && !viewModel.isRemoteReady {
+                    Text("Waiting...")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                        .padding(.bottom, 5)
+                }
             }
             
-            Button(action: { viewModel.toggleReady()
-            }, label: {
-                Text(viewModel.isLocalReady ? "WAITING..." : "READY")
+            Button {
+                viewModel.toggleReady()
+            } label: {
+                Text(viewModel.myReadyStatusText)
                     .font(.title2.bold())
                     .foregroundColor(.white)
                     .padding(.horizontal, 40)
                     .padding(.vertical, 15)
                     .background(
-                        Capsule().fill(
-                            viewModel.isLocalReady ? Color.gray :
-                                (viewModel.isDistributionComplete ? Color.blue : Color.gray.opacity(0.5))
-                        )
+                        Capsule().fill(viewModel.myReadyStatusColor)
                     )
-            })
+            }
             .disabled(!viewModel.isDistributionComplete)
             .padding(.bottom, 40)
         }
@@ -171,7 +178,7 @@ struct BudgetSharingView: View {
         RoundedRectangle(cornerRadius: 5)
             .stroke(
                 money.owner == .host ? Color.green :
-                money.owner == .guest ? Color.red : Color.clear,
+                    money.owner == .guest ? Color.red : Color.clear,
                 lineWidth: 3
             )
             .rotationEffect(.degrees(money.rotation))

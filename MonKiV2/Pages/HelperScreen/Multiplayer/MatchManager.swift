@@ -78,6 +78,9 @@ class MatchManager: NSObject, ObservableObject {
     // MARK: - Player Info
     @Published var otherPlayerName: String = "Waiting..."
     @Published var otherPlayerAvatar: Image?
+    var isOtherPlayerConnected: Bool {
+        return otherPlayerName != "Waiting..." && otherPlayerAvatar != nil
+    }
     
     // MARK: - Handshake Status
     @Published var isRemotePlayerReady = false
