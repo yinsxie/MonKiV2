@@ -19,11 +19,11 @@ final class CashierViewModel {
     init(parent: PlayViewModel?) {
         self.parent = parent
         
-        // MARK: Get 1 rice by default (temporary implementation since we only have 1 type of chef for now)
-        //        if let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
-        //            let riceCartItem = CartItem(item: riceItem)
-        //            self.purchasedItems.append(riceCartItem)
-        //        }
+        // MARK: Get 1 rice by default for multiplayer
+        if parent?.gameMode == .multiplayer, let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
+            let riceCartItem = CartItem(item: riceItem)
+            self.purchasedItems.append(riceCartItem)
+        }
     }
     
     func addBaseIngredient(name: String) {
