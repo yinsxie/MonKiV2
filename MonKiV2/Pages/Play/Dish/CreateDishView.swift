@@ -42,6 +42,12 @@ struct CreateDishView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onChange(of: viewModel.isCreatingMultiplayerDish) { _, newValue in
+            if newValue {
+                print("Both player Ready!!")
+                viewModel.generateInitialMultiplayerDish()
+            }
+        }
     }
     
     // Dishbook + Pot + Stove + Button
@@ -90,7 +96,7 @@ struct CreateDishView: View {
                 .padding(.leading, 180)
         }
         .frame(alignment: .center)
-        .padding(.top, 56)
+        .padding(.top, playVM.gameMode == .multiplayer ? 140 : 56)
         .onAppear {
             if viewModel.cgImage == nil && viewModel.checkCheckoutItems(),
                let purchasedItems = viewModel.parent?.cashierVM.purchasedItems,
@@ -219,47 +225,67 @@ struct IngredientDropZoneView: View {
 struct CookActionButton: View {
     @Environment(CreateDishViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
+    @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
         let isDisabled = viewModel.createDishItem.count == 0 || dragManager.isEitherPlayerDragging
         
-        Button(action: {
-            viewModel.isStartCookingTapped = true
-            AudioManager.shared.play(.buttonClick)
-            if let createDishItem = viewModel.parent?.dishVM.createDishItem {
-                viewModel.setIngredients(from: createDishItem)
-            }
-            viewModel.generate()
-        }, label: {
-            ZStack {
-                Image(isDisabled ? "button_disable" : "button_active")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 107)
+        VStack(spacing: 15) {
+            Button(action: {
+                AudioManager.shared.play(.buttonClick)
                 
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
-                        .scaleEffect(1.5)
-                } else {
-                    HStack(spacing: 10) {
-                        Text("Masak Sekarang")
-                            .font(.fredokaOne(size: 40))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.3)
-                        
-                        Image("Spatula")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
-                    }
-                    .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
+                viewModel.isStartCookingTapped = true
+                
+                if playVM.gameMode == .multiplayer {
+                    viewModel.whoTappedLast = .me
+                    viewModel.sendStartCookingTappedToRemotePlayer()
+                    return
                 }
+                
+                if playVM.gameMode == .singleplayer {
+                    if let createDishItem = viewModel.parent?.dishVM.createDishItem {
+                        viewModel.setIngredients(from: createDishItem)
+                    }
+                    viewModel.generate()
+                }
+            }, label: {
+                ZStack {
+                    Image(isDisabled ? "button_disable" : "button_active")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 107)
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(.white)
+                            .scaleEffect(1.5)
+                    } else {
+                        HStack(spacing: 10) {
+                            Text(viewModel.CTACookButtonTitle)
+                                .font(.fredokaOne(size: 40))
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.3)
+                            
+                            Image("Spatula")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 30)
+                        }
+                        .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
+                    }
+                }
+            })
+            .disabled(isDisabled)
+            
+            if playVM.gameMode == .multiplayer {
+                Text("\(viewModel.amountOfPlayerReady)/2")
+                    .font(.fredokaSemiBold(size: 30))
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 15).fill(.white))
             }
-        })
-        .disabled(isDisabled)
+        }
     }
 }
 
@@ -289,95 +315,9 @@ struct TourButtonOverlay: View {
         }
         .disabled(dragManager.isDragging)
     }
-    
-    private var monkiFace: some View {
-        ZStack {
-            Image("chef_monki")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 413)
-            
-            ZStack(alignment: .center) {
-                Image("speech_bubble")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 202)
-                
-                if viewModel.cgImage == nil {
-                    Image("food_speech_bubble")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 64)
-                } else {
-                    Text("Yummy")
-                        .font(.wendyOne(size: 36))
-                        .foregroundStyle(.black)
-                }
-            }
-            .offset(x: 150, y: -100)
-        }
-    }
-    
-    private var dishBook: some View {
-        //        RoundedRectangle(cornerRadius: 20)
-        //            .fill(Color(hex: "#85DCFA"))
-        //            .frame(width: 171, height: 205)
-        Image("dish_book")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 160, height: 204)
-            .rotationEffect(Angle(degrees: 5))
-            .offset(y: 25)
-    }
-    
-    private var bottomButton: some View {
-        let isDisabled = viewModel.createDishItem.count == 0 || dragManager.isEitherPlayerDragging
-        
-        return Button(action: {
-            // MODIFIED ACTION:
-            // 1. Always get the fresh list of purchased items
-            viewModel.isStartCookingTapped = true
-            AudioManager.shared.play(.buttonClick)
-            if let createDishItem = viewModel.parent?.dishVM.createDishItem {
-                viewModel.setIngredients(from: createDishItem)
-            }
-            // 2. Start generating
-            viewModel.generate()
-        }, label: {
-            ZStack {
-                Image(isDisabled ? "button_disable" : "button_active")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 107)
-                
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
-                        .scaleEffect(1.5)
-                } else {
-                    HStack(spacing: 10) {
-                        // MODIFIED: Text changes based on hasImage
-                        Text("Masak Sekarang")
-                            .font(.fredokaSemiBold(size: 40))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.3)
-                        
-                        Image("Spatula")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 38)
-                    }
-                    .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
-                }
-            }
-        })
-        .disabled(isDisabled) // Use the new isDisabled logic
-    }
 }
 
 #Preview {
-    PlayViewContainer(forGameMode: .singleplayer)
+    PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
         .environmentObject(AppCoordinator())
 }

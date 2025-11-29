@@ -87,4 +87,28 @@ extension PlayViewModel: MatchManagerDelegate {
         dragManager.isRemotePlayerDragging = false
         dishVM.handleRemotePlayerCancelledDragCreateDishItem(itemName: itemName)
     }
+    
+    func didRemotePlayerReadyInCreateDish() {
+        dishVM.isRemotePlayerStartCookingTapped = true
+        dishVM.whoTappedLast = .remotePlayer
+    }
+    
+    func didRemotePlayerUnreadyInCreateDish() {
+        dishVM.isRemotePlayerStartCookingTapped = false
+    }
+    
+    func didReceiveDishImageData(_ image: Data) {
+        dishVM.handleReceivedDishImageData(image)
+    }
+    
+    func didReceiveShowMultiplayerDish() {
+        dishVM.isShowMultiplayerDish = true
+        dishVM.isLoading = false
+    }
+    
+    func didReceiveHideMultiplayerDish() {
+        dishVM.isShowMultiplayerDish = false
+        dishVM.isLoading = true
+        AudioManager.shared.play(.loadCooking, volume: 5)
+    }
 }

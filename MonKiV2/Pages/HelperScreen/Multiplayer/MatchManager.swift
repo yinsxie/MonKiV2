@@ -12,11 +12,17 @@ struct GamePacket: Codable {
         case receiptItemCancelled // When item is returned to remote player
         case createDishItemDragged // When item is dragged to create dish area
         case createDishItemCancelled // When item is returned from create dish area
+        case createDishPlayerReady // When player is ready in create dish screen
+        case createDishPlayerUnready // When player is unready in create dish screen
+        case sendDishImageData     // When sending dish image data
+        case sendShowMultiplayerDish // When requesting to show multiplayer dish
+        case sendHideMultiplayerDish // When requesting to hide multiplayer dish
     }
     
     let type: PacketType
     let itemName: String?
     let budgetPayload: BudgetEvent?
+    var imagePayLoad: DataChunk? = nil
 }
 
 @MainActor
@@ -29,6 +35,11 @@ protocol MatchManagerDelegate: AnyObject {
     func didRemotePlayerCancelReceiptItem(itemName: String)
     func didRemotePlayerDragCreateDishItem(itemName: String)
     func didRemotePlayerCancelCreateDishItem(itemName: String)
+    func didRemotePlayerReadyInCreateDish()
+    func didRemotePlayerUnreadyInCreateDish()
+    func didReceiveDishImageData(_ image: Data)
+    func didReceiveShowMultiplayerDish()
+    func didReceiveHideMultiplayerDish()
 }
 
 @MainActor
@@ -39,6 +50,20 @@ class MatchManager: NSObject, ObservableObject {
         case searching
         case connected
         case playing
+    }
+    
+    var receiver = ChunkReceiver()
+    
+    override init() {
+        super.init()
+        
+        receiver.onComplete = { [weak self] fullData in
+            print("Received full data of size: \(fullData.count)")
+            
+            if let image = UIImage(data: fullData) {
+                self?.delegate?.didReceiveDishImageData(fullData)
+            }
+        }
     }
     
     @Published var matchState: MatchState = .idle
@@ -73,6 +98,57 @@ class MatchManager: NSObject, ObservableObject {
         sendPacket(GamePacket(type: .createDishItemCancelled, itemName: itemName, budgetPayload: nil))
     }
     
+    func sendReadyCookingTapped() {
+        sendPacket(GamePacket(type: .createDishPlayerReady, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendUnreadyCookingTapped() {
+        sendPacket(GamePacket(type: .createDishPlayerUnready, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendShowMultiplayerDish() {
+        sendPacket(GamePacket(type: .sendShowMultiplayerDish, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendHideMultiplayerDish() {
+        sendPacket(GamePacket(type: .sendHideMultiplayerDish, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendDishImageData(cgImage: CGImage?) {
+        guard let cgImage = cgImage else { return }
+        
+        let uiImage = UIImage(cgImage: cgImage)
+        
+        // --- CHANGE: Use jpegData with a compression quality ---
+        // 0.7 is a good balance. Use a lower number (e.g., 0.5) for smaller sizes.
+        let compressionQuality: CGFloat = 0.30
+        guard let imageData = uiImage.jpegData(compressionQuality: compressionQuality) else {
+            print("❌ [MatchManager] Failed to encode CGImage to JPEG Data.")
+            return
+        }
+        // --------------------------------------------------------
+        
+        let chunks = makeChunks(from: imageData)
+        
+        Task {
+            for chunk in chunks {
+                try await Task.sleep(nanoseconds: 2_000_000) // 2 ms spacing
+                
+                let packet = GamePacket(
+                    type: .sendDishImageData,
+                    itemName: nil,
+                    budgetPayload: nil,
+                    imagePayLoad: chunk
+                )
+                sendPacket(packet)
+            }
+        }
+        
+        //        for chunk in chunks {
+        //            sendPacket(GamePacket(type: .sendDishImageData, itemName: nil, budgetPayload: nil, imagePayLoad: chunk))
+        //        }
+    }
+    
     func sendBudgetEvent(_ event: BudgetEvent) {
         let mode: GKMatch.SendDataMode = {
             switch event {
@@ -89,7 +165,7 @@ class MatchManager: NSObject, ObservableObject {
             print("⛔️ [MatchManager] Attempted to send packet, but 'myMatch' is NIL. Connection lost?")
             return
         }
-       
+        
         Task {
             do {
                 let data = try JSONEncoder().encode(packet)
