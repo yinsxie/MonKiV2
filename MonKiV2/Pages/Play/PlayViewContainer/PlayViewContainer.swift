@@ -105,6 +105,8 @@ struct PlayViewContainer: View {
 }
 
 #Preview {
-    PlayViewContainer(forGameMode: .singleplayer)
-        .environmentObject(AppCoordinator())
+    GameRootScaler {
+        PlayViewContainer(forGameMode: .singleplayer)
+            .environmentObject(AppCoordinator())
+    }
 }
