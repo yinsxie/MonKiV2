@@ -176,7 +176,6 @@ internal extension PlayViewContainer {
     
     @ViewBuilder
     var topPageControl: some View {
-        
         VStack {
             PageControl(
                 currentPageIndex: $playVM.currentPageIndex,

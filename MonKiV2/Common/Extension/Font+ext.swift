@@ -32,6 +32,38 @@ extension Font {
     static func fredokaOne(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
         return Font.custom("FredokaOne-Regular", size: size, relativeTo: style)
     }
+    
+    static func fredokaLight(size: CGFloat) -> Font {
+        return Font.custom("Fredoka-Light", size: size)
+    }
+
+    static func fredokaLight(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
+        return Font.custom("Fredoka-Light", size: size, relativeTo: style)
+    }
+    
+    static func fredokaMedium(size: CGFloat) -> Font {
+        return Font.custom("Fredoka-Medium", size: size)
+    }
+
+    static func fredokaMedium(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
+        return Font.custom("Fredoka-Medium", size: size, relativeTo: style)
+    }
+    
+    static func fredokaRegular(size: CGFloat) -> Font {
+        return Font.custom("Fredoka-Regular", size: size)
+    }
+
+    static func fredokaRegular(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
+        return Font.custom("Fredoka-Regular", size: size, relativeTo: style)
+    }
+    
+    static func fredokaSemiBold(size: CGFloat) -> Font {
+        return Font.custom("Fredoka-SemiBold", size: size)
+    }
+
+    static func fredokaSemiBold(size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
+        return Font.custom("Fredoka-SemiBold", size: size, relativeTo: style)
+    }
 }
 
 extension Font {

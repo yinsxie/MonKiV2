@@ -12,9 +12,9 @@ struct PlayViewContainer: View {
     @State var playVM: PlayViewModel
     @State var inactivityManager = InactivityManager()
     
-    init(forGameMode mode: GameMode, matchManager: MatchManager? = nil) {
-            _playVM = State(initialValue: PlayViewModel(gameMode: mode, matchManager: matchManager))
-        }
+    init(forGameMode mode: GameMode, matchManager: MatchManager? = nil, chef: ChefType? = nil) {
+        _playVM = State(initialValue: PlayViewModel(gameMode: mode, matchManager: matchManager, chef: chef))
+    }
     
     @ViewBuilder
     private func view(for identifier: PageIdentifier) -> some View {
@@ -43,7 +43,7 @@ struct PlayViewContainer: View {
     // MARK: - Main Body
     var body: some View {
         ZStack(alignment: .bottom) {
-//            PlayBackgroundView()
+            //            PlayBackgroundView()
             Image("background")
                 .resizable()
                 .scaledToFill()

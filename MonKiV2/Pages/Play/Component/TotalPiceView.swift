@@ -23,7 +23,7 @@ struct TotalPiceView: View {
             
             Text(playVM.currentBudget.formatted())
 //            Text("\(angka.formatted())")
-                .font(.fredokaOne(size: 36, relativeTo: .title))
+                .font(.fredokaMedium(size: 36, relativeTo: .title))
         }
         .padding(.vertical)
         .padding(.horizontal, 25)
@@ -39,7 +39,7 @@ struct TotalPiceView: View {
     
 }
 
-#Preview {
-    TotalPiceView()
-        .environment(PlayViewModel(gameMode: .multiplayer))
-}
+//#Preview {
+//    TotalPiceView()
+//        .environment(PlayViewModel(gameMode: .multiplayer))
+//}

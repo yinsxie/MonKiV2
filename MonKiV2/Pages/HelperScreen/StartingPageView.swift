@@ -69,6 +69,7 @@ struct StartingPageView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 86, height: 110)
+                        .rotationEffect(Angle(degrees: -5))
                 }
             }).frame(width: 195, height: 195)
                 .offset(x: -450, y: 310)

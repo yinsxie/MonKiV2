@@ -176,7 +176,7 @@ struct DishImageView: View {
                 
                     HStack(spacing: 10) {
                         Text("Simpan Resep")
-                            .font(.fredokaOne(size: 40))
+                            .font(.fredokaSemiBold(size: 40))
                             .foregroundColor(.white)
                         
                         Image("bookDownloadIcon")

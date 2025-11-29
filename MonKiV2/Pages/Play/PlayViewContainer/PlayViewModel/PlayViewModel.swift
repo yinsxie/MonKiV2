@@ -36,13 +36,13 @@ import SwiftUI
     // View State
     var isScrollDisabled: Bool {
         dragManager.isDragging
-                        || atmVM.isZoomed
-                        || cashierVM.isReturnedMoneyPrompted
-                        || cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
+        || atmVM.isZoomed
+        || cashierVM.isReturnedMoneyPrompted
+        || cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
     }
     
     var isPageControlAllowHitTesting: Bool {
-        !atmVM.isZoomed && !dishVM.isStartCookingTapped && !cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney && !isBudgetSharingActive
+        !atmVM.isZoomed && !dishVM.isStartCookingTapped && !cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney && !isBudgetSharingActive && !dragManager.isDragging
     }
     
     var isPageControlVisible: Bool {
@@ -63,7 +63,7 @@ import SwiftUI
     var isFlyingMoney: Bool = false
     var flyingMoneyCurrency: Currency?
     
-    init(gameMode: GameMode, matchManager: MatchManager? = nil) {
+    init(gameMode: GameMode, matchManager: MatchManager? = nil, chef: ChefType? = nil) {
         self.gameMode = gameMode
         self.gamePages = PlayViewModel.getPage(for: gameMode)
         self.matchManager = matchManager
@@ -84,6 +84,10 @@ import SwiftUI
         }
         
         setupGameLogic()
+        // for single player inject base ingredient based on picked chef
+        if let selectedChef = chef {
+            cashierVM.addBaseIngredient(name: selectedChef.baseIngredientName)
+        }
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
         //                        let currencyBreakdown = Currency.breakdown(from: budget)
         //                        walletVM.addMoney(currencyBreakdown)

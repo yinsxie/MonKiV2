@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum PlayRoute {
-    case play
+    case singlePlayer(chef: ChefType)
     case multiplayer(MatchManager)
 }
 
@@ -16,8 +16,8 @@ extension PlayRoute: SubRouteProtocol {
     @ViewBuilder
     func delegateView() -> some View {
         switch self {
-        case .play:
-            PlayViewContainer(forGameMode: .singleplayer)
+        case .singlePlayer(let chef):
+            PlayViewContainer(forGameMode: .singleplayer, chef: chef)
         case .multiplayer(let manager):
             PlayViewContainer(forGameMode: .multiplayer, matchManager: manager)
         }
