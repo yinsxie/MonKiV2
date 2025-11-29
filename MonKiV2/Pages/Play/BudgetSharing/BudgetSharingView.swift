@@ -140,7 +140,7 @@ struct BudgetSharingView: View {
     private var readyButton: some View {
         VStack {
             VStack {
-                if viewModel.isRemoteReady && !viewModel.isDistributionComplete {
+                if viewModel.isRemoteReady && viewModel.isDistributionComplete {
                     Text("Friend is Ready!")
                         .font(.headline)
                         .foregroundColor(.green)
