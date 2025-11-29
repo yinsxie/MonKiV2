@@ -103,6 +103,23 @@ final class CreateDishViewModel {
         return "Siap Masak"
     }
     
+    // For ready state in store image
+    var isLocalReadySaveImage: Bool = false
+    var isRemoteReadySaveImage: Bool = false
+    var isBothReadyToSaveImage: Bool {
+        return isLocalReadySaveImage && isRemoteReadySaveImage
+    }
+    var amountOfPlayerReadyToSaveImage: Int {
+        var count = 0
+        if isLocalReadySaveImage {
+            count += 1
+        }
+        if isRemoteReadySaveImage {
+            count += 1
+        }
+        return count
+    }
+    
     func setIngredients(from cartItems: [CartItem]) {
         let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
         
@@ -155,7 +172,6 @@ final class CreateDishViewModel {
 
             self.cgImage = finalCgImage
             
-            // Kirim isShowMultiplayerDish = true ke player lain, after that baru set isShowMultiplayerDish = true di local
             parent?.matchManager?.sendShowMultiplayerDish()
             self.isShowMultiplayerDish = true
             
@@ -255,6 +271,25 @@ final class CreateDishViewModel {
         createDishItem.removeAll()
     }
     
+    func onMultiplayerSaveButtonToggled() {
+        isLocalReadySaveImage.toggle()
+        
+        parent?.matchManager?.sendToggleReadyToSaveDishImage()
+    }
+    
+    func saveMultiplayerDishImageToBook() {
+        // Reset state
+        isLocalReadySaveImage = false
+        isRemoteReadySaveImage = false
+        isStartCookingTapped = false
+        isRemotePlayerStartCookingTapped = false
+        isShowMultiplayerDish = false
+        whoTappedLast = nil
+        
+        saveDishToCollection()
+        createDishItem.removeAll()
+    }
+    
     func saveDishToCollection() {
         guard let cgImage = self.cgImage else { return }
         let uiImage = UIImage(cgImage: cgImage)
@@ -271,6 +306,20 @@ final class CreateDishViewModel {
         newDish.timestamp = Date()
         newDish.totalPrice = Int32(self.totalPurchasedPrice)
         newDish.imageFileName = savedFileName
+        
+        // Save additional data for multiplayer
+        if parent?.gameMode == .multiplayer {
+            let remotePlayerName = parent?.matchManager?.otherPlayerName
+            let otherPlayerAvatarUIImage = parent?.matchManager?.otherPlayerAvatarUIImage
+            
+            newDish.remotePlayerName = remotePlayerName
+            
+            guard let img = otherPlayerAvatarUIImage ,let savedProfileFileName = ImageStorage.saveImage(img) else {
+                print("Failed to save remote player profile image to disk")
+                return
+            }
+            newDish.remotePlayerAvatarImageFileName = savedProfileFileName
+        }
         
         let groupedItems = Dictionary(grouping: createDishItem, by: { $0.item.id })
         
@@ -390,9 +439,5 @@ final class CreateDishViewModel {
         isStartCookingTapped = false
         
         parent?.matchManager?.sendUnreadyCookingTapped()
-    }
-    
-    func onMultiplayerSaveButtonTapped() {
-        
     }
 }

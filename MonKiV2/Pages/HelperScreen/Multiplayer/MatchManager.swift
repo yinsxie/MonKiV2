@@ -17,6 +17,8 @@ struct GamePacket: Codable {
         case sendDishImageData     // When sending dish image data
         case sendShowMultiplayerDish // When requesting to show multiplayer dish
         case sendHideMultiplayerDish // When requesting to hide multiplayer dish
+        case sendToggleReadyToSaveDishImage // When ready to save dish image
+//        case sendUnReadyToSaveDishImage // When unready to save dish image
     }
     
     let type: PacketType
@@ -40,6 +42,7 @@ protocol MatchManagerDelegate: AnyObject {
     func didReceiveDishImageData(_ image: Data)
     func didReceiveShowMultiplayerDish()
     func didReceiveHideMultiplayerDish()
+    func didReceiveToggleReadyToSaveDishImage()
 }
 
 @MainActor
@@ -114,6 +117,10 @@ class MatchManager: NSObject, ObservableObject {
         sendPacket(GamePacket(type: .sendHideMultiplayerDish, itemName: nil, budgetPayload: nil))
     }
     
+    func sendToggleReadyToSaveDishImage() {
+        sendPacket(GamePacket(type: .sendToggleReadyToSaveDishImage, itemName: nil, budgetPayload: nil))
+    }
+    
     func sendDishImageData(cgImage: CGImage?) {
         guard let cgImage = cgImage else { return }
         
@@ -180,6 +187,7 @@ class MatchManager: NSObject, ObservableObject {
     // MARK: - Player Info
     @Published var otherPlayerName: String = "Waiting..."
     @Published var otherPlayerAvatar: Image?
+    @Published var otherPlayerAvatarUIImage: UIImage?
     var isOtherPlayerConnected: Bool {
         return otherPlayerName != "Waiting..." && otherPlayerAvatar != nil
     }
@@ -234,6 +242,7 @@ class MatchManager: NSObject, ObservableObject {
         player.loadPhoto(for: .normal) { image, error in
             if let image = image {
                 DispatchQueue.main.async {
+                    self.otherPlayerAvatarUIImage = image
                     self.otherPlayerAvatar = Image(uiImage: image)
                 }
             } else {

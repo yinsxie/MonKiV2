@@ -111,4 +111,8 @@ extension PlayViewModel: MatchManagerDelegate {
         dishVM.isLoading = true
         AudioManager.shared.play(.loadCooking, volume: 5)
     }
+    
+    func didReceiveToggleReadyToSaveDishImage() {
+        dishVM.isRemoteReadySaveImage.toggle()
+    }
 }

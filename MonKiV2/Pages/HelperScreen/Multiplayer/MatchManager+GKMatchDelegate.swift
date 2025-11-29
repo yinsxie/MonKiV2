@@ -116,6 +116,9 @@ extension MatchManager: GKMatchDelegate {
         
         case .sendHideMultiplayerDish:
             self.delegate?.didReceiveHideMultiplayerDish()
+            
+        case .sendToggleReadyToSaveDishImage:
+            self.delegate?.didReceiveToggleReadyToSaveDishImage()
         }
     }
 }

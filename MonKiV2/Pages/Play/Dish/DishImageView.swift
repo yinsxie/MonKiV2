@@ -19,7 +19,8 @@ struct DishImageView: View {
                     
                     let isInputEmpty = viewModel.checkCheckoutItems()
                     let hasImage = viewModel.cgImage != nil
-                    let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty) || (!viewModel.isShowMultiplayerDish && playVM.gameMode == .multiplayer)
+                    let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty) || (!viewModel.isShowMultiplayerDish && playVM.gameMode == .multiplayer) ||
+                    (playVM.gameMode == .multiplayer && viewModel.isLocalReadySaveImage)
                     
                     if !isDisabled {
                         retryButton
@@ -49,8 +50,17 @@ struct DishImageView: View {
                     .stroke(.white, lineWidth: 24)
             )
             
-            saveButton
-                .offset(y: 70)
+            HStack (spacing: 40) {
+                saveButton
+                
+                if playVM.gameMode == .multiplayer {
+                    Text("\(viewModel.amountOfPlayerReadyToSaveImage)/2")
+                        .font(.fredokaSemiBold(size: 35))
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 15).fill(.white))
+                }
+            }
+            .offset(y: 70)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
@@ -58,6 +68,11 @@ struct DishImageView: View {
             if newValue == false { return }
             AudioManager.shared.stop(.loadCooking)
             AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
+        }
+        .onChange(of: viewModel.isBothReadyToSaveImage) { _, newValue in
+            if newValue {
+                viewModel.saveMultiplayerDishImageToBook()
+            }
         }
     }
     
@@ -190,6 +205,11 @@ struct DishImageView: View {
         
         var text: String {
             if playVM.gameMode == .multiplayer {
+                
+                if viewModel.isLocalReadySaveImage {
+                    return "Batal"
+                }
+                
                 if !viewModel.isRemotePlayerStartCookingTapped {
                     return "Kembali"
                 }
@@ -206,6 +226,10 @@ struct DishImageView: View {
             
             if playVM.gameMode == .singleplayer {
                 return viewModel.isLoading || (!hasImage && isInputEmpty)
+            }
+            
+            if text == "Batal" {
+                return false
             }
             
             if text == "Kembali" {
@@ -228,7 +252,7 @@ struct DishImageView: View {
                 switch text {
                 case "Simpan Resep":
                     return "button_active"
-                case "Memasak...", "Kembali":
+                case "Memasak...", "Kembali", "Batal":
                     return "button_loading"
                 default:
                     return "button_disable"
@@ -261,8 +285,8 @@ struct DishImageView: View {
             if text == "Kembali" {
                 viewModel.onBackButtonTapped()
                 return
-            } else if text == "Simpan Resep" {
-                viewModel.onMultiplayerSaveButtonTapped()
+            } else if text == "Simpan Resep" || text == "Batal" {
+                viewModel.onMultiplayerSaveButtonToggled()
             }
             
         }, label: {
@@ -272,18 +296,24 @@ struct DishImageView: View {
                     .scaledToFit()
                     .frame(height: 127)
                 
-                    HStack(spacing: 10) {
-                        Text(text)
-                            .font(.fredokaSemiBold(size: 40))
-                            .foregroundColor(.white)
-                        
+                HStack(spacing: 10) {
+                    Text(text)
+                        .font(.fredokaSemiBold(size: 40))
+                        .foregroundColor(.white)
+                    
+                    if !iconName.isEmpty {
                         Image(iconName)
                             .resizable()
                             .scaledToFit()
                             .frame(height: 36)
                     }
+                }
             }
         })
         .disabled(isDisabled)
     }
+}
+
+#Preview {
+    PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
 }
