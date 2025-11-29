@@ -168,7 +168,7 @@ internal extension PlayViewContainer {
             
             Spacer()
         }
-        .padding(.top, 16)
+        .padding(.top, 32)
         .allowsHitTesting(isPageControlAllowHitTesting)
         .opacity(isPageControlVisible ? 0 : 1)
     }
