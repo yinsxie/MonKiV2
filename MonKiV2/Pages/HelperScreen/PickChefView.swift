@@ -6,22 +6,58 @@
 //
 import SwiftUI
 
+enum ChefType: String, CaseIterable, Identifiable {
+    case rice
+    case pasta
+    case bread
+    
+    var id: String { rawValue }
+    
+    var activeImage: String {
+        switch self {
+        case .rice: return "chef_monki_rice"
+        case .pasta: return "chef_monki_pasta"
+        case .bread: return "chef_monki_bread"
+        }
+    }
+    
+    var baseIngredientName: String {
+        switch self {
+        case .rice: return "Rice"
+        case .pasta: return "Pasta"
+        case .bread: return "Bread"
+        }
+    }
+    
+    var isUnlocked: Bool {
+        switch self {
+        case .rice: return true
+        case .pasta, .bread: return false
+        }
+    }
+}
+
 struct PickChefView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         ZStack {
             // Background
-            GeometryReader { geo in
-                let backgroundSplitHeight = geo.size.height * (753 / 1024.0)
-                
-                VStack(spacing: 0) {
-                    Color(hex: "#27A8DF").opacity(0.5)
-                        .frame(height: backgroundSplitHeight)
-                    Color(hex: "#85DCFA").opacity(0.5)
-                }
-                .ignoresSafeArea()
-            }
+            //            GeometryReader { geo in
+            //                let backgroundSplitHeight = geo.size.height * (753 / 1024.0)
+            //
+            //                VStack(spacing: 0) {
+            //                    Color(hex: "#27A8DF").opacity(0.5)
+            //                        .frame(height: backgroundSplitHeight)
+            //                    Color(hex: "#85DCFA").opacity(0.5)
+            //                }
+            //                .ignoresSafeArea()
+            //            }
+            
+            Image("background")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea(edges: .all)
             
             // Return Button
             VStack {
@@ -38,11 +74,9 @@ struct PickChefView: View {
             }
             
             HStack(spacing: 45) {
-                chefButton
-                disableChefButton
-                    .disabled(true)
-                disableChefButton
-                    .disabled(true)
+                ForEach(ChefType.allCases) { chef in
+                    chefButton(for: chef)
+                }
             }
             .padding(.top, 170)
         }
@@ -52,13 +86,13 @@ struct PickChefView: View {
 
 extension PickChefView {
     @ViewBuilder
-    private var chefButton: some View {
+    private func chefButton(for chef: ChefType) -> some View {
         Button(action: {
             AudioManager.shared.play(.buttonClick)
-                appCoordinator.goTo(.play(.play))
+            appCoordinator.goTo(.play(.singlePlayer(chef: chef)))
         }, label: {
             VStack(alignment: .leading) {
-                Image("chef_monki_full")
+                Image(chef.activeImage)
                     .resizable()
                     .scaledToFit()
                 Spacer()
