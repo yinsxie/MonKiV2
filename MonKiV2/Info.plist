@@ -12,5 +12,7 @@
 		<string>Fredoka-Medium.ttf</string>
 		<string>Fredoka-SemiBold.ttf</string>
 	</array>
+    <key>UIUserInterfaceStyle</key>
+        <string>Light</string>
 </dict>
 </plist>
