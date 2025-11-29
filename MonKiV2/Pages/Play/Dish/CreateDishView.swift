@@ -204,7 +204,7 @@ struct CreateDishView: View {
     }
     
     private var bottomButton: some View {
-        let isDisabled = viewModel.createDishItem.count == 0
+        let isDisabled = viewModel.createDishItem.count == 0 || dragManager.isEitherPlayerDragging
         
         return Button(action: {
             // MODIFIED ACTION:

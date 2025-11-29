@@ -46,12 +46,14 @@ extension PlayViewModel: MatchManagerDelegate {
         }
         
         print("Current : dishVM.createDishItem: \(dishVM.createDishItem.map { $0.item.name })")
+        dragManager.isRemotePlayerDragging = false
     }
     
     func didRemotePlayerRemoveFromDish(itemName: String) {
         if let item = findItemByName(itemName) {
             cashierVM.purchasedItems.append(CartItem(item: item))
         }
+        dragManager.isRemotePlayerDragging = false
     }
     
     func findItemByName(_ name: String) -> Item? {
@@ -67,18 +69,22 @@ extension PlayViewModel: MatchManagerDelegate {
     }
     
     func didRemotePlayerDragReceiptItem(itemName: String) {
+        dragManager.isRemotePlayerDragging = true
         dishVM.handleRemotePlayerDraggedReceiptItem(itemName: itemName)
     }
     
     func didRemotePlayerCancelReceiptItem(itemName: String) {
+        dragManager.isRemotePlayerDragging = false
         dishVM.handleRemotePlayerCancelledDragReceiptItem(itemName: itemName)
     }
     
     func didRemotePlayerDragCreateDishItem(itemName: String) {
+        dragManager.isRemotePlayerDragging = true
         dishVM.handleRemotePlayerDraggedCreateDishItem(itemName: itemName)
     }
     
     func didRemotePlayerCancelCreateDishItem(itemName: String) {
+        dragManager.isRemotePlayerDragging = false
         dishVM.handleRemotePlayerCancelledDragCreateDishItem(itemName: itemName)
     }
 }

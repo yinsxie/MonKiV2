@@ -134,7 +134,7 @@ struct ShoppingBagSideBarView: View {
                             GroceryDetailView(grocery: grocery)
                                 .makeDraggable(
                                     item: DraggedItem(
-                                        id: grocery.item.id,
+                                        id: grocery.id,
                                         payload: .grocery(grocery.item),
                                         source: .createDishOverlay
                                     ),

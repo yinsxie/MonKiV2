@@ -44,7 +44,7 @@ final class CreateDishViewModel {
         // Convert grouped items into GroceryItem, then sort by quantity
         return grouped.map { (_, items) in
             GroceryItem(
-                id: UUID(),
+                id: items.first?.id ?? UUID(),
                 item: items.first ?? Item.mockItem,
                 quantity: items.count
             )
@@ -221,8 +221,10 @@ final class CreateDishViewModel {
             return
         }
         
-        if let index = parent?.cashierVM.purchasedItems.firstIndex(where: { $0.item.name == itemName }) {
-            parent?.cashierVM.purchasedItems.remove(at: index)
+        Task { @MainActor in
+            if let index = parent?.cashierVM.purchasedItems.firstIndex(where: { $0.item.name == itemName }) {
+                parent?.cashierVM.purchasedItems.remove(at: index)
+            }
         }
     }
     
@@ -232,8 +234,10 @@ final class CreateDishViewModel {
             return
         }
         
-        if let item = parent?.findItemByName(itemName) {
-            parent?.cashierVM.purchasedItems.append(CartItem(item: item))
+        Task { @MainActor in
+            if let item = parent?.findItemByName(itemName) {
+                parent?.cashierVM.purchasedItems.append(CartItem(item: item))
+            }
         }
     }
     
@@ -250,8 +254,10 @@ final class CreateDishViewModel {
         }
         
         //remove the item from createDishItem
-        if let index = createDishItem.firstIndex(where: { $0.item.name == itemName }) {
-            createDishItem.remove(at: index)
+        Task { @MainActor in
+            if let index = createDishItem.firstIndex(where: { $0.item.name == itemName }) {
+                createDishItem.remove(at: index)
+            }
         }
     }
     
@@ -259,9 +265,10 @@ final class CreateDishViewModel {
         if parent?.gameMode != .multiplayer {
             return
         }
-        
-        if let item = parent?.findItemByName(itemName) {
-            createDishItem.append(CartItem(item: item))
+        Task { @MainActor in
+            if let item = parent?.findItemByName(itemName) {
+                createDishItem.append(CartItem(item: item))
+            }
         }
     }
 }

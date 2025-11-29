@@ -48,6 +48,10 @@ enum DragPayload: Equatable {
     var currentDraggedItem: DraggedItem?
     var currentDragLocation: CGPoint = .zero
     var isDragging: Bool = false
+    var isRemotePlayerDragging: Bool = false
+    var isEitherPlayerDragging: Bool {
+        isDragging || isRemotePlayerDragging
+    }
     var dragStartLocation: CGPoint = .zero
     
     var dropZones: [UUID: (frame: CGRect, type: DropZoneType)] = [:]
@@ -67,7 +71,7 @@ enum DragPayload: Equatable {
         var isDroppedInZone = false
         for (_, zone) in dropZones where zone.frame.contains(currentDragLocation) {
             print("Hit zone: \(zone.type)")
-                        
+            
             onDropSuccess?(zone.type, item)
             isDroppedInZone = true
             break
@@ -85,6 +89,10 @@ enum DragPayload: Equatable {
         self.isDragging = true
         self.currentDraggedItem = item
         AudioManager.shared.play(.pickShelf, pitchVariation: 0.04)
-        onDragStart?()
+        if let onDragStart = onDragStart {
+            Task { @MainActor in
+                onDragStart()
+            }
+        }
     }
 }

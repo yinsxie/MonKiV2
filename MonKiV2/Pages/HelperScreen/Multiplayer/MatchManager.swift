@@ -89,13 +89,15 @@ class MatchManager: NSObject, ObservableObject {
             print("⛔️ [MatchManager] Attempted to send packet, but 'myMatch' is NIL. Connection lost?")
             return
         }
-        
-        do {
-            let data = try JSONEncoder().encode(packet)
-            try match.sendData(toAllPlayers: data, with: .reliable)
-            print("🚀 [MatchManager] Sent packet: \(packet.type) - \(packet.itemName)")
-        } catch {
-            print("❌ [MatchManager] Failed to send: \(error.localizedDescription)")
+       
+        Task {
+            do {
+                let data = try JSONEncoder().encode(packet)
+                try match.sendData(toAllPlayers: data, with: .reliable)
+                print("🚀 [MatchManager] Sent packet: \(packet.type) - \(packet.itemName)")
+            } catch {
+                print("❌ [MatchManager] Failed to send: \(error.localizedDescription)")
+            }
         }
     }
     
