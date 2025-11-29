@@ -34,6 +34,7 @@ struct AppCoordinatorView: View {
             setupAppFlow()
             endSplashView()
         }
+        .statusBarHidden(true)
     }
     
     private func endSplashView() {
