@@ -21,9 +21,11 @@ struct MonKiV2App: App {
     
     var body: some Scene {
         WindowGroup {
-            AppCoordinatorView()
-                .environmentObject(appCoordinator)
-                .environment(\.managedObjectContext, coreDataManager.viewContext)
+            GameRootScaler {
+                AppCoordinatorView()
+                    .environmentObject(appCoordinator)
+                    .environment(\.managedObjectContext, coreDataManager.viewContext)
+            }
         }
     }
 }
