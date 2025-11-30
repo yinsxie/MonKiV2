@@ -53,9 +53,7 @@ struct MultiplayerLobbyView: View {
                         } onJoinButtonPressed: {
                             // Join Room
                             isHosting = false
-                            withAnimation {
-                                isJoining = true
-                            }
+                            isJoining = true
                         }
                     } else {
                         JoinRoomView(roomCode: $roomCode) {
