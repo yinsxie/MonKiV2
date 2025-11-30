@@ -67,7 +67,7 @@ extension JoinRoomView {
                     
                 }
             )
-            .offset(y: -270)
+            .offset(y: -230)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         .offset(y: 150)
