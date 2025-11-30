@@ -72,6 +72,7 @@ struct MultiStateButton: View {
         //        .background(.red)
         .onTapGesture {
             if state == .active {
+                AudioManager.shared.play(.buttonClick)
                 action()
             }
         }
