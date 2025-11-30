@@ -56,7 +56,7 @@ extension MultiPlayerModeView {
                 GameModeCard(
                     backgroundImage: "Online_Mode_Background",
                     buttonText: "Main Online",
-                    iconName: "icon_multi_create_room",
+                    iconName: "icon_multi_online_white",
                     action: {
                         onOnlineModeSelected?()
                     }
