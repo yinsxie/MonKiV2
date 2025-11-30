@@ -10,6 +10,7 @@ import SwiftUI
 enum HoldButtonType {
     case home
     case remove
+    case close
     
     var imageName: String {
         switch self {
@@ -17,6 +18,8 @@ enum HoldButtonType {
             return "home_button"
         case .remove:
             return "removeButton"
+        case .close:
+            return "closeButton"
         }
     }
 }
