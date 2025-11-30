@@ -13,13 +13,12 @@ internal extension PlayViewContainer {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
                 ZStack(alignment: .leading) {
-                    // Background image that scrolls with the pages
-                    Image("background_\(playVM.gameMode == .singleplayer ? "singleplayer" : "multiplayer")")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: UIScreen.main.bounds.width * CGFloat(pages.count), height: UIScreen.main.bounds.height)
+                    PagedBackground(
+                        imageName: "background_\(playVM.gameMode == .singleplayer ? "singleplayer" : "multiplayer")",
+                        pageCount: pages.count
+                    )
                     
-                    // Pages on top of the background
+                    // Pages Content
                     HStack(spacing: 0) {
                         ForEach(pages.indices, id: \.self) { index in
                             pages[index]
@@ -180,5 +179,31 @@ internal extension PlayViewContainer {
         .padding(.top, 32)
         .allowsHitTesting(isPageControlAllowHitTesting)
         .opacity(isPageControlVisible ? 0 : 1)
+    }
+}
+
+struct PagedBackground: View {
+    let imageName: String
+    let pageCount: Int
+
+    var body: some View {
+        GeometryReader { geo in
+            let pageHeight = geo.size.height
+
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .frame(
+                    height: pageHeight
+                )
+                .offset(x: -UIScreen.main.bounds.width)
+        }
+    }
+}
+
+#Preview {
+    GameRootScaler {
+        PlayViewContainer(forGameMode: .multiplayer)
+            .environmentObject(AppCoordinator())
     }
 }
