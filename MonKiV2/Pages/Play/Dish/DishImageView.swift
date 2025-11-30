@@ -94,16 +94,8 @@ struct DishImageView: View {
                 // TODO: Bikin animasi custom nunggu temen
                 Text("Nunggu temen....")
             } else if viewModel.isLoading || (!viewModel.isShowMultiplayerDish && playVM.gameMode == .multiplayer) {
-                // State animasi loading makanan
-                // TODO: Bikin animasi loading custom
-                Color.black.opacity(0.4)
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
-                    .overlay(
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .scaleEffect(1.5)
-                            .tint(.white)
-                    )
+                AnimatedGIFView(gifName: "cooking_animation")
+                    .frame(width: 488, height: 488)
             }
         }
         .frame(width: 488, height: 488)
@@ -315,5 +307,7 @@ struct DishImageView: View {
 }
 
 #Preview {
-    PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
+    GameRootScaler {
+        PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
+    }
 }
