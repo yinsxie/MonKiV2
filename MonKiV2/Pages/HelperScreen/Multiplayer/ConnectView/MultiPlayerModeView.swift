@@ -55,7 +55,7 @@ extension MultiPlayerModeView {
             HStack(spacing: 32) {
                 GameModeCard(
                     backgroundImage: "Online_Mode_Background",
-                    buttonText: "Bikin ruang main",
+                    buttonText: "Main Online",
                     iconName: "icon_multi_create_room",
                     action: {
                         onOnlineModeSelected?()
