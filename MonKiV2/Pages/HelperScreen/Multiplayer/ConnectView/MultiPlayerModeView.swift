@@ -64,7 +64,7 @@ extension MultiPlayerModeView {
                 
                 GameModeCard(
                     backgroundImage: "Friend_Mode_Background",
-                    buttonText: "Gabung aja",
+                    buttonText: "Main Bareng",
                     iconName: "icon_multi_join_room",
                     action: {
                         onFriendModeSelected?()
