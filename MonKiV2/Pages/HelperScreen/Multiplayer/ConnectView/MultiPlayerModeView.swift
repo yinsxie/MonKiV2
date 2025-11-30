@@ -9,7 +9,10 @@ import SwiftUI
 
 struct MultiPlayerModeView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
-    @StateObject var matchManager = MatchManager()
+    @EnvironmentObject var matchManager: MatchManager
+    
+    var onOnlineModeSelected: (() -> Void)?
+    var onFriendModeSelected: (() -> Void)?
     
     var body: some View {
         ZStack {
@@ -55,7 +58,7 @@ extension MultiPlayerModeView {
                     buttonText: "Bikin ruang main",
                     iconName: "icon_multi_create_room",
                     action: {
-                        
+                        onOnlineModeSelected?()
                     }
                 )
                 
@@ -64,7 +67,7 @@ extension MultiPlayerModeView {
                     buttonText: "Gabung aja",
                     iconName: "icon_multi_join_room",
                     action: {
-                        
+                        onFriendModeSelected?()
                     }
                 )
             }

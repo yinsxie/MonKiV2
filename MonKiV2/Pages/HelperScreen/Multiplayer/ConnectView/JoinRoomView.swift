@@ -11,7 +11,7 @@ struct JoinRoomView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     let inputOptions = ["🍎", "🍌", "🍇", "🍉", "🍒", "🍓", "🍍"]
     
-    @State private var roomCode: [String] = []
+    @Binding var roomCode: [String]
     
     var isCodeFull: Bool {
         return roomCode.count == 4
@@ -20,6 +20,12 @@ struct JoinRoomView: View {
     var isRemoveActive: Bool {
         return !roomCode.isEmpty
     }
+    
+    var onReturnButtonTapped: (() -> Void)?
+    var onJoinButtonTapped: (() -> Void)?
+    var onCancelJoinButtonTapped: (() -> Void)?
+    
+    @State var isJoinLoading: Bool = false
     
     var body: some View {
         ZStack {
@@ -37,16 +43,9 @@ struct JoinRoomView: View {
             
             contentSection
         }
-    }
-    
-    func getNumericCode() -> Int? {
-        let mapping: [String: String] = [
-            "🍎": "1", "🍌": "2", "🍇": "3", "🍉": "4",
-            "🍒": "5", "🍓": "6", "🍍": "7"
-        ]
-        
-        let codeString = roomCode.compactMap { mapping[$0] }.joined()
-        return Int(codeString)
+        .onAppear {
+            roomCode.removeAll()
+        }
     }
 }
 
@@ -61,10 +60,18 @@ extension JoinRoomView {
                 .ignoresSafeArea(edges: .all)
             
             MultiStateButton(
-                text: "Main",
-                state: isCodeFull ? .active : .disabled,
+                text: isJoinLoading ? "Batal..." : "Main",
+                state: isJoinLoading || isCodeFull ? .active : .disabled,
                 action: {
-                    
+                    if isJoinLoading {
+                        // Cancel join action
+                        isJoinLoading = false
+                        onCancelJoinButtonTapped?()
+                    }
+                    else {
+                        isJoinLoading = true
+                        onJoinButtonTapped?()
+                    }
                 }
             )
             .offset(y: -230)
@@ -75,9 +82,12 @@ extension JoinRoomView {
     
     private var headerSection: some View {
         HStack {
-            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
-                appCoordinator.popLast()
-            })
+            ReturnButton {
+                onReturnButtonTapped?()
+            }
+//            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
+//                onReturnButtonTapped?()
+//            })
             .accessibilityLabel("Kembali ke halaman sebelumnya")
             .padding(.leading, 48)
             .padding(.top, 48)
@@ -190,14 +200,5 @@ extension JoinRoomView {
                 }
             }
         }
-    }
-}
-
-// MARK: - Preview
-struct JoinRoomView_Previews: PreviewProvider {
-    static var previews: some View {
-        JoinRoomView()
-            .environmentObject(AppCoordinator())
-            .previewInterfaceOrientation(.landscapeLeft)
     }
 }

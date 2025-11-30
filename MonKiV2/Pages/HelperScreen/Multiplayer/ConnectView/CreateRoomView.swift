@@ -11,13 +11,10 @@ struct CreateRoomView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     
     let fruitOptions = ["🍎", "🍌", "🍇", "🍉"]
-    
-    private let fruitToNumberMap: [String: String] = [
-        "🍎": "1", "🍌": "2", "🍇": "3", "🍉": "4"
-    ]
-    
-    @State private var roomCode: [String] = []
-    
+
+    @Binding var roomCode: [String]
+    var onBackButtonPressed: (() -> Void)?
+
     var body: some View {
         ZStack {
             Image("background")
@@ -39,12 +36,9 @@ struct CreateRoomView: View {
                 codeDisplaySection
                 
                 bottomDecorationSection
-                    .offset(y: 45)
+                    .offset(y: 60)
             }
             // .background()
-        }
-        .onAppear {
-            generateRandomFruitCode()
         }
     }
 }
@@ -53,9 +47,12 @@ struct CreateRoomView: View {
 extension CreateRoomView {
     private var headerSection: some View {
         HStack {
-            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
-                appCoordinator.popLast()
-            })
+            ReturnButton {
+                onBackButtonPressed?()
+            }
+//            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
+//                appCoordinator.popLast()
+//            })
             .accessibilityLabel("Kembali ke halaman sebelumnya")
             .padding(.leading, 48)
             .padding(.top, 48)
@@ -106,24 +103,6 @@ extension CreateRoomView {
     }
 }
 
-// MARK: - Logic & Helpers
-extension CreateRoomView {
-    
-    func generateRandomFruitCode() {
-        roomCode = []
-        for _ in 0..<4 {
-            if let randomFruit = fruitOptions.randomElement() {
-                roomCode.append(randomFruit)
-            }
-        }
-    }
-    
-    func getNumericCode() -> Int? {
-        let codeString = roomCode.compactMap { fruitToNumberMap[$0] }.joined()
-        return Int(codeString)
-    }
-}
-
 // MARK: - Reusable Component
 struct DisplayCodeBox: View {
     let fruit: String
@@ -141,14 +120,5 @@ struct DisplayCodeBox: View {
             Text(fruit)
                 .font(.system(size: 60))
         }
-    }
-}
-
-// MARK: - Preview
-struct CreateRoomView_Previews: PreviewProvider {
-    static var previews: some View {
-        CreateRoomView()
-            .environmentObject(AppCoordinator())
-            .previewInterfaceOrientation(.landscapeLeft)
     }
 }

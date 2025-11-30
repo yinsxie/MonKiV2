@@ -34,8 +34,8 @@ struct MultiStateButton: View {
     }
     
     private var isLoading: Bool {
-            return state == .loading
-        }
+        return state == .loading
+    }
     
     // MARK: - Body
     var body: some View {
@@ -62,6 +62,7 @@ struct MultiStateButton: View {
                             : .default,
                             value: isLoading
                         )
+                        .rotating(duration: 2, enabled: isLoading)
                 }
             }
             .padding(24)
@@ -71,8 +72,8 @@ struct MultiStateButton: View {
         //        .background(.red)
         .onTapGesture {
             if state == .active {
-                            action()
-                        }
+                action()
+            }
         }
     }
 }

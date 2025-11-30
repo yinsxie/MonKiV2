@@ -9,7 +9,11 @@ import SwiftUI
 
 struct MatchOnlinePlayerView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
-    @StateObject var matchManager = MatchManager()
+    @ObservedObject var matchManager: MatchManager
+    
+    var onCancelMatchMakingPressed: (() -> Void)?
+    var onReadyPressed: (() -> Void)?
+    @State var isReady = false
     
     var body: some View {
         ZStack {
@@ -26,8 +30,14 @@ struct MatchOnlinePlayerView: View {
             VStack(alignment: .center, spacing: 40) {
                 matchContentSection
                 actionButtonSection
+                    .opacity(!isReady ? 1 : 0)
             }
             .offset(y: 25)
+        }
+        .onChange(of: matchManager.isOtherPlayerConnected) { _, newValue in
+            if newValue {
+                AudioManager.shared.play(.changeSound)
+            }
         }
     }
 }
@@ -38,7 +48,7 @@ extension MatchOnlinePlayerView {
     private var headerSection: some View {
         HStack {
             HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
-                appCoordinator.popLast()
+                onCancelMatchMakingPressed?()
             })
             .accessibilityLabel("Kembali ke halaman sebelumnya")
             .padding(.leading, 48)
@@ -51,12 +61,12 @@ extension MatchOnlinePlayerView {
         HStack(spacing: 32) {
             // MARK: - Remote Player (Friend)
             PlayerColumnView(
-                characterImage: "monki_multi_full_disable_1", // TODO: kalau playernya nemu ganti asset ke "monki_multi_full_active_player2"
+                characterImage: matchManager.isOtherPlayerConnected ? "monki_multi_full_active_player2" : "monki_multi_full_disable_1",
                 sparkContent: {
-                    // TODO: ini pakein validasi if kondisi player onlinenya dah nemu baru masukkin sparknya
                     Image("spark")
                         .resizable()
                         .scaledToFit()
+                        .opacity(matchManager.isOtherPlayerConnected ? 1.0 : 0.0)
                 }
             ) {
                 remotePlayerProfile
@@ -64,7 +74,7 @@ extension MatchOnlinePlayerView {
             
             // MARK: - Local Player (Me)
             PlayerColumnView(
-                characterImage: "monki_multi_full_active_player1_2", // TODO: if online player found, change asset to "monki_multi_full_active_player1_3"
+                characterImage: matchManager.isOtherPlayerConnected ? "monki_multi_full_active_player1_3" : "monki_multi_full_active_player1_2"
             ) {
                 localPlayerProfile
             }
@@ -72,12 +82,14 @@ extension MatchOnlinePlayerView {
     }
     
     private var actionButtonSection: some View {
-        // TODO: ntar kasih kondisi kalau player found, bikin statenya .active, textnya "Siap main!"
         MultiStateButton(
-            text: "Mencari Pemain",
-            iconName: "icon_loading_white",
-            state: .loading,
-            action: { }
+            text: matchManager.isOtherPlayerConnected ? "Siap main!" : "Mencari Pemain",
+            iconName: matchManager.isOtherPlayerConnected ? nil : "icon_loading_white",
+            state: matchManager.isOtherPlayerConnected ? .active : .loading,
+            action: {
+                onReadyPressed?()
+                isReady = true
+            }
         )
     }
 }
@@ -94,7 +106,7 @@ extension MatchOnlinePlayerView {
                     .frame(width: 64, height: 64)
                     .clipShape(Circle())
             } else {
-                Image(systemName: "person.crop.circle.badge.questionmark")
+                Image(systemName: "person.crop.circle")
                     .resizable()
                     .frame(width: 64, height: 64)
                     .foregroundColor(.gray)
@@ -102,28 +114,30 @@ extension MatchOnlinePlayerView {
             
             VStack(alignment: .leading, spacing: 4) {
                 // TODO: perlu validasi/kondisi kalau misalnya temennya masih dicari
-                // jadinya yg dimunculin cuman..
-                // Text("Mencari...")
-                //    .font(.fredokaSemiBold(size: 24))
-                //    .foregroundStyle(ColorPalette.neutral700)
-                
-                Text(matchManager.otherPlayerName)
-                    .font(.fredokaSemiBold(size: 24))
-                    .lineLimit(1)
-                    .foregroundStyle(ColorPalette.playerName)
-                
-                if matchManager.isRemotePlayerReady {
-                    StatusBadge(text: "Siap", color: ColorPalette.greenMoney)
+                if !matchManager.isOtherPlayerConnected {
+                    Text("Mencari...")
+                        .font(.fredokaSemiBold(size: 24))
+                        .foregroundStyle(ColorPalette.neutral700)
                 } else {
-                    HStack(spacing: 4) {
-                        Image("icon_loading_grey")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 15, height: 15)
-                        
-                        Text("Menghubungkan")
-                            .font(.fredokaMedium(size: 12))
-                            .foregroundColor(ColorPalette.connectPlayerName)
+                    Text(matchManager.otherPlayerName)
+                        .font(.fredokaSemiBold(size: 24))
+                        .lineLimit(1)
+                        .foregroundStyle(ColorPalette.playerName)
+                    
+                    if matchManager.isRemotePlayerReady {
+                        StatusBadge(text: "Siap", color: ColorPalette.greenMoney)
+                    } else {
+                        HStack(spacing: 4) {
+                            Image("icon_loading_grey")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 15, height: 15)
+                                .rotating(duration: 2)
+                            
+                            Text(matchManager.isOtherPlayerConnected ? "Menunggu..." : "Menghubungkan")
+                                .font(.fredokaMedium(size: 12))
+                                .foregroundColor(ColorPalette.connectPlayerName)
+                        }
                     }
                 }
             }
@@ -207,10 +221,10 @@ struct StatusBadge: View {
 }
 
 // MARK: - Previews
-struct MatchOnlinePlayerView_Previews: PreviewProvider {
-    static var previews: some View {
-        MatchOnlinePlayerView()
-            .environmentObject(AppCoordinator())
-            .previewInterfaceOrientation(.landscapeLeft)
-    }
-}
+//struct MatchOnlinePlayerView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MatchOnlinePlayerView()
+//            .environmentObject(AppCoordinator())
+//            .previewInterfaceOrientation(.landscapeLeft)
+//    }
+//}
