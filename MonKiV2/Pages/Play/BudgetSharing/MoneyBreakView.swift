@@ -248,10 +248,12 @@ struct PlayerStatsView: View {
                 Image(uiImage: profile)
                     .resizable()
                     .frame(width: 64, height: 64)
+                    .clipShape(Circle())
             } else if !amIHost, let profile = gcManager.currentPlayerAvatar {
                 profile
                     .resizable()
                     .frame(width: 64, height: 64)
+                    .clipShape(Circle())
             } else {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()
