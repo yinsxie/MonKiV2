@@ -9,14 +9,17 @@ import SwiftUI
 
 // MARK: - Subviews & Components
 internal extension PlayViewContainer {
+    
     var pagingScrollView: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
                 ZStack(alignment: .leading) {
-                    PagedBackground(
-                        imageName: "background_\(playVM.gameMode == .singleplayer ? "singleplayer" : "multiplayer")",
-                        pageCount: pages.count
-                    )
+                    
+                    //offset by design width
+                    Image("background_\(playVM.gameMode == .singleplayer ? "singleplayer" : "multiplayer")")
+                        .resizable()
+                        .scaledToFill()
+                        .offset(x: -1366)
                     
                     // Pages Content
                     HStack(spacing: 0) {
@@ -179,25 +182,6 @@ internal extension PlayViewContainer {
         .padding(.top, 32)
         .allowsHitTesting(isPageControlAllowHitTesting)
         .opacity(isPageControlVisible ? 0 : 1)
-    }
-}
-
-struct PagedBackground: View {
-    let imageName: String
-    let pageCount: Int
-
-    var body: some View {
-        GeometryReader { geo in
-            let pageHeight = geo.size.height
-
-            Image(imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(
-                    height: pageHeight
-                )
-                .offset(x: -UIScreen.main.bounds.width)
-        }
     }
 }
 
