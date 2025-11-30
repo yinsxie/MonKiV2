@@ -10,6 +10,7 @@ import SwiftUI
 enum ThoughtBubbleType {
     case initialPrice
     case givenMoney
+    case createDish
 }
 
 struct BubbleThoughtView: View {
@@ -34,6 +35,9 @@ struct BubbleThoughtView: View {
                     initialPriceView()
                 case .givenMoney:
                     givenMoneyView()
+                case .createDish:
+                    createDish()
+                    
                 }
             }
             .padding(.horizontal, 25)
@@ -101,7 +105,10 @@ struct BubbleThoughtView: View {
     
     @ViewBuilder
     func createDish() -> some View {
-        
+        Image("panci")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 71, height: 16)
     }
 
 }

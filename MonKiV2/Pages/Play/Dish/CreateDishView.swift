@@ -17,7 +17,10 @@ struct CreateDishView: View {
             // Main Content
             HStack(alignment: .bottom, spacing: 16) {
                 ZStack {
-                    MonkiCharacterView()
+                    Image("chef_monki")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 413)
                         .offset(x: -160, y: 0)
                     
                     Image("tenant")
@@ -40,6 +43,9 @@ struct CreateDishView: View {
             if playVM.isIntroButtonVisible {
                 TourButtonOverlay()
             }
+            
+            BubbleThoughtView(type: .createDish)
+                .offset(x: -100, y: -300)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: viewModel.isCreatingMultiplayerDish) { _, newValue in
