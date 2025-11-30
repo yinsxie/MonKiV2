@@ -140,8 +140,8 @@ struct MoneyBreakView: View {
     private func borderOverlay(for money: SharedMoney) -> some View {
         RoundedRectangle(cornerRadius: 5)
             .stroke(
-                money.owner == .host ? Color.green :
-                    money.owner == .guest ? Color.red : Color.clear,
+                money.owner == .host ? ColorPalette.playerName :
+                    money.owner == .guest ? Color.black : Color.clear,
                 lineWidth: 3
             )
             .rotationEffect(.degrees(money.rotation))
