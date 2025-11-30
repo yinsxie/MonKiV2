@@ -9,21 +9,32 @@ import SwiftUI
 
 // MARK: - Subviews & Components
 internal extension PlayViewContainer {
+    
     var pagingScrollView: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
-                HStack(spacing: 0) {
-                    ForEach(pages.indices, id: \.self) { index in
-                        pages[index]
-                            .containerRelativeFrame(
-                                .horizontal, count: 1, spacing: 0,
-                                alignment: playVM.getPage(at: index) == .cashierLoading ? .leading : .center
-                            )
-                            .ignoresSafeArea()
-                            .id(index)
+                ZStack(alignment: .leading) {
+                    
+                    //offset by design width
+                    Image("background_\(playVM.gameMode == .singleplayer ? "singleplayer" : "multiplayer")")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: CGFloat(1366 * pages.count))
+                    
+                    // Pages Content
+                    HStack(spacing: 0) {
+                        ForEach(pages.indices, id: \.self) { index in
+                            pages[index]
+                                .containerRelativeFrame(
+                                    .horizontal, count: 1, spacing: 0,
+                                    alignment: playVM.getPage(at: index) == .cashierLoading ? .leading : .center
+                                )
+                                .ignoresSafeArea()
+                                .id(index)
+                        }
                     }
+                    .scrollTargetLayout()
                 }
-                .scrollTargetLayout()
             }
             .scrollPosition(id: $playVM.currentPageIndex)
             .scrollTargetBehavior(.paging)
@@ -211,5 +222,8 @@ internal extension PlayViewContainer {
 }
 
 #Preview {
-    PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
+    GameRootScaler {
+        PlayViewContainer(forGameMode: .multiplayer)
+            .environmentObject(AppCoordinator())
+    }
 }
