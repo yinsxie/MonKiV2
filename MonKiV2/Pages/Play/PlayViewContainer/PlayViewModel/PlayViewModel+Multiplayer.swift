@@ -21,7 +21,7 @@ extension PlayViewModel: MatchManagerDelegate {
     }
     
     func didReceiveBudgetEvent(_ event: BudgetEvent) {
-        budgetSharingVM?.handleEvent(event)
+        moneyBreakVM?.handleEvent(event)
     }
         
     func didRemotePlayerPurchase(itemName: String) {
