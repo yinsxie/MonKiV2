@@ -92,7 +92,17 @@ struct DishImageView: View {
             // State nunggu temen
             if !viewModel.isRemotePlayerStartCookingTapped && playVM.gameMode == .multiplayer {
                 // TODO: Bikin animasi custom nunggu temen
-                Text("Nunggu temen....")
+                VStack {
+                    Text("Nunggu temen....")
+                        .font(.fredokaSemiBold(size: 40))
+                        .foregroundColor(Color(hex: "#994000"))
+                   
+                    Image("cashier_monki")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 350)
+                    
+                }
             } else if viewModel.isLoading || (!viewModel.isShowMultiplayerDish && playVM.gameMode == .multiplayer) {
                 AnimatedGIFView(gifName: "cooking_animation")
                     .frame(width: 488, height: 488)
@@ -308,6 +318,6 @@ struct DishImageView: View {
 
 #Preview {
     GameRootScaler {
-        PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
+        PlayViewContainer(forGameMode: .multiplayer, chef: .pasta)
     }
 }
