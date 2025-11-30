@@ -9,6 +9,10 @@ import SwiftUI
 
 struct MatchFriendView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
+   
+    var onBackButtonPressed: (() -> Void)?
+    var onHostButtonPressed: (() -> Void)?
+    var onJoinButtonPressed: (() -> Void)?
     
     var body: some View {
         ZStack {
@@ -32,9 +36,12 @@ struct MatchFriendView: View {
 extension MatchFriendView {
     private var headerSection: some View {
         HStack {
-            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
-                appCoordinator.popLast()
-            })
+            ReturnButton {
+                onBackButtonPressed?()
+            }
+//            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
+//                onBackButtonPressed?()
+//            })
             .accessibilityLabel("Kembali ke halaman sebelumnya")
             .padding(.leading, 48)
             .padding(.top, 48)
@@ -55,7 +62,8 @@ extension MatchFriendView {
                     buttonText: "Bikin ruang main",
                     iconName: "icon_multi_create_room",
                     action: {
-                        
+                        //Host
+                        onHostButtonPressed?()
                     }
                 )
                 
@@ -64,7 +72,8 @@ extension MatchFriendView {
                     buttonText: "Gabung aja",
                     iconName: "icon_multi_join_room",
                     action: {
-                        
+                        // Join
+                        onJoinButtonPressed?()
                     }
                 )
             }

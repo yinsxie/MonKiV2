@@ -32,24 +32,76 @@ struct MultiplayerLobbyView: View {
                 
             case .idle:
                 if !showingCodeOptions {
-                    mainMenuButtons
+                    MultiPlayerModeView {
+                        matchManager.startMatchmaking(withCode: 0)
+                    } onFriendModeSelected: {
+                        showingCodeOptions = true
+                    }
                 } else {
-                    codeEntryInterface
+                    if !isJoining {
+                        MatchFriendView {
+                            // Back to mode selection
+                            isJoining = false
+                            isHosting = false
+                            showingCodeOptions = false
+                            roomCode = []
+                        } onHostButtonPressed: {
+                            // Create Room
+                            generateRandomFruitCode()
+                            isHosting = true
+                            startMatch()
+                        } onJoinButtonPressed: {
+                            // Join Room
+                            isHosting = false
+                            withAnimation {
+                                isJoining = true
+                            }
+                        }
+                    } else {
+                        JoinRoomView(roomCode: $roomCode) {
+                            isJoining = false
+                        } onJoinButtonTapped: {
+                            startMatch()
+                        } onCancelJoinButtonTapped: {
+                            matchManager.cancelMatchmaking()
+                            isHosting = false
+                            roomCode = []
+                        }
+                    }
                 }
                 
             case .searching:
-                searchingView
+                if isHosting {
+                    CreateRoomView(roomCode: $roomCode) {
+                        matchManager.cancelMatchmaking()
+                        isHosting = false
+                        isJoining = false // Reset joining state
+                        roomCode = []
+                    }
+                } else {
+                    MatchOnlinePlayerView(matchManager: matchManager) {
+                        matchManager.cancelMatchmaking()
+                        isHosting = false
+                        isJoining = false // Reset joining state
+                        roomCode = []
+                    } onReadyPressed: {
+                        matchManager.sendReadySignal()
+                    }
+                }
                 
             case .connected:
-                connectedView
+                MatchOnlinePlayerView(matchManager: matchManager) {
+                    matchManager.cancelMatchmaking()
+                    isHosting = false
+                    isJoining = false // Reset joining state
+                    roomCode = []
+                } onReadyPressed: {
+                    matchManager.sendReadySignal()
+                }
                 
             case .playing:
-                VStack {
-                    ProgressView()
-                    Text("Entering Supermarket...")
-                        .foregroundColor(.white)
-                        .font(.headline)
-                }
+                // Not gonna be shown here
+                EmptyView()
             }
         }
         .onAppear {
