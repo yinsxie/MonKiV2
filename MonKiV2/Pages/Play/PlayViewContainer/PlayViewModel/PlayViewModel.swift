@@ -31,7 +31,7 @@ import SwiftUI
     var walletVM: WalletViewModel!
     var dishVM: CreateDishViewModel!
     var atmVM: ATMViewModel!
-    var budgetSharingVM: BudgetSharingViewModel!
+//    var budgetSharingVM: BudgetSharingViewModel!
     var moneyBreakVM: MoneyBreakViewModel!
     
     // View State
@@ -86,7 +86,7 @@ import SwiftUI
         
         if gameMode == .multiplayer {
             self.isBudgetSharingActive = true
-            self.budgetSharingVM = BudgetSharingViewModel(parent: self)
+            self.moneyBreakVM = MoneyBreakViewModel(parent: self)
         }
         
         setupGameLogic()
