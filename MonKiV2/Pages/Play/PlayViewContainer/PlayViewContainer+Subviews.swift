@@ -20,6 +20,10 @@ internal extension PlayViewContainer {
                         .resizable()
                         .scaledToFill()
                         .frame(width: CGFloat(1366 * pages.count))
+                        .scaleEffect(playVM.atmVM.isZoomed ? 2.5 : 1.0)
+                        .offset(y: playVM.atmVM.isZoomed ? 420 : 0)
+                        .offset(x: playVM.atmVM.isZoomed ? 1366 * 3.8 : 0)
+//                        .offset(x: playVM.atmVM.isZoomed ? 1366 : 0, y: playVM.atmVM.isZoomed ? 420 : -35)
                     
                     // Pages Content
                     HStack(spacing: 0) {
@@ -223,7 +227,8 @@ internal extension PlayViewContainer {
 
 #Preview {
     GameRootScaler {
-        PlayViewContainer(forGameMode: .multiplayer)
+        PlayViewContainer(forGameMode: .singleplayer)
             .environmentObject(AppCoordinator())
     }
 }
+
