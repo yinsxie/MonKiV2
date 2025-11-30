@@ -19,7 +19,7 @@ internal extension PlayViewContainer {
                     Image("background_\(playVM.gameMode == .singleplayer ? "singleplayer" : "multiplayer")")
                         .resizable()
                         .scaledToFill()
-                        .offset(x: -1366)
+                        .frame(width: CGFloat(1366 * pages.count))
                     
                     // Pages Content
                     HStack(spacing: 0) {
