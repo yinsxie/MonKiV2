@@ -42,21 +42,24 @@ import GameKit
         sharedMoneys.contains { $0.owner == myRole }
     }
     
-    var actionButtonText: String {
-        if isLocalReady {
-            return "Menunggu Teman..."
-        }
-        
-        return "Lanjut"
+    var isMoneyCompletelyAllocated: Bool {
+        sharedMoneys.allSatisfy { $0.owner != nil }
     }
     
-
-    var actionButtonState: MultiStateButton.ButtonState {
-        if isLocalReady {
-            return .loading
+    var actionButtonText: String {
+        if isLocalReady && isRemoteReady {
+            return "Memulai Permainan"
         }
         
-        if hasMoneyAllocated {
+        if !isLocalReady {
+            return "Siap..."
+        }
+        
+        return "Batal"
+    }
+
+    var actionButtonState: MultiStateButton.ButtonState {
+        if isLocalReady || isMoneyCompletelyAllocated {
             return .active
         }
         

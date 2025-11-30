@@ -116,6 +116,7 @@ struct MoneyBreakView: View {
                 viewModel.checkForHostStatus()
             }
         }
+        .clipped()
     }
     
     // MARK: - Logic Money Layer
@@ -182,6 +183,10 @@ struct MoneyBreakView: View {
 
 // MARK: - Reusable Component (Tidak Berubah)
 struct PlayerStatsView: View {
+    
+    @Environment(PlayViewModel.self) var playVM
+    @ObservedObject var gcManager = GameCenterManager.shared
+    
     let playerName: String
     let amount: Int
     let isReady: Bool
@@ -234,12 +239,24 @@ struct PlayerStatsView: View {
     // Bagian Profile (Avatar, Nama, Status)
     @ViewBuilder
     var profileContent: some View {
+        
         HStack(spacing: 10) {
-            //TODO: ganti ke avatar temen (untuk guest)
-            Image(systemName: "person.crop.circle.fill")
-                .resizable()
-                .frame(width: 64, height: 64)
-                .foregroundColor(.blue)
+            if !isGuest, let profile = playVM.matchManager?.otherPlayerAvatarUIImage {
+                Image(uiImage: profile)
+                    .resizable()
+                    .frame(width: 64, height: 64)
+            }
+            else if isGuest, let profile = gcManager.currentPlayerAvatar {
+                profile
+                    .resizable()
+                    .frame(width: 64, height: 64)
+            }
+            else {
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .frame(width: 64, height: 64)
+                    .foregroundColor(.blue)
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(playerName)
