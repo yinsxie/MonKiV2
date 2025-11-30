@@ -50,7 +50,7 @@ struct DishImageView: View {
                     .stroke(.white, lineWidth: 24)
             )
             
-            HStack (spacing: 40) {
+            HStack(spacing: 40) {
                 saveButton
                 
                 if playVM.gameMode == .multiplayer {

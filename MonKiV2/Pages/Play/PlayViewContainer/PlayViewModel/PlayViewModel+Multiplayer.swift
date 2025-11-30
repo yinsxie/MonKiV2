@@ -90,11 +90,13 @@ extension PlayViewModel: MatchManagerDelegate {
     
     func didRemotePlayerReadyInCreateDish() {
         dishVM.isRemotePlayerStartCookingTapped = true
+        show(.remotePlayerReadyToCook)
         dishVM.whoTappedLast = .remotePlayer
     }
     
     func didRemotePlayerUnreadyInCreateDish() {
         dishVM.isRemotePlayerStartCookingTapped = false
+        hideNotification()
     }
     
     func didReceiveDishImageData(_ image: Data) {

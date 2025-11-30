@@ -63,6 +63,11 @@ import SwiftUI
     var isFlyingMoney: Bool = false
     var flyingMoneyCurrency: Currency?
     
+    // Notification
+    var currentNotification: NotificationType?
+    var dismissNotificationTask: Task<Void, Never>?
+    var isNotificationVisible: Bool = false
+    
     init(gameMode: GameMode, matchManager: MatchManager? = nil, chef: ChefType? = nil) {
         self.gameMode = gameMode
         self.gamePages = PlayViewModel.getPage(for: gameMode)

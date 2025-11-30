@@ -145,7 +145,27 @@ internal extension PlayViewContainer {
                     .offset(x: 225, y: -68)
                 }
             }
-            
+        }
+        
+        // Notifiation overlay for when remote player started cooking
+        .overlay {
+            VStack {
+                HStack {
+                    Spacer()
+                    if let type = playVM.currentNotification,
+                       playVM.isNotificationVisible {
+                        NotificationView(type: type)
+                            .onTapGesture {
+                                withAnimation(.interactiveSpring(response: 1, dampingFraction: 0.75)) {
+                                    playVM.setCurrentIndex(to: .createDish)
+                                    playVM.hideNotification()
+                                }
+                            }
+                    }
+                }
+                Spacer()
+            }
+            .padding([.top, .trailing], 35)
         }
         // this needs to be here so that cart animations happen behind cart
         AnimationOverlayView()
@@ -188,4 +208,8 @@ internal extension PlayViewContainer {
         .allowsHitTesting(playVM.isPageControlAllowHitTesting)
         .opacity(playVM.isPageControlVisible ? 0 : 1)
     }
+}
+
+#Preview {
+    PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
 }
