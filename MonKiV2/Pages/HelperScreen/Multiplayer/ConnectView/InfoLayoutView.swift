@@ -8,9 +8,15 @@
 import SwiftUI
 
 struct GameCodePopupView: View {
+    
+    @Binding var isShowing: Bool
+    
     var body: some View {
         ZStack {
             Color.black.opacity(0.4).edgesIgnoringSafeArea(.all)
+                .onTapGesture {
+                    isShowing = false
+                }
             
             HStack(spacing: 0) {
                 IllustrationView()
@@ -79,9 +85,9 @@ private struct InstructionListView: View {
 }
 
 // MARK: - Preview
-struct GameCodePopupView_Previews: PreviewProvider {
-    static var previews: some View {
-        GameCodePopupView()
-            .previewInterfaceOrientation(.landscapeLeft)
-    }
-}
+//struct GameCodePopupView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        GameCodePopupView()
+//            .previewInterfaceOrientation(.landscapeLeft)
+//    }
+//}

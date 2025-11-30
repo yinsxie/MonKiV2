@@ -13,6 +13,8 @@ struct JoinRoomView: View {
     
     @Binding var roomCode: [String]
     
+    @State var isShowTutorial: Bool = true
+    
     var isCodeFull: Bool {
         return roomCode.count == 4
     }
@@ -42,8 +44,14 @@ struct JoinRoomView: View {
             }
             
             contentSection
+            
+            GameCodePopupView(isShowing: $isShowTutorial)
+                .opacity(isShowTutorial ? 1 : 0)
         }
         .onAppear {
+            withAnimation {
+                isShowTutorial = true
+            }
             roomCode.removeAll()
         }
     }
@@ -84,10 +92,11 @@ extension JoinRoomView {
         HStack {
             ReturnButton {
                 onReturnButtonTapped?()
+                isShowTutorial = true
             }
-//            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
-//                onReturnButtonTapped?()
-//            })
+            //            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
+            //                onReturnButtonTapped?()
+            //            })
             .accessibilityLabel("Kembali ke halaman sebelumnya")
             .padding(.leading, 48)
             .padding(.top, 48)
@@ -123,7 +132,7 @@ extension JoinRoomView {
                 .frame(width: 44, height: 44) // biar menuhin standar HIG (?)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    print("Info diklik!")
+                    isShowTutorial = true
                 }
         }
     }
