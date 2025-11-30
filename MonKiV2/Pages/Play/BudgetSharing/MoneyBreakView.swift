@@ -62,7 +62,8 @@ struct MoneyBreakView: View {
                                 playerName: viewModel.amIHost ? viewModel.localPlayerName : viewModel.remotePlayerName,
                                 amount: viewModel.hostTotal,
                                 isReady: viewModel.amIHost ? viewModel.isLocalReady : viewModel.isRemoteReady,
-                                isGuest: false
+                                isGuest: false,
+                                amIHost: !viewModel.amIHost
                             )
                             .offset(x: 70, y: 80)
                         }
@@ -93,7 +94,8 @@ struct MoneyBreakView: View {
                                 playerName: !viewModel.amIHost ? viewModel.localPlayerName : viewModel.remotePlayerName,
                                 amount: viewModel.guestTotal,
                                 isReady: !viewModel.amIHost ? viewModel.isLocalReady : viewModel.isRemoteReady,
-                                isGuest: true
+                                isGuest: true,
+                                amIHost: viewModel.amIHost
                             )
                             .offset(x: -70, y: 80)
                         }
@@ -191,6 +193,7 @@ struct PlayerStatsView: View {
     let amount: Int
     let isReady: Bool
     let isGuest: Bool
+    let amIHost: Bool
     
     var body: some View {
         HStack(spacing: 12) {
@@ -241,17 +244,15 @@ struct PlayerStatsView: View {
     var profileContent: some View {
         
         HStack(spacing: 10) {
-            if !isGuest, let profile = playVM.matchManager?.otherPlayerAvatarUIImage {
+            if amIHost, let profile = playVM.matchManager?.otherPlayerAvatarUIImage {
                 Image(uiImage: profile)
                     .resizable()
                     .frame(width: 64, height: 64)
-            }
-            else if isGuest, let profile = gcManager.currentPlayerAvatar {
+            } else if !amIHost, let profile = gcManager.currentPlayerAvatar {
                 profile
                     .resizable()
                     .frame(width: 64, height: 64)
-            }
-            else {
+            } else {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()
                     .frame(width: 64, height: 64)
