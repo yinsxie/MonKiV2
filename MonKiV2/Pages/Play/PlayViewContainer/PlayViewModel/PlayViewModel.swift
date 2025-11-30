@@ -32,6 +32,7 @@ import SwiftUI
     var dishVM: CreateDishViewModel!
     var atmVM: ATMViewModel!
     var budgetSharingVM: BudgetSharingViewModel!
+    var moneyBreakVM: MoneyBreakViewModel!
     
     // View State
     var isScrollDisabled: Bool {

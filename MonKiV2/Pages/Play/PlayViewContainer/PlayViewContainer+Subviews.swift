@@ -121,8 +121,8 @@ internal extension PlayViewContainer {
         // Split Budget Overlay
         .overlay {
             ZStack {
-                if playVM.isBudgetSharingActive, let viewModel = playVM.budgetSharingVM {
-                    BudgetSharingView(viewModel: viewModel)
+                if playVM.isBudgetSharingActive, let viewModel = playVM.moneyBreakVM {
+                    MoneyBreakView(viewModel: viewModel)
                         .transition(.move(edge: .top))
                         .onAppear {
                             viewModel.checkForHostStatus()
