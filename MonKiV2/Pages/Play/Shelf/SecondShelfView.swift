@@ -160,11 +160,11 @@ struct SecondShelfView: View {
                             Image("right_shelf")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 400)
+                                .frame(width: 375)
                             VStack {
                                 if let fishItem = fishItem {
                                     Color.clear
-                                        .frame(width: 400, height: 180)
+                                        .frame(width: 375, height: 180)
                                     //                                        .background(Color.green.opacity(0.5))
                                         .contentShape(Rectangle())
                                         .makeDraggable(
@@ -175,7 +175,7 @@ struct SecondShelfView: View {
                                 }
                                 if let poultryItem = poultryItem {
                                     Color.clear
-                                        .frame(width: 400, height: 180)
+                                        .frame(width: 375, height: 180)
                                     //                                        .background(Color.green.opacity(0.5))
                                         .contentShape(Rectangle())
                                         .makeDraggable(
@@ -185,6 +185,7 @@ struct SecondShelfView: View {
                                         )
                                 }
                             }
+                            .offset(y: -10)
                         }
                         
                         Spacer()
@@ -216,6 +217,8 @@ struct SecondShelfView: View {
 }
 
 #Preview {
-    PlayViewContainer(forGameMode: .singleplayer)
-        .environmentObject(AppCoordinator())
+    GameRootScaler {
+        PlayViewContainer(forGameMode: .singleplayer)
+            .environmentObject(AppCoordinator())
+    }
 }
