@@ -37,36 +37,48 @@ struct ShoppingBagSideBarView: View {
     let sideBarWidth: CGFloat = 291
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // RECEIPT (behind)
-            if dishVM.isBagTapped {
-                receiptView
-                    .padding(.horizontal, 20)
-                    .transition(.move(edge: .bottom))
-                    .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dishVM.isBagTapped)
+        ScrollViewReader { proxy in
+            ZStack(alignment: .bottom) {
+                // RECEIPT (behind)
+                if dishVM.isBagTapped {
+                    receiptView
+                        .padding(.horizontal, 20)
+                        .transition(.move(edge: .bottom))
+                        .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dishVM.isBagTapped)
+                }
+                
+                // BAG (fixed in front)
+                VStack {
+                    Spacer()
+                    shoppingBagView
+                }
+                .zIndex(10)
             }
-            
-            // BAG (fixed in front)
-            VStack {
-                Spacer()
-                shoppingBagView
+            .onChange(of: playVM.currentPageIndex) {
+                // MARK: Change if turning on Debug IngredientsListView
+                if playVM.getCurrentPage() == .createDish {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        toggleBag(to: true)
+                    }
+                } else {
+                    toggleBag(to: false)
+                }
             }
-            .zIndex(10)
+            .onChange(of: dishVM.isBagTapped) { _,newValue in
+                if newValue {
+                    // CRITICAL DELAY: Wait for the 0.25s transition to finish
+                    DispatchQueue.main.asyncAfter(deadline: .now()) {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                            proxy.scrollTo("bottomID", anchor: .bottom)
+                        }
+                    }
+                }
+            }
         }
         .ignoresSafeArea()
         .frame(width: sideBarWidth)
         .frame(maxHeight: .infinity)
         .padding(.horizontal, 40)
-        .onChange(of: playVM.currentPageIndex) {
-            // MARK: Change if turning on Debug IngredientsListView
-            if playVM.getCurrentPage() == .createDish {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    toggleBag(to: true)
-                }
-            } else {
-                toggleBag(to: false)
-            }
-        }
     }
     
     // MARK: - Receipt View
@@ -79,30 +91,41 @@ struct ShoppingBagSideBarView: View {
                     .frame(height: max(max(containerHeight - contentHeight, 0), 150))
                     .clipped()
                     .opacity(0)
+                    .onHeaderCloseSwipe {
+                        toggleBag(to: false)
+                    }
+                    .allowsHitTesting(false)
                 
                 // receipt content container (measured by HeightKey)
                 VStack(spacing: 0) {
                     
-                    // Top Paper Edge
-                    Image("receipt_top")
-                        .resizable()
-                        .scaledToFill()
-                        .offset(y: -22)
-                    
-                    // Logo + Barrier
-                    VStack(spacing: 35) {
-                        Image("receipt_logo")
+                    // --- HEADER AREA (Scrollable + Swipeable) ---
+                    VStack(spacing: 0) {
+                        // Top Paper Edge
+                        Image("receipt_top")
                             .resizable()
-                            .scaledToFit()
-                            .frame(width: 114.66)
+                            .scaledToFill()
+                            .offset(y: -22)
                         
-                        Image("receipt_barrier")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 209.25)
+                        // Logo + Barrier
+                        VStack(spacing: 35) {
+                            Image("receipt_logo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 114.66)
+                            
+                            Image("receipt_barrier")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 209.25)
+                        }
+                    }
+                    .background(ColorPalette.overlayBackground)
+                    .onHeaderCloseSwipe {
+                        toggleBag(to: false)
                     }
                     
-                    // Grocery list
+                    // --- LIST AREA (Normal Scroll) ---
                     VStack(spacing: 40) {
                         if dishVM.groceriesList.isEmpty {
                             Color.clear
@@ -111,10 +134,13 @@ struct ShoppingBagSideBarView: View {
                             GroceryDetailView(grocery: grocery)
                                 .makeDraggable(
                                     item: DraggedItem(
-                                        id: grocery.item.id,
+                                        id: grocery.id,
                                         payload: .grocery(grocery.item),
                                         source: .createDishOverlay
-                                    )
+                                    ),
+                                    onDragStarted: {
+                                        playVM.didLocalUserStartDragReceiptItem(itemName: grocery.item.name)
+                                    }
                                 )
                                 .opacity(
                                     dragManager.currentDraggedItem?.id == grocery.item.id &&
@@ -139,11 +165,18 @@ struct ShoppingBagSideBarView: View {
                         Color.clear.preference(key: HeightKey.self, value: geo.size.height)
                     }
                 )
+                
+
                 Image("receipt_top")
                     .resizable()
                     .scaledToFit()
                     .offset(y: 4)
                     .rotationEffect(.degrees(180))
+                
+                Color.clear
+                    .frame(height: 100)
+                    .id("bottomID")
+                    .allowsHitTesting(false)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 30)
@@ -180,12 +213,16 @@ struct ShoppingBagSideBarView: View {
             .resizable()
             .scaledToFit()
             .frame(width: sideBarWidth)
+            .onComponentSwipe(
+                open: { toggleBag(to: true) },
+                close: { toggleBag(to: false) }
+            )
             .onTapGesture {
                 withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                     dishVM.isBagTapped.toggle()
                 }
             }
-            // keep bag visually overlapping the receipt: adjust if needed
+        // keep bag visually overlapping the receipt: adjust if needed
             .padding(.bottom, -200)
             .frame(maxWidth: .infinity, alignment: .bottomTrailing)
     }

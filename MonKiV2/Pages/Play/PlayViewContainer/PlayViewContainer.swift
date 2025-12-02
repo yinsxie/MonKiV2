@@ -12,8 +12,8 @@ struct PlayViewContainer: View {
     @State var playVM: PlayViewModel
     @State var inactivityManager = InactivityManager()
     
-    init(forGameMode mode: GameMode) {
-        _playVM = State(initialValue: PlayViewModel(gameMode: mode))
+    init(forGameMode mode: GameMode, matchManager: MatchManager? = nil, chef: ChefType? = nil) {
+        _playVM = State(initialValue: PlayViewModel(gameMode: mode, matchManager: matchManager, chef: chef))
     }
     
     @ViewBuilder
@@ -43,11 +43,8 @@ struct PlayViewContainer: View {
     // MARK: - Main Body
     var body: some View {
         ZStack(alignment: .bottom) {
-//            PlayBackgroundView()
-            Image("background")
-                .resizable()
-                .scaledToFill()
-                .edgesIgnoringSafeArea(.all)
+            
+            Color.white
             
             // 1. Main Scroll View
             pagingScrollView
@@ -101,10 +98,15 @@ struct PlayViewContainer: View {
         .onPreferenceChange(ViewFrameKey.self) { frames in
             handleFrameUpdates(frames)
         }
+        .onAppear {
+            playVM.connectToMatch()
+        }
     }
 }
 
 #Preview {
-    PlayViewContainer(forGameMode: .singleplayer)
-        .environmentObject(AppCoordinator())
+    GameRootScaler {
+        PlayViewContainer(forGameMode: .singleplayer)
+            .environmentObject(AppCoordinator())
+    }
 }

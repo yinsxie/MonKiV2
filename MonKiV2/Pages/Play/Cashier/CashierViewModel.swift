@@ -7,20 +7,38 @@
 
 import SwiftUI
 
+@MainActor
 @Observable
 final class CashierViewModel {
     weak var parent: PlayViewModel?
     private var checkoutTask: Task<Void, Never>?
     private var currentCheckoutID: UUID = UUID()
     var discardedAmountTracker: Int = 0
+    var isScanning: Bool = false
     
     init(parent: PlayViewModel?) {
         self.parent = parent
         
-        // MARK: Get 1 rice by default (temporary implementation since we only have 1 type of chef for now)
-        if let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
+        // MARK: Get 1 rice by default for multiplayer
+        if parent?.gameMode == .multiplayer, let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
             let riceCartItem = CartItem(item: riceItem)
             self.purchasedItems.append(riceCartItem)
+        }
+    }
+    
+    func addBaseIngredient(name: String) {
+        guard let parent = parent, parent.gameMode == .singleplayer else {
+            print("Skipping base ingredient: Not singleplayer or parent nil")
+            return
+        }
+        
+        if let item = Item.items.first(where: { $0.name == name }) {
+            let cartItem = CartItem(item: item)
+            
+            self.purchasedItems.append(cartItem)
+            print("Base ingredient added: \(name)")
+        } else {
+            print("Error: Base ingredient '\(name)' not found in Item.items")
         }
     }
     
@@ -36,7 +54,7 @@ final class CashierViewModel {
     }
     
     var receivedMoney: [Money] = []
-   
+    
     var receivedMoneyGrouped: [MoneyGroup] {
         var temp: [Currency: (money: Money, count: Int)] = [:]
         
@@ -54,7 +72,7 @@ final class CashierViewModel {
         
         return res
     }
-
+    
     var returnedMoney: [Money] = []
     var isAnimatingReturnMoney: Bool = false
     var isReturnedMoneyPrompted: Bool = false
@@ -109,6 +127,19 @@ final class CashierViewModel {
         
         checkOutItems.append(item)
         bagVisualItems.append(item)
+        triggerScanEffect()
+    }
+    
+    private func triggerScanEffect() {
+        isScanning = false
+        
+        Task { @MainActor in
+            isScanning = true
+            
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            
+            isScanning = false
+        }
     }
     
     func removeFromCounter(withId id: UUID) {
@@ -228,6 +259,14 @@ final class CashierViewModel {
         
         let freshItems = self.bagVisualItems.map { CartItem(item: $0.item) }
         self.purchasedItems.append(contentsOf: freshItems)
+        
+        // Network Update
+        if let matchManager = parent?.matchManager {
+            for cartItem in freshItems {
+                matchManager.sendPurchase(itemName: cartItem.item.name)
+            }
+        }
+        
         self.bagVisualItems.removeAll()
         
         if instantReset {

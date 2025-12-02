@@ -117,4 +117,16 @@ struct ColorPalette {
     
     // Cashier related
     static let overlayBackground = Color(hex: "#EFF0F0")
+    
+    static let walletTotalPrice = Color(hex: "#4B4B4B")
+    
+    static let playerName = Color(hex: "#FF7B1C")
+    static let connectPlayerName = Color(hex: "#949494")
+    static let playWithFriendTitle = Color(hex: "#994000")
+    static let codeBoxOuterBackground = Color(hex: "#F2F2F2")
+    
+    static let choiceCodeBoxOuterBackground = Color(hex: "D4E1F2")
+    static let choiceCodeBoxInnerBackground = Color(hex: "DFEDFF")
+    
+    static let infoBackground = Color(hex: "#FEF0CD")
 }

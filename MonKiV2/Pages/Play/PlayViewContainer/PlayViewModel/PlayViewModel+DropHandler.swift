@@ -10,15 +10,45 @@ import SwiftUI
 // MARK: Drop Handlers
 extension PlayViewModel {
     
-    func handleDropFailed(draggedItem: DraggedItem) {
-        print("Drop failed (Invalid Zone). Clearing item without animation.")
+    func handleGroceryDropFailed(groceryItem: Item, draggedItem: DraggedItem) {
+        defer {
+            DispatchQueue.main.async {
+                self.dragManager.currentDraggedItem = nil
+            }
+        }
         
-        DispatchQueue.main.async {
-            self.dragManager.currentDraggedItem = nil
+        print("Must Handle On Grocery Drop Failed")
+        
+        if draggedItem.source == .createDishOverlay {
+            DispatchQueue.main.async {
+                self.matchManager?.returnDishToReceiptRemotePlayer(itemName: groceryItem.name)
+            }
+        }
+        
+        if draggedItem.source == .createDish {
+            DispatchQueue.main.async {
+                self.matchManager?.returnDishToCreateDishRemotePlayer(itemName: groceryItem.name)
+            }
         }
     }
     
+    func handleMoneyDropFailed(currency: Currency, draggedItem: DraggedItem) {
+        defer {
+            DispatchQueue.main.async {
+                self.dragManager.currentDraggedItem = nil
+            }
+        }
+        print("Must Handle On Money Drop Failed")
+    }
+    
     func handleGroceryDrop(zone: DropZoneType, groceryItem: Item, draggedItem: DraggedItem) {
+        
+        defer {
+            DispatchQueue.main.async {
+                self.dragManager.currentDraggedItem = nil
+            }
+        }
+        
         switch zone {
         case .cart:
             handleGroceryDropOnCart(groceryItem: groceryItem, draggedItem: draggedItem)
@@ -39,9 +69,15 @@ extension PlayViewModel {
     
     func handleMoneyDrop(zone: DropZoneType, currency: Currency, draggedItem: DraggedItem) {
         //        withAnimation(.spring) {
+        defer {
+            DispatchQueue.main.async {
+                self.dragManager.currentDraggedItem = nil
+            }
+        }
+        
         switch zone {
         case .cashierPaymentCounter:
-            if cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney {
+            if cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney || cashierVM.isReturnedMoneyPrompted {
                 print("Player is currently not allowed to drop money on payment counter.")
                 return
             }
@@ -211,23 +247,57 @@ extension PlayViewModel {
     }
     
     func handleGroceryDropOnCreateDish(groceryItem: Item, draggedItem: DraggedItem) {
+        
         if draggedItem.source == .createDishOverlay {
             DispatchQueue.main.async {
+                // Local Update
                 self.dishVM.createDishItem.append(CartItem(item: groceryItem))
                 guard let index = self.cashierVM.purchasedItems.firstIndex(where: { $0.item.id == draggedItem.id }) else { return }
                 self.cashierVM.purchasedItems.remove(at: index)
                 self.dragManager.currentDraggedItem = nil
+                
+                // Network Update
+                if self.gameMode == .multiplayer {
+                    self.matchManager?.sendAddToDish(itemName: groceryItem.name)
+                }
             }
+        }
+        
+        
+        // Dragged to self zone, notify remote player to add the item to createdish again
+        if self.gameMode == .multiplayer, draggedItem.source == .createDish {
+            self.matchManager?.returnDishToCreateDishRemotePlayer(itemName: groceryItem.name)
         }
     }
     
     func handleGroceryDropOnCreateDishOverlay(groceryItem: Item, draggedItem: DraggedItem) {
+        
+        defer {
+            DispatchQueue.main.async {
+                self.dragManager.currentDraggedItem = nil
+            }
+        }
+        
         if draggedItem.source == .createDish {
             DispatchQueue.main.async {
+                // Local Update
                 self.cashierVM.purchasedItems.append(CartItem(item: groceryItem))
                 guard let index = self.dishVM.createDishItem.firstIndex(where: { $0.id == draggedItem.id }) else { return }
                 self.dishVM.createDishItem.remove(at: index)
                 self.dragManager.currentDraggedItem = nil
+                
+                // Network Update
+                if self.gameMode == .multiplayer {
+                    print("Sending remove dish from dropHandler")
+                    self.matchManager?.sendRemoveFromDish(itemName: groceryItem.name)
+                }
+            }
+        }
+        
+        // Dragged to self zone, notify remote player to add the item again
+        if gameMode == .multiplayer, draggedItem.source == .createDishOverlay {
+            DispatchQueue.main.async {
+                self.matchManager?.returnDishToReceiptRemotePlayer(itemName: groceryItem.name)
             }
         }
     }

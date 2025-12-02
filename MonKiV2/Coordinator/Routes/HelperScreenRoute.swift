@@ -11,6 +11,7 @@ enum HelperScreenRoute {
     case startingPage
     case dishBook
     case pickChef
+    case multiplayerLobby
 }
 
 extension HelperScreenRoute: SubRouteProtocol {
@@ -23,6 +24,8 @@ extension HelperScreenRoute: SubRouteProtocol {
             DishBookView()
         case .pickChef:
             PickChefView()
+        case .multiplayerLobby:
+            MultiplayerLobbyView()
         }
     }
 }

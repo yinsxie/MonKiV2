@@ -11,6 +11,7 @@ struct CircleNumberView: View {
     let number: Int
     var size: CGFloat = 70
     var fontSize: CGFloat = 30
+    var innerpadding: CGFloat = 10
     // Inner white circle
     var body: some View {
         ZStack {
@@ -20,7 +21,7 @@ struct CircleNumberView: View {
             
             Circle()
                 .fill(Color.white)
-                .padding(10)
+                .padding(innerpadding)
             
             Text("\(number)")
                 .font(.fredokaOne(size: fontSize))

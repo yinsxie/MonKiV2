@@ -1,0 +1,291 @@
+import GameKit
+import SwiftUI
+import Combine
+
+struct GamePacket: Codable {
+    enum PacketType: String, Codable {
+        case itemPurchased      // When someone buys at cashier
+        case itemAddedToDish    // When item moved from Bag -> Dish
+        case itemRemovedFromDish // When item moved from Dish -> Bag
+        case budgetEvent        // All changes during BudgetSharing
+        case receiptItemDragged  // When item is dragged on receipt
+        case receiptItemCancelled // When item is returned to remote player
+        case createDishItemDragged // When item is dragged to create dish area
+        case createDishItemCancelled // When item is returned from create dish area
+        case createDishPlayerReady // When player is ready in create dish screen
+        case createDishPlayerUnready // When player is unready in create dish screen
+        case sendDishImageData     // When sending dish image data
+        case sendShowMultiplayerDish // When requesting to show multiplayer dish
+        case sendHideMultiplayerDish // When requesting to hide multiplayer dish
+        case sendToggleReadyToSaveDishImage // When ready to save dish image
+        //        case sendUnReadyToSaveDishImage // When unready to save dish image
+    }
+    
+    let type: PacketType
+    let itemName: String?
+    let budgetPayload: BudgetEvent?
+    var imagePayLoad: DataChunk?
+}
+
+@MainActor
+protocol MatchManagerDelegate: AnyObject {
+    
+    // Game Events
+    func didRemotePlayerPurchase(itemName: String)
+    func didRemotePlayerAddToDish(itemName: String)
+    func didRemotePlayerRemoveFromDish(itemName: String)
+    func didReceiveBudgetEvent(_ event: BudgetEvent)
+    func didRemotePlayerDragReceiptItem(itemName: String)
+    func didRemotePlayerCancelReceiptItem(itemName: String)
+    func didRemotePlayerDragCreateDishItem(itemName: String)
+    func didRemotePlayerCancelCreateDishItem(itemName: String)
+    func didRemotePlayerReadyInCreateDish()
+    func didRemotePlayerUnreadyInCreateDish()
+    func didReceiveDishImageData(_ image: Data)
+    func didReceiveShowMultiplayerDish()
+    func didReceiveHideMultiplayerDish()
+    func didReceiveToggleReadyToSaveDishImage()
+    
+    // Connection Events
+    func didOtherPlayerDisconnected()
+    func didLocalPlayerDisconnected()
+}
+
+@MainActor
+final internal class MatchManager: NSObject, ObservableObject {
+    // MARK: - Game State
+    enum MatchState {
+        case idle
+        case searching
+        case connected
+        case playing
+        case disconnected
+    }
+    
+    var receiver = ChunkReceiver()
+    
+    override init() {
+        super.init()
+        
+        receiver.onComplete = { [weak self] fullData in
+            print("Received full data of size: \(fullData.count)")
+            
+            self?.delegate?.didReceiveDishImageData(fullData)
+        }
+    }
+    
+    @Published var matchState: MatchState = .idle
+    @Published var myMatch: GKMatch?
+    weak var delegate: MatchManagerDelegate?
+    
+    func sendPurchase(itemName: String) {
+        sendPacket(GamePacket(type: .itemPurchased, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func sendAddToDish(itemName: String) {
+        sendPacket(GamePacket(type: .itemAddedToDish, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func sendRemoveFromDish(itemName: String) {
+        sendPacket(GamePacket(type: .itemRemovedFromDish, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func sendReceiptItemDragged(itemName: String) {
+        sendPacket(GamePacket(type: .receiptItemDragged, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func returnDishToReceiptRemotePlayer(itemName: String) {
+        sendPacket(GamePacket(type: .receiptItemCancelled, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func sendCreateDishItemDragged(itemName: String) {
+        sendPacket(GamePacket(type: .createDishItemDragged, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func returnDishToCreateDishRemotePlayer(itemName: String) {
+        sendPacket(GamePacket(type: .createDishItemCancelled, itemName: itemName, budgetPayload: nil))
+    }
+    
+    func sendReadyCookingTapped() {
+        sendPacket(GamePacket(type: .createDishPlayerReady, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendUnreadyCookingTapped() {
+        sendPacket(GamePacket(type: .createDishPlayerUnready, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendShowMultiplayerDish() {
+        sendPacket(GamePacket(type: .sendShowMultiplayerDish, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendHideMultiplayerDish() {
+        sendPacket(GamePacket(type: .sendHideMultiplayerDish, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendToggleReadyToSaveDishImage() {
+        sendPacket(GamePacket(type: .sendToggleReadyToSaveDishImage, itemName: nil, budgetPayload: nil))
+    }
+    
+    func sendDishImageData(cgImage: CGImage?) {
+        guard let cgImage = cgImage else { return }
+        
+        let uiImage = UIImage(cgImage: cgImage)
+        
+        // --- CHANGE: Use jpegData with a compression quality ---
+        // 0.7 is a good balance. Use a lower number (e.g., 0.5) for smaller sizes.
+        let compressionQuality: CGFloat = 0.30
+        guard let imageData = uiImage.jpegData(compressionQuality: compressionQuality) else {
+            print("❌ [MatchManager] Failed to encode CGImage to JPEG Data.")
+            return
+        }
+        // --------------------------------------------------------
+        
+        let chunks = makeChunks(from: imageData)
+        
+        Task {
+            for chunk in chunks {
+                try await Task.sleep(nanoseconds: 2_000_000) // 2 ms spacing
+                
+                let packet = GamePacket(
+                    type: .sendDishImageData,
+                    itemName: nil,
+                    budgetPayload: nil,
+                    imagePayLoad: chunk
+                )
+                sendPacket(packet)
+            }
+        }
+        
+        //        for chunk in chunks {
+        //            sendPacket(GamePacket(type: .sendDishImageData, itemName: nil, budgetPayload: nil, imagePayLoad: chunk))
+        //        }
+    }
+    
+    func sendBudgetEvent(_ event: BudgetEvent) {
+        let mode: GKMatch.SendDataMode = {
+            switch event {
+            case .move: return .unreliable // Fast updates for move
+            default: return .reliable      // Logic updates (Lock/Drop/Sync)
+            }
+        }()
+        
+        sendPacket(GamePacket(type: .budgetEvent, itemName: nil, budgetPayload: event), mode: mode)
+    }
+    
+    private func sendPacket(_ packet: GamePacket, mode: GKMatch.SendDataMode = .reliable) {
+        guard let match = myMatch else {
+            print("⛔️ [MatchManager] Attempted to send packet, but 'myMatch' is NIL. Connection lost?")
+            return
+        }
+        
+        Task {
+            do {
+                let data = try JSONEncoder().encode(packet)
+                try match.sendData(toAllPlayers: data, with: .reliable)
+                print("🚀 [MatchManager] Sent packet: \(packet.type) - \(packet.itemName)")
+            } catch {
+                print("❌ [MatchManager] Failed to send: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    // MARK: - Player Info
+    @Published var otherPlayerName: String = "Waiting..."
+    @Published var otherPlayerAvatar: Image?
+    @Published var otherPlayerAvatarUIImage: UIImage?
+    var isOtherPlayerConnected: Bool {
+        return otherPlayerName != "Waiting..." && otherPlayerAvatar != nil
+    }
+    
+    // MARK: - Handshake Status
+    @Published var isRemotePlayerReady = false
+    @Published var isLocalPlayerReady = false
+    
+    // MARK: - Matchmaking Logic
+    func startMatchmaking(withCode code: Int = 0) {
+        self.matchState = .searching
+        
+        let request = GKMatchRequest()
+        request.minPlayers = 2
+        request.maxPlayers = 2
+        request.playerGroup = code
+        
+        GKMatchmaker.shared().findMatch(for: request) { match, error in
+            if let match = match {
+                self.myMatch = match
+                self.myMatch?.delegate = self
+                
+                if !match.players.isEmpty {
+                    self.loadOpponentDetails(player: match.players[0])
+                }
+                
+                self.matchState = .connected
+                
+            } else if let error = error {
+                print("Matchmaking failed: \(error.localizedDescription)")
+                self.resetMatch()
+            }
+        }
+    }
+    
+    func cancelMatchmaking() {
+        GKMatchmaker.shared().cancel()
+        self.matchState = .idle
+        self.otherPlayerName = "Waiting..."
+        self.otherPlayerAvatar = nil
+        self.isLocalPlayerReady = false
+        self.isRemotePlayerReady = false
+    }
+    
+    func loadOpponentDetails(player: GKPlayer) {
+        print("Loading details for: \(player.displayName)")
+        
+        DispatchQueue.main.async {
+            self.otherPlayerName = player.displayName
+        }
+        
+        player.loadPhoto(for: .normal) { image, error in
+            if let image = image {
+                DispatchQueue.main.async {
+                    self.otherPlayerAvatarUIImage = image
+                    self.otherPlayerAvatar = Image(uiImage: image)
+                }
+            } else {
+                print("Could not load avatar: \(error?.localizedDescription ?? "Unknown")")
+            }
+        }
+    }
+    
+    func sendReadySignal() {
+        guard let match = myMatch else { return }
+        self.isLocalPlayerReady = true
+        
+        if let data = "READY".data(using: .utf8) {
+            do {
+                try match.sendData(toAllPlayers: data, with: .reliable)
+            } catch {
+                print("Failed to send ready signal")
+            }
+        }
+        checkIfGameCanStart()
+    }
+    
+    func checkIfGameCanStart() {
+        if isLocalPlayerReady && isRemotePlayerReady {
+            DispatchQueue.main.async {
+                self.matchState = .playing
+            }
+        }
+    }
+    
+    func resetMatch() {
+        myMatch?.disconnect()
+        myMatch?.delegate = nil
+        myMatch = nil
+        self.matchState = .idle
+        self.otherPlayerName = "Waiting..."
+        self.otherPlayerAvatar = nil
+        self.isLocalPlayerReady = false
+        self.isRemotePlayerReady = false
+    }
+}

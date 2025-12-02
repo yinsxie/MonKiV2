@@ -14,6 +14,7 @@ struct MonKiV2App: App {
     // MARK: Project Init
     @StateObject var appCoordinator: AppCoordinator = AppCoordinator()
     let coreDataManager = CoreDataManager.shared
+    @StateObject var gameCenterManager = GameCenterManager.shared
     
     init() {
         _ = AudioManager.shared
@@ -21,9 +22,11 @@ struct MonKiV2App: App {
     
     var body: some Scene {
         WindowGroup {
-            AppCoordinatorView()
-                .environmentObject(appCoordinator)
-                .environment(\.managedObjectContext, coreDataManager.viewContext)
+            GameRootScaler {
+                AppCoordinatorView()
+                    .environmentObject(appCoordinator)
+                    .environment(\.managedObjectContext, coreDataManager.viewContext)
+            }
         }
     }
 }

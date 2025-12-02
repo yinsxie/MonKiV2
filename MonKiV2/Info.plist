@@ -7,6 +7,12 @@
 		<string>WendyOne-Regular.ttf</string>
 		<string>VT323-Regular.ttf</string>
 		<string>FredokaOne-Regular.ttf</string>
+		<string>Fredoka-Light.ttf</string>
+		<string>Fredoka-Regular.ttf</string>
+		<string>Fredoka-Medium.ttf</string>
+		<string>Fredoka-SemiBold.ttf</string>
 	</array>
+    <key>UIUserInterfaceStyle</key>
+        <string>Light</string>
 </dict>
 </plist>

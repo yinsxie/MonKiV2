@@ -10,6 +10,7 @@ import SwiftUI
 enum HoldButtonType {
     case home
     case remove
+    case close
     
     var imageName: String {
         switch self {
@@ -17,6 +18,8 @@ enum HoldButtonType {
             return "home_button"
         case .remove:
             return "removeButton"
+        case .close:
+            return "closeButton"
         }
     }
 }
@@ -67,7 +70,11 @@ struct HoldButton: View {
                 }
             }
         } perform: {
-            AudioManager.shared.play(.buttonClick)
+            if type == HoldButtonType.remove {
+                AudioManager.shared.play(.dropItemTrash, volume: 2, pitchVariation: 0.03)
+            } else {
+                AudioManager.shared.play(.buttonClick)
+            }
             onComplete()
             
             isHolding = false
