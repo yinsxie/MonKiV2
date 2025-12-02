@@ -54,7 +54,8 @@ struct DishBookView: View {
             VStack {
                 HStack {
                     ReturnButton(action: {
-                        appCoordinator.popLast()
+//                        appCoordinator.popLast()
+                        appCoordinator.popLastWithFade()
                     })
                     .accessibilityLabel("Kembali ke halaman sebelumnya")
                     .padding(.leading, 82)

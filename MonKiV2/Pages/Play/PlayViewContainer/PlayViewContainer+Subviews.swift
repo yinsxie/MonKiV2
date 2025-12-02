@@ -23,7 +23,7 @@ internal extension PlayViewContainer {
                         .scaleEffect(playVM.atmVM.isZoomed ? 2.5 : 1.0)
                         .offset(y: playVM.atmVM.isZoomed ? 420 : 0)
                         .offset(x: playVM.atmVM.isZoomed ? 1366 * 3.8 : 0)
-//                        .offset(x: playVM.atmVM.isZoomed ? 1366 : 0, y: playVM.atmVM.isZoomed ? 420 : -35)
+                    //                        .offset(x: playVM.atmVM.isZoomed ? 1366 : 0, y: playVM.atmVM.isZoomed ? 420 : -35)
                     
                     // Pages Content
                     HStack(spacing: 0) {
@@ -65,7 +65,8 @@ internal extension PlayViewContainer {
                         if playVM.gameMode == .multiplayer {
                             playVM.disconnectFromMatch()
                         }
-                        appCoordinator.popToRoot()
+                        //                        appCoordinator.popToRoot()
+                        appCoordinator.popToRootWithFade()
                     })
                     .padding(.leading, 48)
                     .padding(.top, 48)
@@ -127,7 +128,7 @@ internal extension PlayViewContainer {
             ZStack {
                 if playVM.isBudgetSharingActive, let viewModel = playVM.moneyBreakVM {
                     MoneyBreakView(viewModel: viewModel)
-                        .transition(.move(edge: .top))
+                        .transition(.opacity.animation(.easeInOut(duration: 0.5)))
                         .onAppear {
                             viewModel.checkForHostStatus()
                         }
@@ -136,6 +137,7 @@ internal extension PlayViewContainer {
             .ignoresSafeArea()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .zIndex(5)
+            .animation(.easeInOut(duration: 0.5), value: playVM.isBudgetSharingActive)
         }
         
         // MonKi Cashier Overlay (Money Returned)

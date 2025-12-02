@@ -62,7 +62,7 @@ struct CreateDishView: View {
             HStack(alignment: .bottom, spacing: 0) {
                 Button(action: {
                     AudioManager.shared.play(.buttonClick)
-                    appCoordinator.goTo(.helperScreen(.dishBook))
+                    appCoordinator.navigateWithFade(.helperScreen(.dishBook), loadingType: .standardVegetables)
                 }, label: {
                     Image("dish_book")
                         .resizable()

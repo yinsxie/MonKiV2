@@ -36,7 +36,8 @@ extension MultiPlayerModeView {
     private var headerSection: some View {
         HStack {
             ReturnButton(action: {
-                appCoordinator.popLast()
+//                appCoordinator.popLast()
+                appCoordinator.popLastWithFade()
             })
             .accessibilityLabel("Kembali ke halaman sebelumnya")
             .padding(.leading, 48)

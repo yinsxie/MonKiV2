@@ -74,12 +74,8 @@ extension CreateRoomView {
     
     private var codeDisplaySection: some View {
         HStack(spacing: 24) {
-            if roomCode.isEmpty {
-                ProgressView()
-            } else {
-                ForEach(roomCode, id: \.self) { fruit in
+                ForEach(Array(roomCode.enumerated()), id: \.offset) { index, fruit in
                     DisplayCodeBox(fruit: fruit)
-                }
             }
         }
     }
