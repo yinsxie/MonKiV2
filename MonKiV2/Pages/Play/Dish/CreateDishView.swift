@@ -303,6 +303,7 @@ struct TourButtonOverlay: View {
     
     var body: some View {
         Button(action: {
+            AudioManager.shared.play(.wind, volume: 10)
             playVM.startTour()
         }, label: {
             Image(viewModel.tourButtonImage)
