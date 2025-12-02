@@ -92,7 +92,7 @@ extension JoinRoomView {
         HStack {
             ReturnButton {
                 onReturnButtonTapped?()
-                isShowTutorial = true
+                isShowTutorial = false
             }
             //            HoldButton(type: .close, size: 122, strokeWidth: 10, onComplete: {
             //                onReturnButtonTapped?()
