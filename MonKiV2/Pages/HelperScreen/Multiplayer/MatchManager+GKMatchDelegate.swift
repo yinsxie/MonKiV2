@@ -18,9 +18,7 @@ extension MatchManager: GKMatchDelegate {
             loadOpponentDetails(player: player)
         case .disconnected:
             print("🔌 \(player.displayName) disconnected")
-            DispatchQueue.main.async {
-                self.matchState = .idle
-            }
+            self.delegate?.didOtherPlayerDisconnected()
         default:
             break
         }
@@ -28,6 +26,8 @@ extension MatchManager: GKMatchDelegate {
     
     func match(_ match: GKMatch, didFailWithError error: Error?) {
         print("❌ Match failed: \(error?.localizedDescription ?? "Unknown")")
+        print("Local Player disconnected!!!")
+        self.delegate?.didLocalPlayerDisconnected()
     }
     
     // MARK: - Data Reception (Refactored)

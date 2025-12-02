@@ -25,6 +25,7 @@ enum Sound: String, CaseIterable {
     case wind
     case openFridge
     case closeFridge
+    case notifMulti
 }
 
 final class AudioManager {

@@ -18,17 +18,19 @@ struct GamePacket: Codable {
         case sendShowMultiplayerDish // When requesting to show multiplayer dish
         case sendHideMultiplayerDish // When requesting to hide multiplayer dish
         case sendToggleReadyToSaveDishImage // When ready to save dish image
-//        case sendUnReadyToSaveDishImage // When unready to save dish image
+        //        case sendUnReadyToSaveDishImage // When unready to save dish image
     }
     
     let type: PacketType
     let itemName: String?
     let budgetPayload: BudgetEvent?
-    var imagePayLoad: DataChunk? = nil
+    var imagePayLoad: DataChunk?
 }
 
 @MainActor
 protocol MatchManagerDelegate: AnyObject {
+    
+    // Game Events
     func didRemotePlayerPurchase(itemName: String)
     func didRemotePlayerAddToDish(itemName: String)
     func didRemotePlayerRemoveFromDish(itemName: String)
@@ -43,16 +45,21 @@ protocol MatchManagerDelegate: AnyObject {
     func didReceiveShowMultiplayerDish()
     func didReceiveHideMultiplayerDish()
     func didReceiveToggleReadyToSaveDishImage()
+    
+    // Connection Events
+    func didOtherPlayerDisconnected()
+    func didLocalPlayerDisconnected()
 }
 
 @MainActor
-class MatchManager: NSObject, ObservableObject {
+final internal class MatchManager: NSObject, ObservableObject {
     // MARK: - Game State
     enum MatchState {
         case idle
         case searching
         case connected
         case playing
+        case disconnected
     }
     
     var receiver = ChunkReceiver()
@@ -63,9 +70,7 @@ class MatchManager: NSObject, ObservableObject {
         receiver.onComplete = { [weak self] fullData in
             print("Received full data of size: \(fullData.count)")
             
-            if let image = UIImage(data: fullData) {
-                self?.delegate?.didReceiveDishImageData(fullData)
-            }
+            self?.delegate?.didReceiveDishImageData(fullData)
         }
     }
     

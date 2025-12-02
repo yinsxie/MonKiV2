@@ -109,6 +109,7 @@ internal extension PlayViewContainer {
                 .opacity(isOnCreateDish ? 1 : 0)
                 .disabled(!isOnCreateDish)
         }
+        // Dish Image Playground Capability Alert Overlay
         .overlay {
             if playVM.dishVM.isShowingImagePlaygroundCapabilityAlert {
                 InfoOverlayView(isPresented: $playVM.dishVM.isShowingImagePlaygroundCapabilityAlert, type: .createDishImageCreationNotSupported)
@@ -178,8 +179,10 @@ internal extension PlayViewContainer {
                         NotificationView(type: type)
                             .onTapGesture {
                                 withAnimation(.interactiveSpring(response: 1, dampingFraction: 0.75)) {
-                                    playVM.setCurrentIndex(to: .createDish)
-                                    playVM.hideNotification()
+                                    if type == .remotePlayerReadyToCook {
+                                        playVM.setCurrentIndex(to: .createDish)
+                                        playVM.hideNotification()
+                                    }
                                 }
                             }
                     }
@@ -188,6 +191,16 @@ internal extension PlayViewContainer {
             }
             .padding([.top, .trailing], 35)
         }
+        // Disconnect Alert overlay
+        .overlay {
+            if playVM.isGameDisconnected {
+                InfoOverlayView(isPresented: $playVM.isGameDisconnected, type: .multiplayerConnectionLost) {
+                    playVM.disconnectFromMatch()
+                    appCoordinator.popToRoot()
+                }
+            }
+        }
+        
         // this needs to be here so that cart animations happen behind cart
         AnimationOverlayView()
         

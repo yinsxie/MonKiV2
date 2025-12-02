@@ -143,6 +143,8 @@ struct MultiplayerLobbyView: View {
                     
                 case .playing:
                     EmptyView()
+                case .disconnected:
+                    EmptyView()
                 }
             }
         }

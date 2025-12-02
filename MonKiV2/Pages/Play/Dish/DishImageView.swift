@@ -93,7 +93,7 @@ struct DishImageView: View {
             if !viewModel.isRemotePlayerStartCookingTapped && playVM.gameMode == .multiplayer {
                 // TODO: Bikin animasi custom nunggu temen
                 VStack {
-                    Text("Nunggu temen....")
+                    Text("Menunggu teman....")
                         .font(.fredokaSemiBold(size: 40))
                         .foregroundColor(Color(hex: "#994000"))
                    
