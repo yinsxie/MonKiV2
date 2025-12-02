@@ -109,7 +109,11 @@ internal extension PlayViewContainer {
                 .opacity(isOnCreateDish ? 1 : 0)
                 .disabled(!isOnCreateDish)
         }
-        
+        .overlay {
+            if playVM.dishVM.isShowingImagePlaygroundCapabilityAlert {
+                InfoOverlayView(isPresented: $playVM.dishVM.isShowingImagePlaygroundCapabilityAlert, type: .createDishImageCreationNotSupported)
+            }
+        }
         // Dish Image Overlay
         .overlay {
             ZStack {
@@ -229,7 +233,7 @@ internal extension PlayViewContainer {
 
 #Preview {
     GameRootScaler {
-        PlayViewContainer(forGameMode: .singleplayer)
+        PlayViewContainer(forGameMode: .singleplayer, chef: .bread)
             .environmentObject(AppCoordinator())
     }
 }
