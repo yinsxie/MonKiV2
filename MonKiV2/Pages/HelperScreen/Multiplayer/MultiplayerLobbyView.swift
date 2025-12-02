@@ -100,6 +100,8 @@ struct MultiplayerLobbyView: View {
             case .playing:
                 // Not gonna be shown here
                 EmptyView()
+            case .disconnected:
+                EmptyView()
             }
         }
         .onAppear {

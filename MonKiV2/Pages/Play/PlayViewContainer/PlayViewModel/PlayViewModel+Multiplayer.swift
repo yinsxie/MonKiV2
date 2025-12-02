@@ -8,7 +8,7 @@ import SwiftUI
 import GameKit
 
 extension PlayViewModel: MatchManagerDelegate {
-    
+
     func connectToMatch() {
         print("🔗 PlayViewModel connecting to MatchManager delegate")
         self.matchManager?.delegate = self
@@ -118,5 +118,16 @@ extension PlayViewModel: MatchManagerDelegate {
     
     func didReceiveToggleReadyToSaveDishImage() {
         dishVM.isRemoteReadySaveImage.toggle()
+    }
+    
+    func didLocalPlayerDisconnected() {
+        print("You have disconnected from the match.")
+        isGameDisconnected = true
+    }
+    
+    func didOtherPlayerDisconnected() {
+        print("\(matchManager?.otherPlayerName ?? "Remote Player") has disconnected from the match.")
+        show(.remotePlayerDisconnected)
+        gameMode = .singleplayer
     }
 }

@@ -22,6 +22,7 @@ enum Sound: String, CaseIterable {
     case pageTurn
     case loadCooking
     case changeSound
+    case notifMulti
 }
 
 final class AudioManager {

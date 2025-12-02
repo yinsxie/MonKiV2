@@ -9,6 +9,7 @@ import SwiftUI
 
 enum NotificationType {
     case remotePlayerReadyToCook
+    case remotePlayerDisconnected
 }
 
 struct NotificationView: View {
@@ -17,16 +18,18 @@ struct NotificationView: View {
     @State private var dragOffset: CGFloat = 0
     private var prefixImage: UIImage? {
         switch type {
-        case .remotePlayerReadyToCook:
+        case .remotePlayerReadyToCook, .remotePlayerDisconnected:
             playVM.matchManager?.otherPlayerAvatarUIImage
         }
     }
     
     private var message: String {
+        let name = playVM.matchManager?.otherPlayerName ?? "Teman mu"
         switch type {
         case .remotePlayerReadyToCook:
-            let name = playVM.matchManager?.otherPlayerName ?? "Remote Player"
-            return "\(name) is ready to cook!"
+            return "\(name) siap memasak!"
+        case .remotePlayerDisconnected:
+            return "\(name) keluar dari permainan..."
         }
     }
     
@@ -72,6 +75,9 @@ struct NotificationView: View {
         )
         .offset(y: dragOffset)
         .animation(.spring(), value: dragOffset)
+        .onAppear {
+            AudioManager.shared.play(.notifMulti)
+        }
     }
 }
 

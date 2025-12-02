@@ -68,6 +68,9 @@ import SwiftUI
     var currentNotification: NotificationType?
     var dismissNotificationTask: Task<Void, Never>?
     var isNotificationVisible: Bool = false
+   
+    // Game Events
+    var isGameDisconnected: Bool = false
     
     init(gameMode: GameMode, matchManager: MatchManager? = nil, chef: ChefType? = nil) {
         self.gameMode = gameMode
