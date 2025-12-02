@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ImagePlayground
 
 struct CreateDishView: View {
     @Environment(PlayViewModel.self) var playVM
@@ -232,6 +233,7 @@ struct CookActionButton: View {
     @Environment(CreateDishViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
     @Environment(PlayViewModel.self) var playVM
+    @Environment(\.supportsImagePlayground) var supportsImagePlayground
     
     var body: some View {
         let isDisabled = viewModel.createDishItem.count == 0 || dragManager.isEitherPlayerDragging
@@ -239,6 +241,13 @@ struct CookActionButton: View {
         VStack(spacing: 15) {
             Button(action: {
                 AudioManager.shared.play(.buttonClick)
+                
+                if !supportsImagePlayground {
+                    withAnimation {
+                        viewModel.isShowingImagePlaygroundCapabilityAlert = true
+                    }
+                    return
+                }
                 
                 viewModel.isStartCookingTapped = true
                 

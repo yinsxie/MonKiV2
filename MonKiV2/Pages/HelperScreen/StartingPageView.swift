@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import ImagePlayground
 
 struct StartingPageView: View {
     
     @EnvironmentObject var appCoordinator: AppCoordinator
+    @Environment(\.supportsImagePlayground) var supportsImagePlayground
+    
+    @State var isShowingMultiplayerAlert: Bool = false
     
     var body: some View {
         ZStack {
@@ -37,20 +41,19 @@ struct StartingPageView: View {
                     
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
-                        appCoordinator.goTo(.helperScreen(.multiplayerLobby))
+                        if supportsImagePlayground {
+                            appCoordinator.goTo(.helperScreen(.multiplayerLobby))
+                        } else {
+                            withAnimation {
+                                isShowingMultiplayerAlert = true
+                            }
+                        }
                     }, label: {
                         Image("2P_button_active")
                             .resizable()
                             .scaledToFit()
                     })
                     .accessibilityLabel("Multiplayer")
-                    
-                    //                    Button(action: {
-                    //                        AudioManager.shared.play(.buttonClick)
-                    //                        appCoordinator.goTo(.helperScreen(.dishBook))
-                    //                    }, label: {
-                    //                        Text("Book")
-                    //                    })
                 }
             }
             .padding(115)
@@ -73,6 +76,8 @@ struct StartingPageView: View {
                 }
             }).frame(width: 195, height: 195)
                 .offset(x: -450, y: 310)
+            
+            InfoOverlayView(isPresented: $isShowingMultiplayerAlert, type: .multiplayerImageCreationNotSupported)
         }
         .onAppear {
             BGMManager.shared.play(track: .supermarket)

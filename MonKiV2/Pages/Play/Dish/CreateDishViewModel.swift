@@ -25,11 +25,11 @@ final class CreateDishViewModel {
     var isLoading = false
     var inputText: String = ""
     
-    
     var isBagTapped = false
     var isStartCookingTapped = false
     var isRemotePlayerStartCookingTapped: Bool = false
     var isShowMultiplayerDish: Bool = false
+    var isShowingImagePlaygroundCapabilityAlert: Bool = false
     
     var isCreatingMultiplayerDish: Bool {
         return parent?.gameMode == .multiplayer && isStartCookingTapped && isRemotePlayerStartCookingTapped
