@@ -165,6 +165,17 @@ struct InfoOverlayView: View {
             }
         }
         
+        var textFooterGuidance: String {
+            switch type {
+            case .createDishImageCreationNotSupported:
+                return "bisa masak"
+            case .multiplayerImageCreationNotSupported:
+                return "bisa main bareng"
+            case .multiplayerConnectionLost:
+                return ""
+            }
+        }
+        
         VStack(alignment: .leading, spacing: 35) {
             VStack(alignment: .leading, spacing: 24) {
                 Text(textTitle)
@@ -178,7 +189,7 @@ struct InfoOverlayView: View {
                     .multilineTextAlignment(.leading)
                 
                 if isNeedGuidance {
-                    Text("Butuh **Apple Intelligence** untuk bisa main bareng")
+                    Text("Butuh **Apple Intelligence** untuk \(textFooterGuidance).")
                         .font(.fredokaRegular(size: 20))
                 }
             }
