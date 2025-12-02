@@ -63,7 +63,8 @@ struct PickChefView: View {
             VStack {
                 HStack {
                     ReturnButton(action: {
-                        appCoordinator.popLast()
+//                        appCoordinator.popLast()
+                        appCoordinator.popLastWithFade()
                     })
                     .accessibilityLabel("Kembali ke halaman sebelumnya")
                     .padding(.leading, 82)
@@ -89,7 +90,7 @@ extension PickChefView {
     private func chefButton(for chef: ChefType) -> some View {
         Button(action: {
             AudioManager.shared.play(.buttonClick)
-            appCoordinator.goTo(.play(.singlePlayer(chef: chef)))
+            appCoordinator.navigateWithFade(.play(.singlePlayer(chef: chef)), loadingType: .moneyBreakdown)
         }, label: {
             VStack(alignment: .leading) {
                 Image(chef.activeImage)

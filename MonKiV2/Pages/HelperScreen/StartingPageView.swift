@@ -27,7 +27,7 @@ struct StartingPageView: View {
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
                         //                        appCoordinator.goTo(.play(.play))
-                        appCoordinator.goTo(.helperScreen(.pickChef))
+                        appCoordinator.navigateWithFade(.helperScreen(.pickChef), loadingType: .baseIngredients)
                     }, label: {
                         Image("1P_button")
                             .resizable()
@@ -37,7 +37,7 @@ struct StartingPageView: View {
                     
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
-                        appCoordinator.goTo(.helperScreen(.multiplayerLobby))
+                        appCoordinator.navigateWithFade(.helperScreen(.multiplayerLobby), loadingType: .multiPlay)
                     }, label: {
                         Image("2P_button_active")
                             .resizable()
@@ -57,7 +57,7 @@ struct StartingPageView: View {
             
             Button(action: {
                 AudioManager.shared.play(.buttonClick)
-                appCoordinator.goTo(.helperScreen(.dishBook))
+                appCoordinator.navigateWithFade(.helperScreen(.dishBook), loadingType: .standardVegetables)
             }, label: {
                 ZStack {
                     if let isNewDishEntry = UserDefaultsManager.shared.getIsNewDishSaved(), isNewDishEntry {

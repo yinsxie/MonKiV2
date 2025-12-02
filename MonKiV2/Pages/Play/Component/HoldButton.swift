@@ -70,7 +70,11 @@ struct HoldButton: View {
                 }
             }
         } perform: {
-            AudioManager.shared.play(.buttonClick)
+            if type == HoldButtonType.remove {
+                AudioManager.shared.play(.dropItemTrash, volume: 2, pitchVariation: 0.03)
+            } else {
+                AudioManager.shared.play(.buttonClick)
+            }
             onComplete()
             
             isHolding = false

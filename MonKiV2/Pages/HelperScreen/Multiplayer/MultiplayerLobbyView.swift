@@ -21,85 +21,129 @@ struct MultiplayerLobbyView: View {
     // The "Keyboard" Options
     let fruitOptions = ["🍎", "🍌", "🍇", "🍉"]
     
+    private let transitionFade = AnyTransition.opacity.animation(.easeInOut(duration: 0.5))
+    private let animDuration: Double = 2.0
+    
     var body: some View {
         ZStack {
             // Global Background
             Color(UIColor.systemBackground)
                 .ignoresSafeArea()
             
-            // Dynamic Content based on Match State
-            switch matchManager.matchState {
-                
-            case .idle:
-                if !showingCodeOptions {
-                    MultiPlayerModeView {
-                        matchManager.startMatchmaking(withCode: 0)
-                    } onFriendModeSelected: {
-                        showingCodeOptions = true
-                    }
-                } else {
-                    if !isJoining {
-                        MatchFriendView {
-                            // Back to mode selection
-                            isJoining = false
-                            isHosting = false
-                            showingCodeOptions = false
-                            roomCode = []
-                        } onHostButtonPressed: {
-                            // Create Room
-                            generateRandomFruitCode()
-                            isHosting = true
-                            startMatch()
-                        } onJoinButtonPressed: {
-                            // Join Room
-                            isHosting = false
-                            isJoining = true
+            ZStack {
+                switch matchManager.matchState {
+                    
+                case .idle:
+                    if !showingCodeOptions {
+                        // 1. MAIN MENU
+                        MultiPlayerModeView {
+                            // On Random Mode Selected
+                            withAnimation(.easeInOut(duration: animDuration)) {
+                                matchManager.startMatchmaking(withCode: 0)
+                            }
+                        } onFriendModeSelected: {
+                            // FADE OUT Main Menu -> FADE IN Friend Mode
+                            withAnimation(.easeInOut(duration: animDuration)) {
+                                showingCodeOptions = true
+                            }
                         }
+                        .transition(transitionFade)
+                        
                     } else {
-                        JoinRoomView(roomCode: $roomCode) {
-                            isJoining = false
-                        } onJoinButtonTapped: {
-                            startMatch()
-                        } onCancelJoinButtonTapped: {
+                        // 2. FRIEND MODE AREA
+                        if !isJoining {
+                            // Pilihan HOST atau JOIN
+                            MatchFriendView {
+                                // Back -> FADE ke Main Menu
+                                withAnimation(.easeInOut(duration: animDuration)) {
+                                    showingCodeOptions = false
+                                    roomCode = []
+                                }
+                            } onHostButtonPressed: {
+                                // Host -> FADE ke Searching UI
+                                withAnimation(.easeInOut(duration: animDuration)) {
+                                    generateRandomFruitCode()
+                                    isHosting = true
+                                    startMatch()
+                                }
+                            } onJoinButtonPressed: {
+                                // Join -> FADE ke Keypad
+                                withAnimation(.easeInOut(duration: animDuration)) {
+                                    isHosting = false
+                                    isJoining = true
+                                }
+                            }
+                            .transition(transitionFade)
+                            
+                        } else {
+                            // 3. INPUT CODE (KEYPAD)
+                            JoinRoomView(roomCode: $roomCode) {
+                                // Back -> FADE ke Pilihan Host/Join
+                                withAnimation(.easeInOut(duration: animDuration)) {
+                                    isJoining = false
+                                    roomCode = []
+                                }
+                            } onJoinButtonTapped: {
+                                withAnimation(.easeInOut(duration: animDuration)) {
+                                    startMatch()
+                                }
+                            } onCancelJoinButtonTapped: {
+                                // Cancel Total -> FADE ke Awal
+                                withAnimation(.easeInOut(duration: animDuration )) {
+                                    matchManager.cancelMatchmaking()
+                                    isHosting = false
+                                    isJoining = false
+                                    roomCode = []
+                                }
+                            }
+                            .transition(transitionFade)
+                        }
+                    }
+                    
+                case .searching:
+                    // 4. SEARCHING / WAITING UI
+                    if isHosting {
+                        CreateRoomView(roomCode: $roomCode) {
+                            withAnimation(.easeInOut(duration: animDuration)) {
+                                matchManager.cancelMatchmaking()
+                                isHosting = false
+                                isJoining = false
+                                roomCode = []
+                            }
+                        }
+                        .transition(transitionFade)
+                        
+                    } else {
+                        MatchOnlinePlayerView(matchManager: matchManager) {
+                            withAnimation(.easeInOut(duration: animDuration)) {
+                                matchManager.cancelMatchmaking()
+                                isHosting = false
+                                isJoining = false
+                                roomCode = []
+                            }
+                        } onReadyPressed: {
+                            matchManager.sendReadySignal()
+                        }
+                        .transition(transitionFade)
+                    }
+                    
+                case .connected:
+                    // 5. CONNECTED UI
+                    MatchOnlinePlayerView(matchManager: matchManager) {
+                        withAnimation(.easeInOut(duration: animDuration)) {
                             matchManager.cancelMatchmaking()
                             isHosting = false
+                            isJoining = false
                             roomCode = []
                         }
-                    }
-                }
-                
-            case .searching:
-                if isHosting {
-                    CreateRoomView(roomCode: $roomCode) {
-                        matchManager.cancelMatchmaking()
-                        isHosting = false
-                        isJoining = false // Reset joining state
-                        roomCode = []
-                    }
-                } else {
-                    MatchOnlinePlayerView(matchManager: matchManager) {
-                        matchManager.cancelMatchmaking()
-                        isHosting = false
-                        isJoining = false // Reset joining state
-                        roomCode = []
                     } onReadyPressed: {
                         matchManager.sendReadySignal()
                     }
+                    .transition(transitionFade)
+                    
+                case .playing:
+                    EmptyView()
                 }
-                
-            case .connected:
-                MatchOnlinePlayerView(matchManager: matchManager) {
-                    matchManager.cancelMatchmaking()
-                    isHosting = false
-                    isJoining = false // Reset joining state
-                    roomCode = []
-                } onReadyPressed: {
-                    matchManager.sendReadySignal()
-                }
-                
-            case .playing:
-                // Not gonna be shown here
-                EmptyView()
             }
         }
         .onAppear {
@@ -108,12 +152,13 @@ struct MultiplayerLobbyView: View {
             }
         }
         .onChange(of: matchManager.matchState) { _, newState in
-           if newState == .playing {
-               print("🚀 Game Started! Navigating to PlayView...")
-               
-               appCoordinator.replaceTop(with: .play(.multiplayer(matchManager)))
-           }
-       }
+            if newState == .playing {
+                print("🚀 Game Started! Navigating to PlayView...")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    appCoordinator.replaceTopWithFade(with: .play(.multiplayer(matchManager)))
+                }
+            }
+        }
     }
     
     // MARK: - SUBVIEWS
