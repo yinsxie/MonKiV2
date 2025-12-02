@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import CoreData
 
-@Observable
+@MainActor @Observable
 final class CreateDishViewModel {
     weak var parent: PlayViewModel?
     private let bgProcessor = BackgroundRemoverProcessor()
@@ -27,7 +27,32 @@ final class CreateDishViewModel {
     
     var isBagTapped = false
     var isStartCookingTapped = false
+    var isRemotePlayerStartCookingTapped: Bool = false
+    var isShowMultiplayerDish: Bool = false
+    var isShowingImagePlaygroundCapabilityAlert: Bool = false
     
+    var isCreatingMultiplayerDish: Bool {
+        return parent?.gameMode == .multiplayer && isStartCookingTapped && isRemotePlayerStartCookingTapped
+    }
+    
+    enum WhoTappedLast {
+        case me
+        case remotePlayer
+    }
+    
+    var whoTappedLast: WhoTappedLast?
+    
+    var amountOfPlayerReady: Int {
+        var count = 0
+        if isStartCookingTapped {
+            count += 1
+        }
+        if isRemotePlayerStartCookingTapped {
+            count += 1
+        }
+        return count
+    }
+
     var totalPurchasedPrice: Int {
         return createDishItem.reduce(0) { $0 + $1.item.price }
     }
@@ -44,7 +69,7 @@ final class CreateDishViewModel {
         // Convert grouped items into GroceryItem, then sort by quantity
         return grouped.map { (_, items) in
             GroceryItem(
-                id: UUID(),
+                id: items.first?.id ?? UUID(),
                 item: items.first ?? Item.mockItem,
                 quantity: items.count
             )
@@ -70,6 +95,31 @@ final class CreateDishViewModel {
         return groceryItems.sorted { $0.item.name < $1.item.name }
     }
     
+    var CTACookButtonTitle: String {
+        if parent?.gameMode == .singleplayer {
+            return "Masak Sekarang"
+        }
+        
+        return "Siap Masak"
+    }
+    
+    // For ready state in store image
+    var isLocalReadySaveImage: Bool = false
+    var isRemoteReadySaveImage: Bool = false
+    var isBothReadyToSaveImage: Bool {
+        return isLocalReadySaveImage && isRemoteReadySaveImage
+    }
+    var amountOfPlayerReadyToSaveImage: Int {
+        var count = 0
+        if isLocalReadySaveImage {
+            count += 1
+        }
+        if isRemoteReadySaveImage {
+            count += 1
+        }
+        return count
+    }
+    
     func setIngredients(from cartItems: [CartItem]) {
         let grouped = Dictionary(grouping: cartItems, by: { $0.item.id })
         
@@ -83,6 +133,52 @@ final class CreateDishViewModel {
         print("\(inputText)")
     }
     
+    func generateInitialMultiplayerDish() {
+        setIngredients(from: createDishItem)
+        print("Started generating multiplayer dish...")
+        guard !checkCheckoutItems() else {
+            return
+        }
+        
+        cgImage = nil
+        
+        if whoTappedLast == .me {
+            print("Im the last one to tap!")
+            generate()
+        } else {
+            print("Remote player is the last one to tap, waiting for their dish...")
+            Task {
+                isLoading = true
+                isShowMultiplayerDish = false
+                AudioManager.shared.play(.loadCooking, volume: 5.0)
+            }
+        }
+    }
+    
+    func handleReceivedDishImageData(_ image: Data) {
+        print("Received dish image data from remote player....")
+
+        Task { @MainActor in
+            guard let uiImage = UIImage(data: image) else { return }
+            
+            let processedUiImage = try await bgProcessor.process(uiImage)
+
+            guard let finalCgImage =
+                    processedUiImage.cgImage ??
+                    uiImage.cgImage else {
+                print("❌ Could not extract CGImage")
+                return
+            }
+
+            self.cgImage = finalCgImage
+            
+            parent?.matchManager?.sendShowMultiplayerDish()
+            self.isShowMultiplayerDish = true
+            
+            isLoading = false
+        }
+    }
+
     func generate() {
         guard !checkCheckoutItems() else {
             return
@@ -90,23 +186,45 @@ final class CreateDishViewModel {
         
         Task {
             isLoading = true
+            
             let start = CFAbsoluteTimeGetCurrent()
             
             do {
                 print(inputText)
                 AudioManager.shared.play(.loadCooking, volume: 5.0)
+                
+                // 1. Generate Raw Image
                 let rawCgImage = try await ImagePlaygroundManager.shared.generateDish(from: inputText)
                 let rawUiImage = UIImage(cgImage: rawCgImage)
+                
+                // 2. Process Image
                 let processedUiImage = try await bgProcessor.process(rawUiImage)
                 
-                if let finalCgImage = processedUiImage.cgImage {
-                    self.cgImage = finalCgImage
+                // 3. Determine Final CGImage
+                var finalCgImage: CGImage! // Use a variable to hold the chosen image
+                
+                if let cgImage = processedUiImage.cgImage {
+                    finalCgImage = cgImage
                 } else { // Fallback
-                    self.cgImage = rawCgImage
+                    finalCgImage = rawCgImage
                 }
+                
+                // 4. Set State (Crucial: Update self.cgImage before sending)
+                self.cgImage = finalCgImage
                 
                 let time = CFAbsoluteTimeGetCurrent() - start
                 print("Generated in \(String(format: "%.2f", time))s")
+                
+                // 5. Send Final Image to Remote Player
+                if parent?.gameMode == .multiplayer {
+                    self.isShowMultiplayerDish = false
+                    // Send the determined final CGImage
+                    print("Sending dish image data to remote player..., size: \(finalCgImage.width)x\(finalCgImage.height)")
+                    parent?.matchManager?.sendDishImageData(cgImage: finalCgImage)
+                    return
+                }
+                
+                // 6. Final UI/Audio Updates
                 AudioManager.shared.stop(.loadCooking)
                 AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
                 
@@ -153,6 +271,25 @@ final class CreateDishViewModel {
         createDishItem.removeAll()
     }
     
+    func onMultiplayerSaveButtonToggled() {
+        isLocalReadySaveImage.toggle()
+        
+        parent?.matchManager?.sendToggleReadyToSaveDishImage()
+    }
+    
+    func saveMultiplayerDishImageToBook() {
+        // Reset state
+        isLocalReadySaveImage = false
+        isRemoteReadySaveImage = false
+        isStartCookingTapped = false
+        isRemotePlayerStartCookingTapped = false
+        isShowMultiplayerDish = false
+        whoTappedLast = nil
+        
+        saveDishToCollection()
+        createDishItem.removeAll()
+    }
+    
     func saveDishToCollection() {
         guard let cgImage = self.cgImage else { return }
         let uiImage = UIImage(cgImage: cgImage)
@@ -169,6 +306,20 @@ final class CreateDishViewModel {
         newDish.timestamp = Date()
         newDish.totalPrice = Int32(self.totalPurchasedPrice)
         newDish.imageFileName = savedFileName
+        
+        // Save additional data for multiplayer
+        if parent?.gameMode == .multiplayer {
+            let remotePlayerName = parent?.matchManager?.otherPlayerName
+            let otherPlayerAvatarUIImage = parent?.matchManager?.otherPlayerAvatarUIImage
+            
+            newDish.remotePlayerName = remotePlayerName
+            
+            guard let img = otherPlayerAvatarUIImage ,let savedProfileFileName = ImageStorage.saveImage(img) else {
+                print("Failed to save remote player profile image to disk")
+                return
+            }
+            newDish.remotePlayerAvatarImageFileName = savedProfileFileName
+        }
         
         let groupedItems = Dictionary(grouping: createDishItem, by: { $0.item.id })
         
@@ -209,7 +360,84 @@ final class CreateDishViewModel {
         tourTimer = nil
     }
     
-    deinit {
-        stopAutoLoopAnimation()
+    func handleOnItemDraggedFromReceipt(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        parent?.matchManager?.sendReceiptItemDragged(itemName: itemName)
+    }
+    
+    func handleRemotePlayerDraggedReceiptItem(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        Task { @MainActor in
+            if let index = parent?.cashierVM.purchasedItems.firstIndex(where: { $0.item.name == itemName }) {
+                parent?.cashierVM.purchasedItems.remove(at: index)
+            }
+        }
+    }
+    
+    func handleRemotePlayerCancelledDragReceiptItem(itemName: String) {
+        // add back the item to the cart
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        Task { @MainActor in
+            if let item = parent?.findItemByName(itemName) {
+                parent?.cashierVM.purchasedItems.append(CartItem(item: item))
+            }
+        }
+    }
+    
+    func handleOnItemDraggedFromCreateDish(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        parent?.matchManager?.sendCreateDishItemDragged(itemName: itemName)
+    }
+    
+    func handleRemotePlayerDraggedCreateDishItem(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        //remove the item from createDishItem
+        Task { @MainActor in
+            if let index = createDishItem.firstIndex(where: { $0.item.name == itemName }) {
+                createDishItem.remove(at: index)
+            }
+        }
+    }
+    
+    func handleRemotePlayerCancelledDragCreateDishItem(itemName: String) {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        Task { @MainActor in
+            if let item = parent?.findItemByName(itemName) {
+                createDishItem.append(CartItem(item: item))
+            }
+        }
+    }
+    
+    func sendStartCookingTappedToRemotePlayer() {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        parent?.matchManager?.sendReadyCookingTapped()
+    }
+    
+    func onBackButtonTapped() {
+        if parent?.gameMode != .multiplayer {
+            return
+        }
+        
+        isStartCookingTapped = false
+        
+        parent?.matchManager?.sendUnreadyCookingTapped()
     }
 }

@@ -17,6 +17,9 @@ struct SplashScreenView: View {
                 .scaledToFit()
                 .frame(height: 144)
         }
+        .onAppear {
+            GameCenterManager.shared.authenticateUser()
+        }
     }
 }
 

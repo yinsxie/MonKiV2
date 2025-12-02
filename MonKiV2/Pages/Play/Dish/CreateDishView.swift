@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ImagePlayground
 
 struct CreateDishView: View {
     @Environment(PlayViewModel.self) var playVM
@@ -48,6 +49,12 @@ struct CreateDishView: View {
                 .offset(x: -100, y: -300)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onChange(of: viewModel.isCreatingMultiplayerDish) { _, newValue in
+            if newValue {
+                print("Both player Ready!!")
+                viewModel.generateInitialMultiplayerDish()
+            }
+        }
     }
     
     // Dishbook + Pot + Stove + Button
@@ -56,7 +63,7 @@ struct CreateDishView: View {
             HStack(alignment: .bottom, spacing: 0) {
                 Button(action: {
                     AudioManager.shared.play(.buttonClick)
-                    appCoordinator.goTo(.helperScreen(.dishBook))
+                    appCoordinator.navigateWithFade(.helperScreen(.dishBook), loadingType: .standardVegetables)
                 }, label: {
                     Image("dish_book")
                         .resizable()
@@ -96,7 +103,7 @@ struct CreateDishView: View {
                 .padding(.leading, 180)
         }
         .frame(alignment: .center)
-        .padding(.top, 56)
+        .padding(.top, playVM.gameMode == .multiplayer ? 140 : 56)
         .onAppear {
             if viewModel.cgImage == nil && viewModel.checkCheckoutItems(),
                let purchasedItems = viewModel.parent?.cashierVM.purchasedItems,
@@ -115,7 +122,41 @@ struct CreateDishView: View {
 }
 
 // MARK: - Subviews
-// 1. Ingredient Drop Zone & Grid View
+
+// 1. Monki Character View
+struct MonkiCharacterView: View {
+    @Environment(CreateDishViewModel.self) var viewModel
+    
+    var body: some View {
+        ZStack {
+            Image("chef_monki")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 413)
+            
+            ZStack(alignment: .center) {
+                Image("speech_bubble")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 202)
+                
+                if viewModel.cgImage == nil {
+                    Image("food_speech_bubble")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 64)
+                } else {
+                    Text("Yummy")
+                        .font(.wendyOne(size: 36))
+                        .foregroundStyle(.black)
+                }
+            }
+            .offset(x: 220, y: -200)
+        }
+    }
+}
+
+// 2. Ingredient Drop Zone & Grid View
 struct IngredientDropZoneView: View {
     @Environment(CreateDishViewModel.self) var viewModel
     @Environment(DragManager.self) var dragManager
@@ -135,7 +176,12 @@ struct IngredientDropZoneView: View {
                             GroceryItemView(item: cartItem.item)
                                 .scaleEffect(0.86)
                                 .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
-                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                .makeDraggable(
+                                    item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish),
+                                    onDragStarted: {
+                                        viewModel.handleOnItemDraggedFromCreateDish(itemName: cartItem.item.name)
+                                    }
+                                )
                         }
                     }
                 }
@@ -147,7 +193,12 @@ struct IngredientDropZoneView: View {
                             GroceryItemView(item: cartItem.item)
                                 .scaleEffect(0.86)
                                 .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
-                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                .makeDraggable(
+                                    item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish),
+                                    onDragStarted: {
+                                        viewModel.handleOnItemDraggedFromCreateDish(itemName: cartItem.item.name)
+                                    }
+                                )
                         }
                     }
                 }
@@ -159,7 +210,12 @@ struct IngredientDropZoneView: View {
                             GroceryItemView(item: cartItem.item)
                                 .scaleEffect(0.86)
                                 .opacity(dragManager.currentDraggedItem?.id == cartItem.id && dragManager.currentDraggedItem?.source == .createDish ? 0 : 1)
-                                .makeDraggable(item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish))
+                                .makeDraggable(
+                                    item: DraggedItem(id: cartItem.id, payload: .grocery(cartItem.item), source: .createDish),
+                                    onDragStarted: {
+                                        viewModel.handleOnItemDraggedFromCreateDish(itemName: cartItem.item.name)
+                                    }
+                                )
                         }
                     }
                 }
@@ -175,47 +231,76 @@ struct IngredientDropZoneView: View {
 // 3. Cook Action Button View
 struct CookActionButton: View {
     @Environment(CreateDishViewModel.self) var viewModel
+    @Environment(DragManager.self) var dragManager
+    @Environment(PlayViewModel.self) var playVM
+    @Environment(\.supportsImagePlayground) var supportsImagePlayground
     
     var body: some View {
-        let isDisabled = viewModel.createDishItem.count == 0
+        let isDisabled = viewModel.createDishItem.count == 0 || dragManager.isEitherPlayerDragging
         
-        Button(action: {
-            viewModel.isStartCookingTapped = true
-            AudioManager.shared.play(.buttonClick)
-            if let createDishItem = viewModel.parent?.dishVM.createDishItem {
-                viewModel.setIngredients(from: createDishItem)
-            }
-            viewModel.generate()
-        }, label: {
-            ZStack {
-                Image(isDisabled ? "button_disable" : "button_active")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 107)
+        VStack(spacing: 15) {
+            Button(action: {
+                AudioManager.shared.play(.buttonClick)
                 
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
-                        .scaleEffect(1.5)
-                } else {
-                    HStack(spacing: 10) {
-                        Text("Masak Sekarang")
-                            .font(.fredokaOne(size: 40))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.3)
-                        
-                        Image("Spatula")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 30)
+                if !supportsImagePlayground {
+                    withAnimation {
+                        viewModel.isShowingImagePlaygroundCapabilityAlert = true
                     }
-                    .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
+                    return
                 }
+                
+                viewModel.isStartCookingTapped = true
+                
+                if playVM.gameMode == .multiplayer {
+                    viewModel.whoTappedLast = .me
+                    viewModel.sendStartCookingTappedToRemotePlayer()
+                    return
+                }
+                
+                if playVM.gameMode == .singleplayer {
+                    if let createDishItem = viewModel.parent?.dishVM.createDishItem {
+                        viewModel.setIngredients(from: createDishItem)
+                    }
+                    viewModel.generate()
+                }
+            }, label: {
+                ZStack {
+                    Image(isDisabled ? "button_disable" : "button_active")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 107)
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(.white)
+                            .scaleEffect(1.5)
+                    } else {
+                        HStack(spacing: 10) {
+                            Text(viewModel.CTACookButtonTitle)
+                                .font(.fredokaOne(size: 40))
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.3)
+                            
+                            Image("Spatula")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 30)
+                        }
+                        .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
+                    }
+                }
+            })
+            .disabled(isDisabled)
+            
+            if playVM.gameMode == .multiplayer {
+                Text("\(viewModel.amountOfPlayerReady)/2")
+                    .font(.fredokaSemiBold(size: 30))
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 15).fill(.white))
             }
-        })
-        .disabled(isDisabled)
+        }
     }
 }
 
@@ -227,6 +312,7 @@ struct TourButtonOverlay: View {
     
     var body: some View {
         Button(action: {
+            AudioManager.shared.play(.wind, volume: 10)
             playVM.startTour()
         }, label: {
             Image(viewModel.tourButtonImage)
@@ -248,6 +334,6 @@ struct TourButtonOverlay: View {
 }
 
 #Preview {
-    PlayViewContainer(forGameMode: .singleplayer)
+    PlayViewContainer(forGameMode: .singleplayer, chef: .pasta)
         .environmentObject(AppCoordinator())
 }

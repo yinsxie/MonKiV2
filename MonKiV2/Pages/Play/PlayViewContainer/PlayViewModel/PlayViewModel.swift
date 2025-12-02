@@ -7,9 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 @Observable class PlayViewModel {
     
     var gameMode: GameMode
+    var matchManager: MatchManager?
+    
     var gamePages: [PageIdentifier]
     
     var floatingItems: [FloatingItemFeedback] = [] // track items that need animating floating item feedback
@@ -28,6 +31,8 @@ import SwiftUI
     var walletVM: WalletViewModel!
     var dishVM: CreateDishViewModel!
     var atmVM: ATMViewModel!
+//    var budgetSharingVM: BudgetSharingViewModel!
+    var moneyBreakVM: MoneyBreakViewModel!
     
     // View State
     var isScrollDisabled: Bool {
@@ -37,11 +42,21 @@ import SwiftUI
         || cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney
     }
     
+    var isPageControlAllowHitTesting: Bool {
+        !atmVM.isZoomed && !dishVM.isStartCookingTapped && !cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney && !isBudgetSharingActive && !dragManager.isDragging
+    }
+    
+    var isPageControlVisible: Bool {
+        atmVM.isZoomed || dishVM.isStartCookingTapped || cashierVM.isReturnedMoneyPrompted || isBudgetSharingActive
+    }
+    
     // Start at CreateDishView
     var currentPageIndex: Int? = 0
     var isIntroButtonVisible: Bool = true
     
     var dragManager = DragManager()
+    
+    var isBudgetSharingActive: Bool = false
     
     var atmFrame: CGRect = .zero
     var walletFrame: CGRect = .zero
@@ -49,9 +64,19 @@ import SwiftUI
     var isFlyingMoney: Bool = false
     var flyingMoneyCurrency: Currency?
     
-    init(gameMode: GameMode, chef: ChefType? = nil) {
+    // Notification
+    var currentNotification: NotificationType?
+    var dismissNotificationTask: Task<Void, Never>?
+    var isNotificationVisible: Bool = false
+   
+    // Game Events
+    var isGameDisconnected: Bool = false
+    
+    init(gameMode: GameMode, matchManager: MatchManager? = nil, chef: ChefType? = nil) {
         self.gameMode = gameMode
         self.gamePages = PlayViewModel.getPage(for: gameMode)
+        self.matchManager = matchManager
+        
         // On Game Start
         let budget = generateBudget(min: 30, max: 100, step: 10)
         self.initialBudget = budget
@@ -62,6 +87,11 @@ import SwiftUI
         self.dishVM = CreateDishViewModel(parent: self)
         self.atmVM = ATMViewModel(parent: self, initialBalance: budget)
         
+        if gameMode == .multiplayer {
+            self.isBudgetSharingActive = true
+            self.moneyBreakVM = MoneyBreakViewModel(parent: self)
+        }
+        
         setupGameLogic()
         // for single player inject base ingredient based on picked chef
         if let selectedChef = chef {
@@ -70,8 +100,8 @@ import SwiftUI
         // MARK: - ini komen dulu supaya duitnya ga langsung masuk dompet
         //                        let currencyBreakdown = Currency.breakdown(from: budget)
         //                        walletVM.addMoney(currencyBreakdown)
+        
     }
-    
 }
 
 private extension PlayViewModel {

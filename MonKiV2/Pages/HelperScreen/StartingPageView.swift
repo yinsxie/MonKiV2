@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import ImagePlayground
 
 struct StartingPageView: View {
     
     @EnvironmentObject var appCoordinator: AppCoordinator
+    @Environment(\.supportsImagePlayground) var supportsImagePlayground
+    
+    @State var isShowingMultiplayerAlert: Bool = false
     
     var body: some View {
         ZStack {
@@ -27,7 +31,7 @@ struct StartingPageView: View {
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
                         //                        appCoordinator.goTo(.play(.play))
-                        appCoordinator.goTo(.helperScreen(.pickChef))
+                        appCoordinator.navigateWithFade(.helperScreen(.pickChef), loadingType: .baseIngredients)
                     }, label: {
                         Image("1P_button")
                             .resizable()
@@ -37,29 +41,26 @@ struct StartingPageView: View {
                     
                     Button(action: {
                         AudioManager.shared.play(.buttonClick)
+                        if supportsImagePlayground {
+                            appCoordinator.navigateWithFade(.helperScreen(.multiplayerLobby), loadingType: .multiPlay)
+                        } else {
+                            withAnimation {
+                                isShowingMultiplayerAlert = true
+                            }
+                        }
                     }, label: {
-                        Image("2P_button")
+                        Image("2P_button_active")
                             .resizable()
                             .scaledToFit()
                     })
                     .accessibilityLabel("Multiplayer")
-                    .disabled(true)
-                    
-                    //                    Button(action: {
-                    //                        AudioManager.shared.play(.buttonClick)
-                    //                        appCoordinator.goTo(.helperScreen(.dishBook))
-                    //                    }, label: {
-                    //                        Text("Book")
-                    //                    })
                 }
-                
-                
             }
             .padding(115)
             
             Button(action: {
                 AudioManager.shared.play(.buttonClick)
-                appCoordinator.goTo(.helperScreen(.dishBook))
+                appCoordinator.navigateWithFade(.helperScreen(.dishBook), loadingType: .standardVegetables)
             }, label: {
                 ZStack {
                     if let isNewDishEntry = UserDefaultsManager.shared.getIsNewDishSaved(), isNewDishEntry {
@@ -75,6 +76,8 @@ struct StartingPageView: View {
                 }
             }).frame(width: 195, height: 195)
                 .offset(x: -450, y: 310)
+            
+            InfoOverlayView(isPresented: $isShowingMultiplayerAlert, type: .multiplayerImageCreationNotSupported)
         }
         .onAppear {
             BGMManager.shared.play(track: .supermarket)

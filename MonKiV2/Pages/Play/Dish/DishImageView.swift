@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DishImageView: View {
     @Environment(CreateDishViewModel.self) var viewModel
+    @Environment(PlayViewModel.self) var playVM
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -18,7 +19,8 @@ struct DishImageView: View {
                     
                     let isInputEmpty = viewModel.checkCheckoutItems()
                     let hasImage = viewModel.cgImage != nil
-                    let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+                    let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty) || (!viewModel.isShowMultiplayerDish && playVM.gameMode == .multiplayer) ||
+                    (playVM.gameMode == .multiplayer && viewModel.isLocalReadySaveImage)
                     
                     if !isDisabled {
                         retryButton
@@ -48,33 +50,62 @@ struct DishImageView: View {
                     .stroke(.white, lineWidth: 24)
             )
             
-            saveButton
-                .offset(y: 70)
+            HStack(spacing: 40) {
+                saveButton
+                
+                if playVM.gameMode == .multiplayer {
+                    Text("\(viewModel.amountOfPlayerReadyToSaveImage)/2")
+                        .font(.fredokaSemiBold(size: 35))
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 15).fill(.white))
+                }
+            }
+            .offset(y: 70)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
+        .onChange(of: viewModel.isShowMultiplayerDish) { _, newValue in
+            if newValue == false { return }
+            AudioManager.shared.stop(.loadCooking)
+            AudioManager.shared.play(.dishDone, pitchVariation: 0.03)
+        }
+        .onChange(of: viewModel.isBothReadyToSaveImage) { _, newValue in
+            if newValue {
+                viewModel.saveMultiplayerDishImageToBook()
+            }
+        }
     }
     
     // MARK: - Image Display
     private var imageDisplay: some View {
         ZStack {
             if let cgImage = viewModel.cgImage {
-                Image(uiImage: UIImage(cgImage: cgImage))
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                if viewModel.isShowMultiplayerDish || playVM.gameMode == .singleplayer {
+                    Image(uiImage: UIImage(cgImage: cgImage))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(RoundedRectangle(cornerRadius: 24))
+                }
             }
             
             // LOADING OVERLAY
-            if viewModel.isLoading {
-                Color.black.opacity(0.4)
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
-                    .overlay(
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .scaleEffect(1.5)
-                            .tint(.white)
-                    )
+            // State nunggu temen
+            if !viewModel.isRemotePlayerStartCookingTapped && playVM.gameMode == .multiplayer {
+                // TODO: Bikin animasi custom nunggu temen
+                VStack {
+                    Text("Menunggu teman....")
+                        .font(.fredokaSemiBold(size: 40))
+                        .foregroundColor(Color(hex: "#994000"))
+                   
+                    Image("cashier_monki")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 350)
+                    
+                }
+            } else if viewModel.isLoading || (!viewModel.isShowMultiplayerDish && playVM.gameMode == .multiplayer) {
+                AnimatedGIFView(gifName: "cooking_animation")
+                    .frame(width: 488, height: 488)
             }
         }
         .frame(width: 488, height: 488)
@@ -145,8 +176,19 @@ struct DishImageView: View {
         
         return Button(action: {
             AudioManager.shared.play(.buttonClick)
-            viewModel.setIngredients(from: viewModel.createDishItem)
-            viewModel.generate()
+            
+            if playVM.gameMode == .singleplayer {
+                viewModel.setIngredients(from: viewModel.createDishItem)
+                viewModel.cgImage = nil
+                viewModel.generate()
+                return
+            }
+            
+            //Handle multiplayer
+            playVM.matchManager?.sendHideMultiplayerDish()
+            
+            viewModel.whoTappedLast = .me
+            viewModel.generateInitialMultiplayerDish()
         }, label: {
             ZStack {
                 Image("retryButton")
@@ -162,30 +204,120 @@ struct DishImageView: View {
     private var saveButton: some View {
         let isInputEmpty = viewModel.checkCheckoutItems()
         let hasImage = viewModel.cgImage != nil
-        let isDisabled = viewModel.isLoading || (!hasImage && isInputEmpty)
+        
+        var text: String {
+            if playVM.gameMode == .multiplayer {
+                
+                if viewModel.isLocalReadySaveImage {
+                    return "Batal"
+                }
+                
+                if !viewModel.isRemotePlayerStartCookingTapped {
+                    return "Kembali"
+                }
+                if !viewModel.isShowMultiplayerDish {
+                    return "Memasak..."
+                }
+                
+                return hasImage ? "Simpan Resep" : "Memasak..."
+            }
+            return "Simpan Resep"
+        }
+        
+        var isDisabled: Bool {
+            
+            if playVM.gameMode == .singleplayer {
+                return viewModel.isLoading || (!hasImage && isInputEmpty)
+            }
+            
+            if text == "Batal" {
+                return false
+            }
+            
+            if text == "Kembali" {
+                return false
+            }
+            
+            if text == "Memasak..." {
+                return true
+            }
+            
+            if text == "Simpan Resep" {
+                return false
+            }
+            
+            return viewModel.isLoading || (!hasImage && isInputEmpty)
+        }
+        
+        var imageName: String {
+            if playVM.gameMode == .multiplayer {
+                switch text {
+                case "Simpan Resep":
+                    return "button_active"
+                case "Memasak...", "Kembali", "Batal":
+                    return "button_loading"
+                default:
+                    return "button_disable"
+                }
+            }
+            return isDisabled ? "button_disable" : "button_active"
+        }
+        
+        var iconName: String {
+            switch text {
+            case "Simpan Resep":
+                return "bookDownloadIcon"
+            case "Memasak...":
+                return "loadingCreateDishIcon"
+            default:
+                return ""
+            }
+        }
         
         return Button(action: {
             AudioManager.shared.play(.buttonClick)
-            viewModel.onSaveButtonTapped()
+            
+            if playVM.gameMode == .singleplayer {
+                viewModel.onSaveButtonTapped()
+                return
+            }
+            
+            // Handle multiplayer
+            // If the remote player has not started cooking, go back, make it unready"
+            if text == "Kembali" {
+                viewModel.onBackButtonTapped()
+                return
+            } else if text == "Simpan Resep" || text == "Batal" {
+                viewModel.onMultiplayerSaveButtonToggled()
+            }
+            
         }, label: {
             ZStack {
-                Image(isDisabled ? "button_disable" : "button_active")
+                Image(imageName)
                     .resizable()
                     .scaledToFit()
                     .frame(height: 127)
                 
-                    HStack(spacing: 10) {
-                        Text("Simpan Resep")
-                            .font(.fredokaSemiBold(size: 40))
-                            .foregroundColor(.white)
-                        
-                        Image("bookDownloadIcon")
+                HStack(spacing: 10) {
+                    Text(text)
+                        .font(.fredokaSemiBold(size: 40))
+                        .foregroundColor(.white)
+                    
+                    if !iconName.isEmpty {
+                        Image(iconName)
                             .resizable()
                             .scaledToFit()
                             .frame(height: 36)
                     }
+                }
             }
         })
         .disabled(isDisabled)
+    }
+}
+
+#Preview {
+    GameRootScaler {
+        PlayViewContainer(forGameMode: .multiplayer, chef: .pasta)
     }
 }

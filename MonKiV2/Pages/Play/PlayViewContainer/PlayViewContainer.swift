@@ -12,8 +12,8 @@ struct PlayViewContainer: View {
     @State var playVM: PlayViewModel
     @State var inactivityManager = InactivityManager()
     
-    init(forGameMode mode: GameMode, chef: ChefType? = nil) {
-        _playVM = State(initialValue: PlayViewModel(gameMode: mode, chef: chef))
+    init(forGameMode mode: GameMode, matchManager: MatchManager? = nil, chef: ChefType? = nil) {
+        _playVM = State(initialValue: PlayViewModel(gameMode: mode, matchManager: matchManager, chef: chef))
     }
     
     @ViewBuilder
@@ -97,6 +97,9 @@ struct PlayViewContainer: View {
         // MARK: - Preference Changes
         .onPreferenceChange(ViewFrameKey.self) { frames in
             handleFrameUpdates(frames)
+        }
+        .onAppear {
+            playVM.connectToMatch()
         }
     }
 }

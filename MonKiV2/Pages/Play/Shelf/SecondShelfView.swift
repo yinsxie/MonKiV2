@@ -135,6 +135,11 @@ struct SecondShelfView: View {
                                         perspective: 0.4
                                     )
                                     .onTapGesture {
+                                        if (viewModel.isSecondShelfLeftFridgeOpen) {
+                                            AudioManager.shared.play(.openFridge, volume: 7)
+                                        } else {
+                                            AudioManager.shared.play(.closeFridge, volume: 7)
+                                        }
                                         viewModel.animateLeftDoor()
                                     }
                                 
@@ -148,6 +153,11 @@ struct SecondShelfView: View {
                                         perspective: 0.4
                                     )
                                     .onTapGesture {
+                                        if (viewModel.isSecondShelfRightFridgeOpen) {
+                                            AudioManager.shared.play(.openFridge, volume: 7)
+                                        } else {
+                                            AudioManager.shared.play(.closeFridge, volume: 7)
+                                        }
                                         viewModel.animateRightDoor()
                                     }
                             }

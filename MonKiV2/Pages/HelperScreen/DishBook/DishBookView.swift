@@ -54,7 +54,8 @@ struct DishBookView: View {
             VStack {
                 HStack {
                     ReturnButton(action: {
-                        appCoordinator.popLast()
+//                        appCoordinator.popLast()
+                        appCoordinator.popLastWithFade()
                     })
                     .accessibilityLabel("Kembali ke halaman sebelumnya")
                     .padding(.leading, 82)
@@ -217,22 +218,29 @@ struct DishHeaderView: View {
                     }
                 }
                 
-                //                Button(action: {
-                //                    AudioManager.shared.play(.buttonClick)
-                //                    onDelete(dish)
-                //                }, label: {
-                //                    Image("removeButton")
-                //                        .resizable()
-                //                        .scaledToFit()
-                //                        .frame(width: 72, height: 72)
-                //                })
-                
                 HoldButton(type: .remove, size: 72, strokeWidth: 6, onComplete: {
                     onDelete(dish)
                 })
                 .offset(x: 20, y: -20)
                 .accessibilityLabel("Delete dish")
                 
+                // TODO: Change once layout has been finalized
+                // If multiplayer
+                if let profile = dish.remotePlayerAvatarImageFileName, let name = dish.remotePlayerName, let img = ImageStorage.loadImage(from: profile) {
+                    VStack(spacing: 10) {
+                        Image(uiImage: img)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 60, height: 60)
+                            .clipped()
+                            .accessibilityLabel("Dish photo created with \(name)")
+                        
+                        Text(name)
+                            .font(.fredokaMedium(size: 20))
+                    }
+                    .offset(x: -260, y: 230)
+                }
+               
                 PriceTag(price: dish.totalPrice)
                     .offset(x: 60, y: 250)
                     .rotationEffect(Angle(degrees: 2.42))
@@ -322,13 +330,6 @@ struct IngredientItemView: View {
                 CircleNumberView(number: Int(ingredient.quantity))
                     .scaleEffect(0.45)
                     .offset(y: 15)
-                
-                // TODO: Remove when all shelf item assets are in
-                //                Text(itemName)
-                //                    .font(.fredokaOne(size: 14))
-                //                    .foregroundColor(.black.opacity(0.8))
-                //                    .lineLimit(1)
-                //                    .fixedSize()
             }
             .frame(width: 48, height: 70)
         }
@@ -408,7 +409,7 @@ struct ReturnButton: View {
 
 // MARK: - Preview
 #Preview {
-    DishBookView()
+    AppCoordinatorView()
         .environmentObject(AppCoordinator())
     //        .environment(\.managedObjectContext, CoreDataManager.shared.viewContext)
 }

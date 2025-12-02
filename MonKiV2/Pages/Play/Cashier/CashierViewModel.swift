@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 @Observable
 final class CashierViewModel {
     weak var parent: PlayViewModel?
@@ -18,11 +19,11 @@ final class CashierViewModel {
     init(parent: PlayViewModel?) {
         self.parent = parent
         
-        // MARK: Get 1 rice by default (temporary implementation since we only have 1 type of chef for now)
-        //        if let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
-        //            let riceCartItem = CartItem(item: riceItem)
-        //            self.purchasedItems.append(riceCartItem)
-        //        }
+        // MARK: Get 1 rice by default for multiplayer
+        if parent?.gameMode == .multiplayer, let riceItem = Item.items.first(where: { $0.name == "Rice" }) {
+            let riceCartItem = CartItem(item: riceItem)
+            self.purchasedItems.append(riceCartItem)
+        }
     }
     
     func addBaseIngredient(name: String) {
@@ -258,6 +259,14 @@ final class CashierViewModel {
         
         let freshItems = self.bagVisualItems.map { CartItem(item: $0.item) }
         self.purchasedItems.append(contentsOf: freshItems)
+        
+        // Network Update
+        if let matchManager = parent?.matchManager {
+            for cartItem in freshItems {
+                matchManager.sendPurchase(itemName: cartItem.item.name)
+            }
+        }
+        
         self.bagVisualItems.removeAll()
         
         if instantReset {

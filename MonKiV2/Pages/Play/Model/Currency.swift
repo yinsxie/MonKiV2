@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-enum Currency {
+enum Currency: String, Codable, CaseIterable {
     case idr100
     case idr50
     case idr20

@@ -33,17 +33,19 @@ extension PlayViewModel {
     
     static func getPage(for mode: GameMode) -> [PageIdentifier] {
         var pages: [PageIdentifier] = [
-            .ATM
+//            .ATM
         ]
 
         switch mode {
         case .singleplayer:
             // Include both shelves for single player
+            pages.append(.ATM)
             pages.append(contentsOf: [.shelfA, .shelfB])
             
         case .multiplayer:
             // TODO: Condition on multiplayer
             pages.append(.shelfA)
+            pages.append(.shelfB)
         }
         
         // Append the remaining pages

@@ -23,7 +23,7 @@ internal extension PlayViewContainer {
                         .scaleEffect(playVM.atmVM.isZoomed ? 2.5 : 1.0)
                         .offset(y: playVM.atmVM.isZoomed ? 420 : 0)
                         .offset(x: playVM.atmVM.isZoomed ? 1366 * 3.8 : 0)
-//                        .offset(x: playVM.atmVM.isZoomed ? 1366 : 0, y: playVM.atmVM.isZoomed ? 420 : -35)
+                    //                        .offset(x: playVM.atmVM.isZoomed ? 1366 : 0, y: playVM.atmVM.isZoomed ? 420 : -35)
                     
                     // Pages Content
                     HStack(spacing: 0) {
@@ -62,7 +62,11 @@ internal extension PlayViewContainer {
             VStack {
                 HStack {
                     HoldButton(type: .home, size: 122, strokeWidth: 10, onComplete: {
-                        appCoordinator.popToRoot()
+                        if playVM.gameMode == .multiplayer {
+                            playVM.disconnectFromMatch()
+                        }
+                        //                        appCoordinator.popToRoot()
+                        appCoordinator.popToRootWithFade()
                     })
                     .padding(.leading, 48)
                     .padding(.top, 48)
@@ -105,7 +109,12 @@ internal extension PlayViewContainer {
                 .opacity(isOnCreateDish ? 1 : 0)
                 .disabled(!isOnCreateDish)
         }
-        
+        // Dish Image Playground Capability Alert Overlay
+        .overlay {
+            if playVM.dishVM.isShowingImagePlaygroundCapabilityAlert {
+                InfoOverlayView(isPresented: $playVM.dishVM.isShowingImagePlaygroundCapabilityAlert, type: .createDishImageCreationNotSupported)
+            }
+        }
         // Dish Image Overlay
         .overlay {
             ZStack {
@@ -117,6 +126,23 @@ internal extension PlayViewContainer {
             .ignoresSafeArea()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .zIndex(5)
+        }
+        
+        // Split Budget Overlay
+        .overlay {
+            ZStack {
+                if playVM.isBudgetSharingActive, let viewModel = playVM.moneyBreakVM {
+                    MoneyBreakView(viewModel: viewModel)
+                        .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+                        .onAppear {
+                            viewModel.checkForHostStatus()
+                        }
+                }
+            }
+            .ignoresSafeArea()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .zIndex(5)
+            .animation(.easeInOut(duration: 0.5), value: playVM.isBudgetSharingActive)
         }
         
         // MonKi Cashier Overlay (Money Returned)
@@ -141,8 +167,40 @@ internal extension PlayViewContainer {
                     .offset(x: 225, y: -68)
                 }
             }
-            
         }
+        
+        // Notifiation overlay for when remote player started cooking
+        .overlay {
+            VStack {
+                HStack {
+                    Spacer()
+                    if let type = playVM.currentNotification,
+                       playVM.isNotificationVisible {
+                        NotificationView(type: type)
+                            .onTapGesture {
+                                withAnimation(.interactiveSpring(response: 1, dampingFraction: 0.75)) {
+                                    if type == .remotePlayerReadyToCook {
+                                        playVM.setCurrentIndex(to: .createDish)
+                                        playVM.hideNotification()
+                                    }
+                                }
+                            }
+                    }
+                }
+                Spacer()
+            }
+            .padding([.top, .trailing], 35)
+        }
+        // Disconnect Alert overlay
+        .overlay {
+            if playVM.isGameDisconnected {
+                InfoOverlayView(isPresented: $playVM.isGameDisconnected, type: .multiplayerConnectionLost) {
+                    playVM.disconnectFromMatch()
+                    appCoordinator.popToRoot()
+                }
+            }
+        }
+        
         // this needs to be here so that cart animations happen behind cart
         AnimationOverlayView()
         
@@ -172,9 +230,6 @@ internal extension PlayViewContainer {
     
     @ViewBuilder
     var topPageControl: some View {
-        let isPageControlAllowHitTesting = !playVM.atmVM.isZoomed && !playVM.dishVM.isStartCookingTapped && !playVM.cashierVM.isPlayerDisabledNavigatingWhileReceivedMoney && !playVM.dragManager.isDragging
-        let isPageControlVisible = playVM.atmVM.isZoomed || playVM.dishVM.isStartCookingTapped || playVM.cashierVM.isReturnedMoneyPrompted
-        
         VStack {
             PageControl(
                 currentPageIndex: $playVM.currentPageIndex,
@@ -184,14 +239,14 @@ internal extension PlayViewContainer {
             Spacer()
         }
         .padding(.top, 32)
-        .allowsHitTesting(isPageControlAllowHitTesting)
-        .opacity(isPageControlVisible ? 0 : 1)
+        .allowsHitTesting(playVM.isPageControlAllowHitTesting)
+        .opacity(playVM.isPageControlVisible ? 0 : 1)
     }
 }
 
 #Preview {
     GameRootScaler {
-        PlayViewContainer(forGameMode: .singleplayer)
+        PlayViewContainer(forGameMode: .singleplayer, chef: .bread)
             .environmentObject(AppCoordinator())
     }
 }
